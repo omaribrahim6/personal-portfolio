@@ -21,10 +21,14 @@ export const metadata: Metadata = {
   keywords: ['developer', 'portfolio', 'web development', 'software engineer'],
   authors: [{ name: 'Omar' }],
   icons: {
-    icon: '/OI-favicon.png',
-    shortcut: '/OI-favicon.png',
-    apple: '/OI-favicon.png',
+    icon: [
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+    ],
+    shortcut: '/OI-favicon.ico',
+    apple: '/apple-touch-icon.png',
   },
+  manifest: '/site.webmanifest',
   openGraph: {
     title: 'Omar - Developer Portfolio',
     description: 'A dark, minimalist portfolio showcasing my work as a developer',
