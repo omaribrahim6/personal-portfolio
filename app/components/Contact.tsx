@@ -25,7 +25,7 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="min-h-screen py-20 px-6 flex items-center">
+    <section id="contact" className="min-h-screen py-16 md:py-20 px-4 sm:px-6 flex items-center">
       <div className="max-w-6xl mx-auto w-full">
         <motion.div
           ref={ref}
@@ -39,7 +39,7 @@ export default function Contact() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
             transition={{ delay: 0.2, duration: 0.6 }}
-            className="font-display text-6xl md:text-7xl lg:text-8xl xl:text-9xl uppercase mb-8 hover:text-accent-yellow transition-colors duration-300"
+            className="font-display text-[clamp(3rem,15vw,9rem)] uppercase mb-6 sm:mb-8 hover:text-accent-yellow transition-colors duration-300"
           >
             LET&apos;S TALK
           </motion.h2>
@@ -59,19 +59,21 @@ export default function Contact() {
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ delay: 0.6, duration: 0.6 }}
-            className="mb-12"
+            className="mb-12 flex justify-center"
           >
-            <div className="inline-flex items-center gap-4 bg-dark-secondary px-8 py-4 rounded-lg border-2 border-dark-tertiary hover:border-accent-yellow transition-all duration-300 group">
-              <Mail className="w-6 h-6 text-accent-yellow" />
-              <a
-                href={`mailto:${email}`}
-                className="text-xl md:text-2xl text-light-primary hover:text-accent-yellow transition-colors duration-300 font-medium"
-              >
-                {email}
-              </a>
+            <div className="inline-flex flex-col sm:flex-row items-center gap-3 sm:gap-4 bg-dark-secondary px-4 sm:px-8 py-4 rounded-lg border-2 border-dark-tertiary hover:border-accent-yellow transition-all duration-300 group w-full sm:w-auto max-w-sm sm:max-w-none">
+              <div className="flex items-center gap-3">
+                <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-accent-yellow flex-shrink-0" />
+                <a
+                  href={`mailto:${email}`}
+                  className="text-base sm:text-xl md:text-2xl text-light-primary hover:text-accent-yellow transition-colors duration-300 font-medium break-all sm:break-normal"
+                >
+                  {email}
+                </a>
+              </div>
               <button
                 onClick={copyEmail}
-                className="p-2 hover:bg-accent-yellow hover:text-dark-primary rounded transition-all duration-300"
+                className="p-2 hover:bg-accent-yellow hover:text-dark-primary rounded transition-all duration-300 flex-shrink-0"
                 aria-label="Copy email"
               >
                 {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}

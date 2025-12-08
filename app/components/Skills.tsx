@@ -63,7 +63,7 @@ export default function Skills() {
   const isInView = useInView(ref, { once: true, margin: '-100px' })
 
   return (
-    <section id="skills" className="min-h-screen py-20 px-6">
+    <section id="skills" className="min-h-screen py-20 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto">
         <motion.div
           ref={ref}
@@ -72,7 +72,7 @@ export default function Skills() {
           transition={{ duration: 0.6 }}
           className="mb-16"
         >
-          <h2 className="font-display text-5xl md:text-6xl lg:text-7xl uppercase mb-4">
+          <h2 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl uppercase mb-4">
             <span className="text-accent-yellow">{'//'}</span> skills & tools
           </h2>
           <p className="text-light-secondary text-lg md:text-xl">

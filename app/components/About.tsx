@@ -71,7 +71,18 @@ export default function About() {
   const sectionRef = useRef<HTMLElement>(null)
   const rotatorRef = useRef<HTMLDivElement>(null)
   const [sectionTop, setSectionTop] = useState(0)
+  const [isMobile, setIsMobile] = useState(false)
   const { scrollY } = useScroll()
+
+  // Check if mobile on mount and resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   // Get section position on mount and resize
   useEffect(() => {
@@ -91,11 +102,10 @@ export default function About() {
     const vh = window.innerHeight
     
     // Define scroll points relative to section position
-    // Extra scroll at start to view option 1, extra at end to view option 3
-    const start = sectionTop + vh * 0.3      // Delay start - more time on option 1
-    const mid1 = sectionTop + vh * 0.7       // Transition to option 2
-    const mid2 = sectionTop + vh * 1.2       // Pause on option 2
-    const end = sectionTop + vh * 1.6        // Transition to option 3
+    const start = sectionTop + vh * 0.3
+    const mid1 = sectionTop + vh * 0.7
+    const mid2 = sectionTop + vh * 1.2
+    const end = sectionTop + vh * 1.6
 
     if (value < start) return 90
     if (value < mid1) {
@@ -128,12 +138,19 @@ export default function About() {
       ref={sectionRef}
       id="about"
       className="relative"
-      style={{ height: '280vh', paddingTop: 0, marginBottom: '30vh' }}
+      style={{ 
+        height: isMobile ? '280vh' : '280vh', 
+        paddingTop: 0, 
+        marginBottom: isMobile ? '20vh' : '30vh',
+      }}
     >
       {/* Sticky container that keeps wheel in view */}
-      <div className="sticky top-12" style={{ height: '70vh' }}>
+      <div 
+        className="sticky top-4 md:top-12" 
+        style={{ height: isMobile ? '55vh' : '70vh' }}
+      >
         {/* Section title */}
-        <h2 className="font-display text-4xl md:text-5xl lg:text-6xl uppercase mb-4 relative z-10 pl-4 md:pl-56">
+        <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl uppercase mb-4 relative z-10 px-4 md:pl-56">
           <span className="text-accent-yellow">{'//'}</span> The Story So Far
         </h2>
 
@@ -143,11 +160,13 @@ export default function About() {
           className="absolute rounded-full border-2 border-dark-tertiary"
           style={{
             rotate,
-            width: '70vh',
-            height: '70vh',
+            width: isMobile ? '70vh' : '70vh',
+            height: isMobile ? '70vh' : '70vh',
             transformOrigin: '50% 50%',
-            top: '100px',
-            right: '80%',
+            top: isMobile ? '10vh' : '100px',
+            right: isMobile ? '55%' : '80%',
+            // Scale down on mobile to fit viewport while keeping proportions
+            scale: isMobile ? 0.55 : 1,
           }}
         >
           {/* Education - Top position (vertical text, rotated 180°) */}
@@ -162,23 +181,23 @@ export default function About() {
             }}
             tabIndex={0}
           >
-            <h3 className="font-display text-5xl md:text-6xl lg:text-7xl uppercase m-0 text-accent-yellow opacity-80">
+            <h3 className="font-display text-6xl lg:text-7xl uppercase m-0 text-accent-yellow opacity-80">
               {experiences[0].category}
             </h3>
-            <h4 className="text-base md:text-lg leading-8 m-0 text-light-primary">
-              <span className="bg-accent-yellow text-dark-primary px-1 py-0.5">
+            <h4 className="text-lg leading-8 m-0 text-light-primary">
+              <span className="bg-accent-yellow text-dark-primary px-1 py-0.5 text-base">
                 {experiences[0].title}
               </span>{' '}
-              <span className="text-accent-yellow">@{experiences[0].organization}</span>
+              <span className="text-accent-yellow text-base">@{experiences[0].organization}</span>
             </h4>
-            <p className="text-xs md:text-sm font-normal tracking-wider my-1 uppercase text-light-secondary">
+            <p className="text-sm font-normal tracking-wider my-1 uppercase text-light-secondary">
               {experiences[0].period}
             </p>
             <ul className="pl-6 list-disc space-y-1">
               {experiences[0].details?.map((item, i) => (
                 <li
                   key={i}
-                  className="text-xs md:text-sm text-light-primary opacity-80"
+                  className="text-sm text-light-primary opacity-80"
                   style={{ listStyleType: 'disc' }}
                 >
                   {item}
@@ -197,22 +216,22 @@ export default function About() {
             }}
             tabIndex={0}
           >
-            <h3 className="font-display text-5xl md:text-6xl lg:text-7xl uppercase m-0 text-accent-yellow opacity-80">
+            <h3 className="font-display text-6xl lg:text-7xl uppercase m-0 text-accent-yellow opacity-80">
               {experiences[1].category}
             </h3>
             {experiences[1].roles?.map((role, idx) => (
               <div key={idx} className={idx > 0 ? 'mt-3' : ''}>
-                <h4 className="text-base md:text-lg leading-8 my-1 text-light-primary">
-                  <span className="bg-accent-yellow text-dark-primary px-1 py-0.5">
+                <h4 className="text-lg leading-8 my-1 text-light-primary">
+                  <span className="bg-accent-yellow text-dark-primary px-1 py-0.5 text-base">
                     {role.title}
                   </span>{' '}
-                  <span className="text-accent-yellow">@{role.organization}</span>
+                  <span className="text-accent-yellow text-base">@{role.organization}</span>
                 </h4>
                 <ul className="pl-6 list-disc space-y-1">
                   {role.details.map((item, i) => (
                     <li
                       key={i}
-                      className="text-xs md:text-sm text-light-primary opacity-80"
+                      className="text-sm text-light-primary opacity-80"
                     >
                       {item}
                     </li>
@@ -222,7 +241,7 @@ export default function About() {
             ))}
           </div>
 
-          {/* Experience 2 - Bottom position (vertical text) */}
+          {/* Experience - Bottom position (vertical text) */}
           <div
             className="absolute left-1/2"
             style={{
@@ -234,23 +253,23 @@ export default function About() {
             }}
             tabIndex={0}
           >
-            <h3 className="font-display text-5xl md:text-6xl lg:text-7xl uppercase m-0 text-accent-yellow opacity-80">
+            <h3 className="font-display text-6xl lg:text-7xl uppercase m-0 text-accent-yellow opacity-80">
               {experiences[2].category}
             </h3>
-            <h4 className="text-base md:text-lg leading-8 m-0 text-light-primary">
-              <span className="bg-accent-yellow text-dark-primary px-1 py-0.5">
+            <h4 className="text-lg leading-8 m-0 text-light-primary">
+              <span className="bg-accent-yellow text-dark-primary px-1 py-0.5 text-base">
                 {experiences[2].title}
               </span>{' '}
-              <span className="text-accent-yellow">@{experiences[2].organization}</span>
+              <span className="text-accent-yellow text-base">@{experiences[2].organization}</span>
             </h4>
-            <p className="text-xs md:text-sm font-normal tracking-wider my-1 uppercase text-light-secondary">
+            <p className="text-sm font-normal tracking-wider my-1 uppercase text-light-secondary">
               {experiences[2].period}
             </p>
             <ul className="pl-6 list-disc space-y-1">
               {experiences[2].details?.map((item, i) => (
                 <li
                   key={i}
-                  className="text-xs md:text-sm text-light-primary opacity-80"
+                  className="text-sm text-light-primary opacity-80"
                 >
                   {item}
                 </li>

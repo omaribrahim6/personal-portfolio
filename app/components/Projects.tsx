@@ -166,7 +166,7 @@ export default function Projects() {
   const isInView = useInView(ref, { once: true, margin: '-100px' })
 
   return (
-    <section id="projects" className="min-h-screen py-20 px-6">
+    <section id="projects" className="min-h-screen py-20 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto">
         <motion.div
           ref={ref}
@@ -175,7 +175,7 @@ export default function Projects() {
           transition={{ duration: 0.6 }}
           className="mb-16"
         >
-          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl uppercase mb-4">
+          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl uppercase mb-4">
             <span className="text-accent-yellow">{'//'}</span> my projects (for now)
           </h2>
           <p className="text-light-secondary text-lg md:text-xl">

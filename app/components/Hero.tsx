@@ -36,10 +36,10 @@ export default function Hero() {
   }
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center px-6 overflow-hidden">
+    <section className="relative min-h-[85vh] md:min-h-screen flex items-center justify-center px-4 sm:px-6 pt-12 md:pt-0 overflow-hidden max-w-full">
       {/* Background decorative element */}
       <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent-yellow rounded-full blur-[120px]" />
+        <div className="absolute top-1/4 left-1/4 w-64 md:w-96 h-64 md:h-96 bg-accent-yellow rounded-full blur-[120px]" />
       </div>
 
       <div className="relative z-10 max-w-6xl w-full">
@@ -48,9 +48,9 @@ export default function Hero() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-4 md:mb-6"
+          className="mb-2 md:mb-6"
         >
-          <p className="text-lg md:text-xl text-light-secondary font-body">
+          <p className="text-base md:text-xl text-light-secondary font-body">
             hi, my name is
           </p>
         </motion.div>
@@ -60,13 +60,13 @@ export default function Hero() {
           variants={container}
           initial="hidden"
           animate="visible"
-          className="font-display text-7xl sm:text-8xl md:text-9xl lg:text-[12rem] font-bold leading-none mb-6 md:mb-8 flex"
+          className="font-display text-[clamp(2.5rem,12vw,12rem)] font-bold leading-none mb-4 md:mb-8 flex flex-wrap overflow-hidden w-full"
         >
           {letters.map((letter, index) => (
             <motion.span
               key={index}
               variants={child}
-              className={`hover:text-accent-yellow transition-colors duration-300 ${letter === ' ' ? 'w-4 md:w-6 lg:w-8' : ''}`}
+              className={`hover:text-accent-yellow transition-colors duration-300 ${letter === ' ' ? 'w-2 sm:w-4 md:w-6 lg:w-8' : ''}`}
             >
               {letter === ' ' ? '\u00A0' : letter}
             </motion.span>
@@ -80,12 +80,12 @@ export default function Hero() {
           transition={{ delay: 1.2, duration: 0.8 }}
           className="max-w-3xl"
         >
-          <p className="text-xl md:text-2xl lg:text-3xl text-light-primary font-body leading-relaxed">
+          <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-light-primary font-body leading-relaxed">
             A <span className="text-accent-yellow font-semibold">developer</span> who creates{' '}
             <span className="text-accent-yellow font-semibold">secure</span> and{' '}
             <span className="text-accent-yellow font-semibold">elegant</span> digital experiences.
           </p>
-          <p className="text-lg md:text-xl text-light-secondary mt-4">
+          <p className="text-base md:text-xl text-light-secondary mt-3 md:mt-4">
             Building and securing modern web applications.
           </p>
         </motion.div>
@@ -95,13 +95,13 @@ export default function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.4 }}
-          className="mt-8 flex gap-4 md:hidden"
+          className="mt-6 flex gap-3 md:hidden"
         >
           <a
             href="https://github.com/omaribrahim6"
             target="_blank"
             rel="noopener noreferrer"
-            className="px-6 py-3 bg-dark-secondary hover:bg-accent-yellow text-light-primary hover:text-dark-primary rounded-lg transition-all duration-300"
+            className="px-5 py-2.5 text-sm bg-dark-secondary hover:bg-accent-yellow text-light-primary hover:text-dark-primary rounded-lg transition-all duration-300"
           >
             GitHub
           </a>
@@ -109,7 +109,7 @@ export default function Hero() {
             href="http://linkedin.com/in/omar-ibrahim-14825838a"
             target="_blank"
             rel="noopener noreferrer"
-            className="px-6 py-3 bg-dark-secondary hover:bg-accent-yellow text-light-primary hover:text-dark-primary rounded-lg transition-all duration-300"
+            className="px-5 py-2.5 text-sm bg-dark-secondary hover:bg-accent-yellow text-light-primary hover:text-dark-primary rounded-lg transition-all duration-300"
           >
             LinkedIn
           </a>
@@ -125,10 +125,10 @@ export default function Hero() {
           y: { repeat: Infinity, duration: 2, ease: 'easeInOut' },
         }}
         onClick={scrollToAbout}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 text-light-secondary hover:text-accent-yellow transition-colors duration-300"
+        className="absolute bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 text-light-secondary hover:text-accent-yellow transition-colors duration-300"
         aria-label="Scroll down"
       >
-        <ChevronDown className="w-8 h-8" />
+        <ChevronDown className="w-6 h-6 md:w-8 md:h-8" />
       </motion.button>
     </section>
   )
