@@ -171,12 +171,13 @@ export default function About() {
         >
           {/* Education - Top position (vertical text, rotated 180°) */}
           <div
-            className="absolute left-1/2 -translate-x-1/2"
+            className="absolute whitespace-nowrap"
             style={{
               writingMode: 'vertical-rl',
               textOrientation: 'sideways',
-              maxHeight: '365px',
-              top: '-64%',
+              height: 'max-content',
+              bottom: 'calc(100% + 16px)',
+              left: '50%',
               transform: 'translateX(-50%) scale(-1)',
             }}
             tabIndex={0}
@@ -198,7 +199,6 @@ export default function About() {
                 <li
                   key={i}
                   className="text-sm text-light-primary opacity-80"
-                  style={{ listStyleType: 'disc' }}
                 >
                   {item}
                 </li>
@@ -208,10 +208,11 @@ export default function About() {
 
           {/* Volunteer - Right position (horizontal text) */}
           <div
-            className="absolute top-1/2"
+            className="absolute"
             style={{
               maxWidth: '450px',
-              right: '-80%',
+              left: 'calc(100% + 16px)',
+              top: '50%',
               transform: 'translateY(-50%)',
             }}
             tabIndex={0}
@@ -243,12 +244,13 @@ export default function About() {
 
           {/* Experience - Bottom position (vertical text) */}
           <div
-            className="absolute left-1/2"
+            className="absolute whitespace-nowrap"
             style={{
               writingMode: 'vertical-rl',
               textOrientation: 'sideways',
-              maxHeight: '450px',
-              bottom: '-80%',
+              height: 'max-content',
+              top: 'calc(100% + 16px)',
+              left: '50%',
               transform: 'translateX(-50%)',
             }}
             tabIndex={0}
