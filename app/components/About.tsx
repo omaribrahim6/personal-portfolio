@@ -210,7 +210,7 @@ export default function About() {
           <div
             className="absolute"
             style={{
-              maxWidth: '550px',
+              maxWidth: '650px',
               left: 'calc(100% + 16px)',
               top: '50%',
               transform: 'translateY(-50%)',
