@@ -41,9 +41,9 @@ const projects: Project[] = [
   },
   {
     number: '03',
-    title: 'Home Server',
-    description: 'Self-hosted infrastructure running Proxmox with Docker containers for media streaming, network-wide ad blocking, file storage, and automated backups.',
-    tags: ['Proxmox', 'Docker', 'Linux', 'Nginx', 'Pi-hole'],
+    title: 'Astralis VPS Infrastructure',
+    description: 'Self-hosted production environment running on an Ubuntu-based VPS with automated CI/CD, Nginx reverse-proxy routing, SSL certificates, and isolated production services. Includes secure deployment pipelines, systemd-managed applications, SSH key authentication, and custom automation scripts for seamless zero-touch updates.',
+    tags: ['DevOps', 'Linux', 'Nginx', 'CI/CD', 'GitHub Actions', 'Systemd', 'Node.js', 'Security', 'VPS'],
   },
 ]
 
@@ -176,10 +176,10 @@ export default function Projects() {
           className="mb-16"
         >
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl uppercase mb-4">
-            <span className="text-accent-yellow">{'//'}</span> my projects (for now)
+            <span className="text-accent-yellow">{'//'}</span> my projects
           </h2>
           <p className="text-light-secondary text-lg md:text-xl">
-            a comprehensive list
+            a non-exhaustive list
           </p>
           <div className="w-24 h-1 bg-accent-yellow mt-4" />
         </motion.div>
