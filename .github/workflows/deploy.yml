@@ -3,13 +3,15 @@ name: CI/CD to Astralis
 on:
   push:
     branches: [ "main" ]
-    paths-ignore:
-      - "README.md"
-      - "README/**"
-      - "docs/**"
-      - ".github/**"
-      - "*.md"
-      - "*.txt"
+    paths:
+      - "app/**"
+      - "public/**"
+      - "next.config.*"
+      - "tailwind.config.*"
+      - "postcss.config.*"
+      - "tsconfig.json"
+      - "package.json"
+      - "package-lock.json"
 
 jobs:
   build:
@@ -36,18 +38,6 @@ jobs:
     name: Deploy to VPS
     needs: build
     runs-on: ubuntu-latest
-
-    # Only deploy if source files changed
-    if: |
-      github.event_name == 'push' &&
-      (
-        contains(join(github.event.commits.*.modified), 'app/') ||
-        contains(join(github.event.commits.*.modified), 'src/') ||
-        contains(join(github.event.commits.*.modified), 'components/') ||
-        contains(join(github.event.commits.*.modified), 'public/') ||
-        contains(join(github.event.commits.*.modified), 'package.json') ||
-        contains(join(github.event.commits.*.modified), 'next.config.js')
-      )
 
     steps:
       - name: Start SSH agent
