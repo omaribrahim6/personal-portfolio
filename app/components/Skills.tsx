@@ -33,12 +33,11 @@ function SkillCategory({ category, index }: { category: typeof skillCategories[0
       initial={{ opacity: 0, y: 30 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
       transition={{ delay: index * 0.1, duration: 0.6 }}
-      className="mb-12"
     >
-      <h3 className="font-display text-2xl md:text-3xl uppercase mb-6 text-accent-yellow tracking-wide">
+      <h3 className="font-display text-xl md:text-3xl uppercase mb-4 md:mb-6 text-accent-yellow tracking-wide">
         {category.title}
       </h3>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4">
         {category.skills.map((skill, skillIndex) => (
           <motion.div
             key={skill}
@@ -46,9 +45,9 @@ function SkillCategory({ category, index }: { category: typeof skillCategories[0
             animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
             transition={{ delay: index * 0.1 + skillIndex * 0.05, duration: 0.4 }}
             whileHover={{ scale: 1.05, y: -5 }}
-            className="bg-dark-secondary px-4 py-3 rounded-lg border border-dark-tertiary hover:border-accent-yellow transition-all duration-300 text-center cursor-pointer group"
+            className="bg-dark-secondary px-3 py-2.5 md:px-4 md:py-3 rounded-lg border border-dark-tertiary hover:border-accent-yellow transition-all duration-300 text-center cursor-pointer group"
           >
-            <span className="text-light-primary font-medium group-hover:text-accent-yellow transition-colors duration-300">
+            <span className="text-sm md:text-base text-light-primary font-medium group-hover:text-accent-yellow transition-colors duration-300">
               {skill}
             </span>
           </motion.div>
@@ -81,7 +80,7 @@ export default function Skills() {
           <div className="w-24 h-1 bg-accent-yellow mt-4" />
         </motion.div>
 
-        <div>
+        <div className="space-y-8 md:space-y-12">
           {skillCategories.map((category, index) => (
             <SkillCategory key={category.title} category={category} index={index} />
           ))}
@@ -92,9 +91,9 @@ export default function Skills() {
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : { opacity: 0 }}
           transition={{ delay: 0.8, duration: 0.6 }}
-          className="mt-12 p-6 bg-dark-secondary rounded-lg border border-dark-tertiary"
+          className="mt-8 md:mt-12 p-5 md:p-6 bg-dark-secondary rounded-lg border border-dark-tertiary"
         >
-          <p className="text-light-primary leading-relaxed">
+          <p className="text-sm md:text-base text-light-primary leading-relaxed">
             <span className="text-accent-yellow font-semibold">Always learning.</span> I&apos;m constantly 
             exploring new technologies and staying up-to-date with the latest trends in web development. 
             Currently diving deeper into systems programming and distributed systems.

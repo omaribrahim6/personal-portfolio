@@ -50,7 +50,7 @@ export default function Hero() {
           transition={{ duration: 0.6 }}
           className="mb-2 md:mb-6"
         >
-          <p className="text-base md:text-xl text-light-secondary font-body">
+          <p className="text-lg md:text-xl text-light-secondary font-body">
             hi, my name is
           </p>
         </motion.div>
@@ -60,7 +60,7 @@ export default function Hero() {
           variants={container}
           initial="hidden"
           animate="visible"
-          className="font-display text-[clamp(2.5rem,12vw,12rem)] font-bold leading-none mb-4 md:mb-8 flex flex-wrap overflow-hidden w-full"
+          className="font-display text-[clamp(3.5rem,12vw,12rem)] font-bold leading-none mb-4 md:mb-8 flex flex-wrap overflow-hidden w-full"
         >
           {letters.map((letter, index) => (
             <motion.span
@@ -80,12 +80,12 @@ export default function Hero() {
           transition={{ delay: 1.2, duration: 0.8 }}
           className="max-w-3xl"
         >
-          <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-light-primary font-body leading-relaxed">
+          <p className="text-xl sm:text-2xl md:text-2xl lg:text-3xl text-light-primary font-body leading-relaxed">
             A <span className="text-accent-yellow font-semibold">developer</span> who creates{' '}
             <span className="text-accent-yellow font-semibold">secure</span> and{' '}
             <span className="text-accent-yellow font-semibold">elegant</span> digital experiences.
           </p>
-          <p className="text-base md:text-xl text-light-secondary mt-3 md:mt-4">
+          <p className="text-lg md:text-xl text-light-secondary mt-3 md:mt-4">
             Building and securing modern web applications.
           </p>
         </motion.div>

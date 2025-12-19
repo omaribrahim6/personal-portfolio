@@ -82,18 +82,18 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         initial={{ opacity: 0, y: 50 }}
         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
         transition={{ delay: index * 0.15, duration: 0.6 }}
-        className="group relative bg-dark-secondary p-6 md:p-8 rounded-lg border-2 border-dark-tertiary hover:border-accent-yellow transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-accent-yellow/10 h-full flex flex-col"
+        className="group relative bg-dark-secondary p-5 md:p-8 rounded-lg border-2 border-dark-tertiary hover:border-accent-yellow transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-accent-yellow/10 h-full flex flex-col"
       >
         {/* Project number */}
-        <div className="absolute -top-4 -left-4 w-16 h-16 bg-accent-yellow rounded-full flex items-center justify-center">
-          <span className="font-display text-2xl text-dark-primary">{project.number}</span>
+        <div className="absolute -top-3 -left-3 w-14 h-14 md:w-16 md:h-16 bg-accent-yellow rounded-full flex items-center justify-center">
+          <span className="font-display text-xl md:text-2xl text-dark-primary">{project.number}</span>
         </div>
 
         <div className="mt-4 flex flex-col flex-grow">
-          <h3 className="font-display text-3xl md:text-4xl uppercase mb-3 group-hover:text-accent-yellow transition-colors duration-300">
+          <h3 className="font-display text-2xl md:text-4xl uppercase mb-3 group-hover:text-accent-yellow transition-colors duration-300">
             {project.title}
           </h3>
-          <p className="text-light-primary mb-6 leading-relaxed flex-grow">
+          <p className="text-base md:text-lg text-light-primary mb-6 leading-relaxed flex-grow">
             {project.description}
           </p>
 

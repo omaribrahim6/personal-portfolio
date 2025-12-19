@@ -48,7 +48,7 @@ export default function Contact() {
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ delay: 0.4, duration: 0.6 }}
-            className="text-xl md:text-2xl text-light-secondary mb-12 max-w-2xl mx-auto"
+            className="text-lg md:text-2xl text-light-secondary mb-12 max-w-2xl mx-auto px-2"
           >
             Have a project in mind or just want to chat? 
             <span className="text-accent-yellow"> I&apos;d love to hear from you.</span>
@@ -86,7 +86,7 @@ export default function Contact() {
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ delay: 0.8, duration: 0.6 }}
-            className="flex justify-center gap-6 mb-16"
+            className="flex justify-center gap-4 md:gap-6 mb-16"
           >
             {socialLinks.map((link, index) => (
               <motion.a
