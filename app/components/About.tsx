@@ -210,7 +210,7 @@ export default function About() {
           <div
             className="absolute"
             style={{
-              maxWidth: '650px',
+              maxWidth: '1000px',
               left: 'calc(100% + 16px)',
               top: '50%',
               transform: 'translateY(-50%)',
@@ -233,6 +233,7 @@ export default function About() {
                     <li
                       key={i}
                       className="text-sm text-light-primary opacity-80"
+                      style={{ whiteSpace: 'nowrap' }}
                     >
                       {item}
                     </li>
