@@ -4,7 +4,7 @@ A minimalist portfolio website built with Next.js and TypeScript.
 
 ## Tech Stack
 
-- Next.js 14 (App Router)
+- Next.js 16 (App Router)
 - TypeScript
 - Tailwind CSS
 - Framer Motion
