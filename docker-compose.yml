@@ -1,0 +1,18 @@
+services:
+  web:
+    build: .
+    container_name: portfolio_web
+    restart: unless-stopped
+    expose:
+      - "3000"
+    environment:
+      - VIRTUAL_HOST=omaribrahim.me,www.omaribrahim.me
+      - LETSENCRYPT_HOST=omaribrahim.me,www.omaribrahim.me
+      - VIRTUAL_PORT=3000
+      - LETSENCRYPT_EMAIL=omarmgmi@gmail.com
+    networks:
+      - webnet
+
+networks:
+  webnet:
+    external: true
