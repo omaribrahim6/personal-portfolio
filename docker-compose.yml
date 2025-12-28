@@ -6,10 +6,10 @@ services:
     expose:
       - "3000"
     environment:
-      - VIRTUAL_HOST=omaribrahim.me,www.omaribrahim.me
-      - LETSENCRYPT_HOST=omaribrahim.me,www.omaribrahim.me
+      - VIRTUAL_HOST=${VIRTUAL_HOST}
+      - LETSENCRYPT_HOST=${LETSENCRYPT_HOST}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
       - VIRTUAL_PORT=3000
-      - LETSENCRYPT_EMAIL=omarmgmi@gmail.com
     networks:
       - webnet
 
