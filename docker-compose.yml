@@ -1,0 +1,18 @@
+services:
+  web:
+    build: .
+    container_name: portfolio_web
+    restart: unless-stopped
+    expose:
+      - "3000"
+    environment:
+      - VIRTUAL_HOST=${VIRTUAL_HOST}
+      - LETSENCRYPT_HOST=${LETSENCRYPT_HOST}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+      - VIRTUAL_PORT=3000
+    networks:
+      - webnet
+
+networks:
+  webnet:
+    external: true
