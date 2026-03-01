@@ -26,9 +26,11 @@ const projects: Project[] = [
   },
   {
     number: '01',
-    title: 'Cyberpen AI',
-    description: 'An AI cybersecurity tool still in the works... stay tuned.',
-    tags: ['AI', 'Cybersecurity', 'Python'],
+    title: 'RoadSense',
+    description: 'AI-powered road damage detection system using dashcam video analysis. Detects potholes, cracks, ruts, and debris, then visualizes them on an interactive map dashboard for engineers.',
+    tags: ['AI', 'Computer Vision', 'Mapping', 'Dashcam Analytics'],
+    github: 'https://github.com/omaribrahim6/roadsense',
+    demo: 'https://astrali.tech/',
   },
   {
     number: '02',
@@ -193,4 +195,3 @@ export default function Projects() {
     </section>
   )
 }
-

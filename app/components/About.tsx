@@ -1,12 +1,22 @@
 'use client'
 
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
-import { useRef, useLayoutEffect, useEffect, useState } from 'react'
+import { useRef, useLayoutEffect, useEffect, useState, type MouseEvent } from 'react'
+
+type Detail =
+  | string
+  | {
+      prefix?: string
+      linkText: string
+      href: string
+      suffix?: string
+    }
 
 type Role = {
   title: string
   organization: string
-  details: string[]
+  period?: string
+  details: Detail[]
 }
 
 type SingleExperience = {
@@ -14,7 +24,7 @@ type SingleExperience = {
   title: string
   organization: string
   period: string
-  details: string[]
+  details: Detail[]
   roles?: never
 }
 
@@ -35,9 +45,7 @@ const experiences: Experience[] = [
     title: 'B.Eng. in Software Engineering',
     organization: 'Carleton University',
     period: 'Expected April 2028',
-    details: [
-      'GPA: 10.33/12.00',
-    ],
+    details: [],
   },
   {
     category: 'volunteer',
@@ -56,25 +64,43 @@ const experiences: Experience[] = [
   },
   {
     category: 'experience',
-    title: 'Cybersecurity Analyst (Contract)',
-    organization: 'Journale.ai',
-    period: 'NOV 2025 – Present',
-    details: [
-      'Conducted security assessments and vulnerability testing',
-      'Implemented security best practices and protocols',
-      'Monitored and responded to security incidents',
+    roles: [
+      {
+        title: 'Cybersecurity Analyst (Contract)',
+        organization: 'Journale.ai',
+        period: 'NOV 2025 - Present',
+        details: [
+          'Conducted security assessments and vulnerability testing',
+          'Implemented security best practices and protocols',
+          'Monitored and responded to security incidents',
+        ],
+      },
+      {
+        title: 'Freelance Web Developer',
+        organization: 'Independent',
+        details: [
+          {
+            prefix: '(',
+            linkText: 'contact',
+            href: '#contact',
+            suffix: ' me for a website)',
+          },
+        ],
+      },
     ],
   },
 ]
 
 export default function About() {
+  const education = experiences[0] as SingleExperience
+  const volunteer = experiences[1] as MultiRoleExperience
+  const professional = experiences[2] as MultiRoleExperience
   const sectionRef = useRef<HTMLElement>(null)
   const rotatorRef = useRef<HTMLDivElement>(null)
   const [sectionTop, setSectionTop] = useState(0)
   const [isMobile, setIsMobile] = useState(false)
   const { scrollY } = useScroll()
 
-  // Check if mobile on mount and resize
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768)
@@ -84,7 +110,6 @@ export default function About() {
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
-  // Get section position on mount and resize
   useEffect(() => {
     const updateSectionTop = () => {
       if (sectionRef.current) {
@@ -96,12 +121,10 @@ export default function About() {
     return () => window.removeEventListener('resize', updateSectionTop)
   }, [])
 
-  // Calculate rotation based on scroll position
   const rotationRange = useTransform(scrollY, (value) => {
     if (typeof window === 'undefined') return 90
     const vh = window.innerHeight
-    
-    // Define scroll points relative to section position
+
     const start = sectionTop + vh * 0.3
     const mid1 = sectionTop + vh * 0.7
     const mid2 = sectionTop + vh * 1.2
@@ -133,28 +156,60 @@ export default function About() {
     }
   }, [scrollY, sectionTop])
 
+  const handleHashLinkClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    const href = event.currentTarget.getAttribute('href')
+    if (!href || !href.startsWith('#')) return
+
+    const target = document.getElementById(href.slice(1))
+    if (!target) return
+
+    event.preventDefault()
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    window.history.replaceState(null, '', href)
+  }
+
+  const renderDetail = (item: Detail, index: number, className = '') => (
+    <li
+      key={index}
+      className={`text-sm text-light-primary opacity-80 ${className}`.trim()}
+    >
+      {typeof item === 'string' ? (
+        item
+      ) : (
+        <>
+          {item.prefix}
+          <a
+            href={item.href}
+            onClick={item.href.startsWith('#') ? handleHashLinkClick : undefined}
+            className="underline underline-offset-2 text-inherit hover:text-accent-yellow transition-colors duration-300"
+          >
+            {item.linkText}
+          </a>
+          {item.suffix}
+        </>
+      )}
+    </li>
+  )
+
   return (
     <section
       ref={sectionRef}
       id="about"
       className="relative"
-      style={{ 
-        height: isMobile ? '280vh' : '280vh', 
-        paddingTop: 0, 
+      style={{
+        height: isMobile ? '280vh' : '280vh',
+        paddingTop: 0,
         marginBottom: isMobile ? '20vh' : '30vh',
       }}
     >
-      {/* Sticky container that keeps wheel in view */}
-      <div 
-        className="sticky top-4 md:top-12" 
+      <div
+        className="sticky top-4 md:top-12"
         style={{ height: isMobile ? '55vh' : '70vh' }}
       >
-        {/* Section title */}
         <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl uppercase mb-4 relative z-10 px-4 md:pl-56">
           <span className="text-accent-yellow">{'//'}</span> The Story So Far
         </h2>
 
-        {/* The rotating wheel */}
         <motion.div
           ref={rotatorRef}
           className="absolute rounded-full border-2 border-dark-tertiary"
@@ -165,11 +220,9 @@ export default function About() {
             transformOrigin: '50% 50%',
             top: isMobile ? '10vh' : '100px',
             right: isMobile ? '55%' : '80%',
-            // Scale down on mobile to fit viewport while keeping proportions
             scale: isMobile ? 0.55 : 1,
           }}
         >
-          {/* Education - Top position (vertical text, rotated 180°) */}
           <div
             className="absolute whitespace-nowrap"
             style={{
@@ -183,30 +236,24 @@ export default function About() {
             tabIndex={0}
           >
             <h3 className="font-display text-6xl lg:text-7xl uppercase m-0 text-accent-yellow opacity-80">
-              {experiences[0].category}
+              {education.category}
             </h3>
             <h4 className="text-lg leading-8 m-0 text-light-primary">
               <span className="bg-accent-yellow text-dark-primary px-1 py-0.5 text-base">
-                {experiences[0].title}
+                {education.title}
               </span>{' '}
-              <span className="text-accent-yellow text-base">@{experiences[0].organization}</span>
+              <span className="text-accent-yellow text-base">@{education.organization}</span>
             </h4>
             <p className="text-sm font-normal tracking-wider my-1 uppercase text-light-secondary">
-              {experiences[0].period}
+              {education.period}
             </p>
-            <ul className="pl-6 list-disc space-y-1">
-              {experiences[0].details?.map((item, i) => (
-                <li
-                  key={i}
-                  className="text-sm text-light-primary opacity-80"
-                >
-                  {item}
-                </li>
-              ))}
-            </ul>
+            {!!education.details.length && (
+              <ul className="pl-6 list-disc space-y-1">
+                {education.details.map((item, index) => renderDetail(item, index))}
+              </ul>
+            )}
           </div>
 
-          {/* Volunteer - Right position (horizontal text) */}
           <div
             className="absolute"
             style={{
@@ -218,10 +265,10 @@ export default function About() {
             tabIndex={0}
           >
             <h3 className="font-display text-6xl lg:text-7xl uppercase m-0 text-accent-yellow opacity-80">
-              {experiences[1].category}
+              {volunteer.category}
             </h3>
-            {experiences[1].roles?.map((role, idx) => (
-              <div key={idx} className={idx > 0 ? 'mt-3' : ''}>
+            {volunteer.roles.map((role, index) => (
+              <div key={index} className={index > 0 ? 'mt-3' : ''}>
                 <h4 className="text-lg leading-8 my-1 text-light-primary">
                   <span className="bg-accent-yellow text-dark-primary px-1 py-0.5 text-base">
                     {role.title}
@@ -229,21 +276,14 @@ export default function About() {
                   <span className="text-accent-yellow text-base">@{role.organization}</span>
                 </h4>
                 <ul className="pl-6 list-disc space-y-1">
-                  {role.details.map((item, i) => (
-                    <li
-                      key={i}
-                      className="text-sm text-light-primary opacity-80"
-                      style={{ whiteSpace: 'nowrap' }}
-                    >
-                      {item}
-                    </li>
-                  ))}
+                  {role.details.map((item, detailIndex) =>
+                    renderDetail(item, detailIndex, 'whitespace-nowrap')
+                  )}
                 </ul>
               </div>
             ))}
           </div>
 
-          {/* Experience - Bottom position (vertical text) */}
           <div
             className="absolute whitespace-nowrap"
             style={{
@@ -257,27 +297,30 @@ export default function About() {
             tabIndex={0}
           >
             <h3 className="font-display text-6xl lg:text-7xl uppercase m-0 text-accent-yellow opacity-80">
-              {experiences[2].category}
+              {professional.category}
             </h3>
-            <h4 className="text-lg leading-8 m-0 text-light-primary">
-              <span className="bg-accent-yellow text-dark-primary px-1 py-0.5 text-base">
-                {experiences[2].title}
-              </span>{' '}
-              <span className="text-accent-yellow text-base">@{experiences[2].organization}</span>
-            </h4>
-            <p className="text-sm font-normal tracking-wider my-1 uppercase text-light-secondary">
-              {experiences[2].period}
-            </p>
-            <ul className="pl-6 list-disc space-y-1">
-              {experiences[2].details?.map((item, i) => (
-                <li
-                  key={i}
-                  className="text-sm text-light-primary opacity-80"
-                >
-                  {item}
-                </li>
-              ))}
-            </ul>
+            {professional.roles.map((role, index) => (
+              <div key={index} className={index > 0 ? 'mt-3' : ''}>
+                <h4 className="text-lg leading-8 m-0 text-light-primary">
+                  <span className="bg-accent-yellow text-dark-primary px-1 py-0.5 text-base">
+                    {role.title}
+                  </span>{' '}
+                  <span className="text-accent-yellow text-base">@{role.organization}</span>
+                </h4>
+                {role.period && (
+                  <p className="text-sm font-normal tracking-wider my-1 uppercase text-light-secondary">
+                    {role.period}
+                  </p>
+                )}
+                {!!role.details.length && (
+                  <ul className="pl-6 list-disc space-y-1">
+                    {role.details.map((item, detailIndex) =>
+                      renderDetail(item, detailIndex)
+                    )}
+                  </ul>
+                )}
+              </div>
+            ))}
           </div>
         </motion.div>
       </div>

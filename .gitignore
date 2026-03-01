@@ -36,3 +36,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# local documents
+/Omar_Ibrahim_Transcript.pdf
+
