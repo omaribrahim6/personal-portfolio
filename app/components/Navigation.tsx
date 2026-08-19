@@ -1,11 +1,12 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Github, Linkedin, Mail, FileText } from 'lucide-react'
+import { Mail, FileText } from 'lucide-react'
+import { Github, Linkedin } from './BrandIcons'
 
 const socialLinks = [
   { icon: Github, href: 'https://github.com/omaribrahim6', label: 'GitHub' },
-  { icon: Linkedin, href: 'http://linkedin.com/in/omar-ibrahim-14825838a', label: 'LinkedIn' },
+  { icon: Linkedin, href: 'https://www.linkedin.com/in/omar-ibrahim6/', label: 'LinkedIn' },
   { icon: Mail, href: 'mailto:omarmgmi08@gmail.com', label: 'Email' },
   { icon: FileText, href: '/resume.pdf', label: 'Resume' },
 ]

@@ -45,7 +45,7 @@ export default function CursorFollower() {
     <>
       {/* Main cursor dot - instant follow, no delay */}
       <div
-        className="fixed top-0 left-0 pointer-events-none z-[9999] mix-blend-difference"
+        className="fixed top-0 left-0 pointer-events-none z-9999 mix-blend-difference"
         style={{
           transform: `translate(${mousePosition.x - 8}px, ${mousePosition.y - 8}px) scale(${isHovering ? 1.5 : 1})`,
           transition: 'transform 0.05s ease-out',
@@ -56,7 +56,7 @@ export default function CursorFollower() {
 
       {/* Outer glow ring - very slight trail effect */}
       <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-[9998]"
+        className="fixed top-0 left-0 pointer-events-none z-9998"
         animate={{
           x: mousePosition.x - 20,
           y: mousePosition.y - 20,

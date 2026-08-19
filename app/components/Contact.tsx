@@ -3,11 +3,12 @@
 import { motion } from 'framer-motion'
 import { useInView } from 'framer-motion'
 import { useRef, useState } from 'react'
-import { Mail, Github, Linkedin, FileText, Copy, Check } from 'lucide-react'
+import { Mail, FileText, Copy, Check } from 'lucide-react'
+import { Github, Linkedin } from './BrandIcons'
 
 const socialLinks = [
   { icon: Github, href: 'https://github.com/omaribrahim6', label: 'GitHub' },
-  { icon: Linkedin, href: 'http://linkedin.com/in/omar-ibrahim-14825838a', label: 'LinkedIn' },
+  { icon: Linkedin, href: 'https://www.linkedin.com/in/omar-ibrahim6/', label: 'LinkedIn' },
   { icon: FileText, href: '/resume.pdf', label: 'Resume' },
 ]
 
@@ -63,7 +64,7 @@ export default function Contact() {
           >
             <div className="inline-flex flex-col sm:flex-row items-center gap-3 sm:gap-4 bg-dark-secondary px-4 sm:px-8 py-4 rounded-lg border-2 border-dark-tertiary hover:border-accent-yellow transition-all duration-300 group w-full sm:w-auto max-w-sm sm:max-w-none">
               <div className="flex items-center gap-3">
-                <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-accent-yellow flex-shrink-0" />
+                <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-accent-yellow shrink-0" />
                 <a
                   href={`mailto:${email}`}
                   className="text-base sm:text-xl md:text-2xl text-light-primary hover:text-accent-yellow transition-colors duration-300 font-medium break-all sm:break-normal"
@@ -73,7 +74,7 @@ export default function Contact() {
               </div>
               <button
                 onClick={copyEmail}
-                className="p-2 hover:bg-accent-yellow hover:text-dark-primary rounded transition-all duration-300 flex-shrink-0"
+                className="p-2 hover:bg-accent-yellow hover:text-dark-primary rounded-sm transition-all duration-300 shrink-0"
                 aria-label="Copy email"
               >
                 {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}

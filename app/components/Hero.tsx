@@ -300,12 +300,13 @@ export default function Hero() {
           className="max-w-3xl"
         >
           <p className="text-xl sm:text-2xl md:text-2xl lg:text-3xl text-light-primary font-body leading-relaxed">
-            A <span className="text-accent-yellow font-semibold">developer</span> who creates{' '}
-            <span className="text-accent-yellow font-semibold">secure</span> and{' '}
-            <span className="text-accent-yellow font-semibold">elegant</span> digital experiences.
+            A <span className="text-accent-yellow font-semibold">developer</span> and{' '}
+            <span className="text-accent-yellow font-semibold">security auditor</span> — I build
+            things, then try to break them before someone else does.
           </p>
           <p className="text-base md:text-xl text-light-secondary mt-4 md:mt-4">
-            Building and securing modern web applications.
+            Software Engineering @ Carleton University. Currently looking for internships in
+            software development and security.
           </p>
         </motion.div>
 
@@ -324,7 +325,7 @@ export default function Hero() {
             GitHub
           </a>
           <a
-            href="http://linkedin.com/in/omar-ibrahim-14825838a"
+            href="https://www.linkedin.com/in/omar-ibrahim6/"
             target="_blank"
             rel="noopener noreferrer"
             className="px-6 py-3 text-base bg-dark-secondary hover:bg-accent-yellow text-light-primary hover:text-dark-primary rounded-lg transition-all duration-300"

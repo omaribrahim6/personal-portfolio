@@ -2,81 +2,63 @@
 
 import { motion } from 'framer-motion'
 import { useInView } from 'framer-motion'
-import { useRef, useState, useEffect } from 'react'
-import { ExternalLink, Github } from 'lucide-react'
+import { useRef } from 'react'
+import { ExternalLink, Trophy } from 'lucide-react'
+import { Github } from './BrandIcons'
 
 type Project = {
   number: string
   title: string
+  award?: string
   description: string
   tags: string[]
   github?: string
   demo?: string
-  privateRepo?: boolean
+  demoLabel?: string
+  devpost?: string
 }
 
 const projects: Project[] = [
   {
     number: '00',
-    title: 'Empower Orphans Website',
-    description: 'Full-stack website for NGO Empower Orphans, a student-led organization fundraising and volunteering to support orphaned children across university chapters.',
-    tags: ['Next.js', 'TypeScript', 'TailwindCSS'],
-    github: 'https://github.com/omaribrahim6/Empower-Orphans-Website',
-    demo: 'https://www.empowerorphans.com/',
+    title: 'Clascade',
+    award: 'cuHacking 2026 — Best Use of Gemini',
+    description: 'Teachers upload the slide deck they already have and Clascade turns it into a collaborative 3D lesson the whole class moves through together in the browser. The teacher controls every phase from their own screen so no student can rush ahead, every generated fact is grounded in cited sources, and every scene is age-checked before students ever see it.',
+    tags: ['Next.js', 'TypeScript', '3D / WebGL', 'RAG', 'EdTech'],
+    demo: 'https://clascade-page.vercel.app/',
+    demoLabel: 'Case Study & Demos',
+    devpost: 'https://devpost.com/software/clascade',
   },
   {
     number: '01',
-    title: 'RoadSense',
-    description: 'AI-powered road damage detection system using dashcam video analysis. Detects potholes, cracks, ruts, and debris, then visualizes them on an interactive map dashboard for engineers.',
-    tags: ['AI', 'Computer Vision', 'Mapping', 'Dashcam Analytics'],
-    github: 'https://github.com/omaribrahim6/roadsense',
-    demo: 'https://astrali.tech/',
+    title: 'Revenant',
+    award: 'GenAI Genesis 2026 — Winner, Moorcheh.ai Track',
+    description: 'Won Canada\'s largest AI hackathon against 1,000+ hackers. Every company slowly loses its memory — the reasoning behind engineering decisions gets buried in Slack threads and pull requests. Revenant captures that reasoning as it happens, so two years later a developer can ask "why did we pick Postgres?" and get the original discussion back. Built in 36 hours.',
+    tags: ['Next.js', 'FastAPI', 'Python', 'PostgreSQL', 'Redis', 'RAG', 'Docker'],
+    devpost: 'https://devpost.com/software/revenent',
   },
   {
     number: '02',
-    title: 'CUMSA Website',
-    description: 'Conducted security audits and implemented fixes for Carleton University Muslim Students\' Association website. Integrated Instagram Graph API for dynamic social content.',
-    tags: ['Security', 'Instagram API', 'Next.js'],
-    github: 'https://github.com/machine-moon/cumsa-web',
-    demo: 'https://cumsa.ca/',
-    privateRepo: true,
+    title: 'QueryForge',
+    award: 'MindBridge AI Challenge',
+    description: 'A natural-language-to-SQL agent that lets anyone query a database in plain English. Hit 98% accuracy across 172 test cases, including trick questions written specifically to break it. Runs entirely on CPU through Ollama with no external API, so data never leaves the machine and inference costs nothing.',
+    tags: ['Python', 'DuckDB', 'Ollama', 'SQL', 'Local LLM'],
+    github: 'https://github.com/omaribrahim6/QueryForge',
   },
   {
     number: '03',
-    title: 'Astralis VPS Infrastructure',
-    description: 'Self-hosted production environment running on an Ubuntu-based VPS with automated CI/CD, Nginx reverse-proxy routing, SSL certificates, and isolated production services. Includes secure deployment pipelines, systemd-managed applications, SSH key authentication, and custom automation scripts for seamless zero-touch updates.',
-    tags: ['DevOps', 'Linux', 'Nginx', 'CI/CD', 'GitHub Actions', 'Systemd', 'Node.js', 'Security', 'VPS'],
+    title: 'RoadSense',
+    award: 'Hack the Future — 2nd Place',
+    description: 'Cities find potholes through manual inspection and citizen complaints — slow, expensive, reactive. RoadSense turns ordinary dashcam footage into a live map of road conditions using a fine-tuned YOLOv8 model, with frame extraction, severity scoring, GPS resolution, and duplicate filtering feeding a MapLibre dashboard engineers can filter by damage type and severity.',
+    tags: ['Python', 'YOLOv8', 'OpenCV', 'Supabase', 'Next.js', 'MapLibre'],
+    github: 'https://github.com/omaribrahim6/roadsense',
+    demo: 'https://roadsense-live.vercel.app/',
   },
 ]
 
 function ProjectCard({ project, index }: { project: Project; index: number }) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
-  const [showPrivateMsg, setShowPrivateMsg] = useState(false)
-  const [displayText, setDisplayText] = useState('')
-  const [typingDone, setTypingDone] = useState(false)
-  const fullText = "// it's a private repo, click again if u really wanna check"
-
-  useEffect(() => {
-    if (showPrivateMsg && displayText.length < fullText.length) {
-      const timeout = setTimeout(() => {
-        setDisplayText(fullText.slice(0, displayText.length + 1))
-      }, 35)
-      return () => clearTimeout(timeout)
-    } else if (showPrivateMsg && displayText.length === fullText.length) {
-      setTypingDone(true)
-    }
-  }, [showPrivateMsg, displayText, fullText])
-
-  const handlePrivateRepoClick = (e: React.MouseEvent) => {
-    e.preventDefault()
-    if (!showPrivateMsg) {
-      setShowPrivateMsg(true)
-    } else if (typingDone) {
-      window.open(project.github, '_blank', 'noopener,noreferrer')
-    }
-  }
-
   return (
     <div className="relative h-full">
       <motion.div
@@ -91,11 +73,17 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
           <span className="font-display text-xl md:text-2xl text-dark-primary">{project.number}</span>
         </div>
 
-        <div className="mt-4 flex flex-col flex-grow">
-          <h3 className="font-display text-2xl md:text-4xl uppercase mb-3 group-hover:text-accent-yellow transition-colors duration-300">
+        <div className="mt-4 flex flex-col grow">
+          <h3 className="font-display text-2xl md:text-4xl uppercase mb-2 group-hover:text-accent-yellow transition-colors duration-300">
             {project.title}
           </h3>
-          <p className="text-base md:text-lg text-light-primary mb-6 leading-relaxed flex-grow">
+          {project.award && (
+            <p className="inline-flex self-start items-center gap-2 mb-4 px-2.5 py-1 text-xs md:text-sm uppercase tracking-wider text-accent-yellow border border-accent-yellow/40 bg-accent-yellow/5 rounded-sm">
+              <Trophy className="w-3.5 h-3.5 shrink-0" />
+              <span>{project.award}</span>
+            </p>
+          )}
+          <p className="text-base md:text-lg text-light-primary mb-6 leading-relaxed grow">
             {project.description}
           </p>
 
@@ -113,15 +101,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 
           {/* Links */}
           <div className="flex flex-wrap gap-4 items-start mt-auto">
-            {project.github && project.privateRepo ? (
-              <button
-                onClick={handlePrivateRepoClick}
-                className="flex items-center gap-2 px-4 py-2 bg-dark-primary hover:bg-accent-yellow text-light-primary hover:text-dark-primary rounded-lg transition-all duration-300"
-              >
-                <Github className="w-4 h-4" />
-                <span>Code</span>
-              </button>
-            ) : project.github ? (
+            {project.github ? (
               <a
                 href={project.github}
                 target="_blank"
@@ -140,25 +120,24 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
                 className="flex items-center gap-2 px-4 py-2 bg-dark-primary hover:bg-accent-yellow text-light-primary hover:text-dark-primary rounded-lg transition-all duration-300"
               >
                 <ExternalLink className="w-4 h-4" />
-                <span>Demo</span>
+                <span>{project.demoLabel ?? 'Demo'}</span>
+              </a>
+            )}
+            {project.devpost && (
+              <a
+                href={project.devpost}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-4 py-2 bg-dark-primary hover:bg-accent-yellow text-light-primary hover:text-dark-primary rounded-lg transition-all duration-300"
+              >
+                <Trophy className="w-4 h-4" />
+                <span>Devpost</span>
               </a>
             )}
           </div>
         </div>
       </motion.div>
 
-      {/* Private repo message - below the card, absolutely positioned */}
-      {project.privateRepo && showPrivateMsg && (
-        <div className="absolute left-2 -bottom-7">
-          <span 
-            className="font-mono text-sm text-accent-yellow"
-            style={{ fontFamily: "'Fira Code', 'JetBrains Mono', 'SF Mono', 'Consolas', monospace" }}
-          >
-            {displayText}
-            {!typingDone && <span className="animate-pulse">|</span>}
-          </span>
-        </div>
-      )}
     </div>
   )
 }
@@ -181,7 +160,7 @@ export default function Projects() {
             <span className="text-accent-yellow">{'//'}</span> my projects
           </h2>
           <p className="text-light-secondary text-lg md:text-xl">
-            a non-exhaustive list
+            hackathon wins and things I build for fun
           </p>
           <div className="w-24 h-1 bg-accent-yellow mt-4" />
         </motion.div>

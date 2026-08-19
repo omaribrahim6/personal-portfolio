@@ -7,19 +7,23 @@ import { useRef } from 'react'
 const skillCategories = [
   {
     title: 'Languages',
-    skills: ['JavaScript', 'TypeScript', 'Python', 'C++', 'HTML/CSS'],
+    skills: ['Python', 'TypeScript', 'JavaScript', 'C++', 'Java', 'SQL', 'Bash'],
+  },
+  {
+    title: 'AI & Machine Learning',
+    skills: ['Computer Vision', 'YOLOv8', 'OpenCV', 'Ollama', 'RAG', 'Agentic AI', 'LLM Integration', 'Prompt Engineering'],
   },
   {
     title: 'Frameworks & Libraries',
-    skills: ['Next.js', 'React', 'Node.js', 'Tailwind CSS', 'Framer Motion'],
+    skills: ['Next.js', 'React', 'Node.js', 'FastAPI', 'Tailwind CSS', 'Framer Motion'],
   },
   {
-    title: 'Tools & Technologies',
-    skills: ['Docker', 'CI/CD', 'GitHub Actions', 'Supabase', 'PostgreSQL', 'Cloudflare', 'API Development'],
+    title: 'Infrastructure & DevOps',
+    skills: ['Linux', 'Docker', 'Nginx', 'CI/CD', 'GitHub Actions', 'PostgreSQL', 'Redis', 'Supabase', 'Cloudflare'],
   },
   {
     title: 'Security',
-    skills: ['Penetration Testing', 'Ethical Hacking'],
+    skills: ['Penetration Testing', 'Burp Suite', 'Kali Linux', 'Web Security', 'Secure Coding', 'CTF'],
   },
 ]
 
@@ -94,9 +98,9 @@ export default function Skills() {
           className="mt-8 md:mt-12 p-5 md:p-6 bg-dark-secondary rounded-lg border border-dark-tertiary"
         >
           <p className="text-sm md:text-base text-light-primary leading-relaxed">
-            <span className="text-accent-yellow font-semibold">Always learning.</span> I&apos;m constantly 
-            exploring new technologies and staying up-to-date with the latest trends in web development. 
-            Currently diving deeper into systems programming and distributed systems.
+            <span className="text-accent-yellow font-semibold">Always learning.</span> Most of what I know
+            came from shipping under a deadline — hackathons, CTFs, and production sites people actually
+            depend on. Currently going deeper on agentic AI systems and offensive security.
           </p>
         </motion.div>
       </div>
