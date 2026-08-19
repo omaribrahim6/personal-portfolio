@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useEffect, useRef, useState, type MouseEvent } from 'react'
+import { useState, type MouseEvent } from 'react'
 
 type Detail =
   | string
@@ -42,6 +42,49 @@ const groups: Group[] = [
     category: 'experience',
     roles: [
       {
+        title: 'Software Developer & Security Analyst',
+        organization: 'Journale AI',
+        period: 'Oct 2025 — Jan 2026 · Contract',
+        details: [
+          'Built a cloud AI dialogue system that plugs into game engines through custom SDKs',
+          'Diagnosed backend and REST APIs to discover 6 critical flaws using Burp Suite, Postman, and cURL',
+          'Fixed a Stripe integration flaw that bypassed payment and granted subscriptions, in under 5 hours',
+          'Validated risks with the engineering team and recommended remediation under responsible disclosure',
+        ],
+      },
+      {
+        title: 'Software Developer Student',
+        organization: 'uOttawa MSA',
+        period: 'Dec 2025 — Apr 2026',
+        details: [
+          'Built uomsa.ca in Next.js, eliminating the GoDaddy builder and cutting annual costs by $500',
+          'Worked on an 8-developer Agile team building a library system supporting 1,000+ students across 5 organizations',
+          'Built React components and shipped PostgreSQL migrations for the admin dashboard',
+        ],
+      },
+      {
+        title: 'Technical Workshop Lead',
+        organization: 'IEEE uOttawa Student Branch',
+        period: 'Mar 2026',
+        details: [
+          'Delivered 4 technical workshops to 100+ students across a two-week series',
+          'Taught Linux fundamentals, Docker, GitHub Actions CI/CD, AI/ML, and cybersecurity',
+          'Built a lab environment of isolated per-student Docker containers with custom challenges',
+        ],
+      },
+      {
+        title: 'Penetration Tester',
+        organization: 'cuHacking',
+        period: 'Mar 2026 — Apr 2026',
+        details: ["Security testing across Canada's largest student-run hackathon platform (on-call)"],
+      },
+      {
+        title: 'Penetration Tester',
+        organization: 'BearHacks',
+        period: 'Apr 2026',
+        details: ['Security testing for the event platform ahead of launch (remote, on-call)'],
+      },
+      {
         title: 'Freelance Developer',
         organization: 'Independent',
         period: 'Sep 2025 — Present',
@@ -57,49 +100,6 @@ const groups: Group[] = [
           },
         ],
       },
-      {
-        title: 'Penetration Tester',
-        organization: 'BearHacks',
-        period: 'Apr 2026',
-        details: ['Security testing for the event platform ahead of launch (remote, on-call)'],
-      },
-      {
-        title: 'Penetration Tester',
-        organization: 'cuHacking',
-        period: 'Mar 2026 — Apr 2026',
-        details: ["Security testing across Canada's largest student-run hackathon platform (on-call)"],
-      },
-      {
-        title: 'Technical Workshop Lead',
-        organization: 'IEEE uOttawa Student Branch',
-        period: 'Mar 2026',
-        details: [
-          'Delivered 4 technical workshops to 100+ students across a two-week series',
-          'Taught Linux fundamentals, Docker, GitHub Actions CI/CD, AI/ML, and cybersecurity',
-          'Built a lab environment of isolated per-student Docker containers with custom challenges',
-        ],
-      },
-      {
-        title: 'Software Developer Student',
-        organization: 'uOttawa MSA',
-        period: 'Dec 2025 — Apr 2026',
-        details: [
-          'Built uomsa.ca in Next.js, eliminating the GoDaddy builder and cutting annual costs by $500',
-          'Worked on an 8-developer Agile team building a library system supporting 1,000+ students across 5 organizations',
-          "Built React components and shipped PostgreSQL migrations for the admin dashboard",
-        ],
-      },
-      {
-        title: 'Software Developer & Security Analyst',
-        organization: 'Journale AI',
-        period: 'Oct 2025 — Jan 2026 · Contract',
-        details: [
-          'Built a cloud AI dialogue system that plugs into game engines through custom SDKs',
-          'Diagnosed backend and REST APIs to discover 6 critical flaws using Burp Suite, Postman, and cURL',
-          'Fixed a Stripe integration flaw that bypassed payment and granted subscriptions, in under 5 hours',
-          'Validated risks with the engineering team and recommended remediation under responsible disclosure',
-        ],
-      },
     ],
   },
   {
@@ -108,7 +108,7 @@ const groups: Group[] = [
       {
         title: 'Co-Founder & Co-President',
         organization: 'Empower Orphans Foundation',
-        period: 'Mar 2025 — Present',
+        period: 'Mar 2025 — Apr 2026',
         details: [
           'Lead a 20+ member team across marketing, events, and sponsorship divisions',
           'Organized fundraisers and collaborations with Islamic Relief for orphan care',
@@ -118,7 +118,7 @@ const groups: Group[] = [
       {
         title: 'Web Developer',
         organization: 'Empower Orphans Foundation',
-        period: 'Sep 2025 — Present',
+        period: 'Sep 2025 — Apr 2026',
         details: [
           'Built empowerorphans.com with Next.js, Supabase, and Tailwind CSS',
           'Shipped a secure admin dashboard and event-management system for real-time updates',
@@ -134,74 +134,7 @@ const groups: Group[] = [
   },
 ]
 
-function useActiveGroup(count: number) {
-  const [active, setActive] = useState(0)
-  const refs = useRef<(HTMLDivElement | null)[]>([])
-
-  useEffect(() => {
-    // The active group is the last one whose top has crossed the viewport middle.
-    const update = () => {
-      const mid = window.innerHeight / 2
-      let index = 0
-      refs.current.slice(0, count).forEach((node, i) => {
-        if (node && node.getBoundingClientRect().top <= mid) index = i
-      })
-      setActive(index)
-    }
-
-    update()
-    window.addEventListener('scroll', update, { passive: true })
-    window.addEventListener('resize', update)
-    return () => {
-      window.removeEventListener('scroll', update)
-      window.removeEventListener('resize', update)
-    }
-  }, [count])
-
-  return { active, refs }
-}
-
-function CategoryRail({
-  active,
-  onSelect,
-}: {
-  active: number
-  onSelect: (index: number) => void
-}) {
-  return (
-    <nav aria-label="About sections" className="flex flex-col gap-6">
-      {groups.map((group, index) => {
-        const isActive = index === active
-        return (
-          <button
-            key={group.category}
-            onClick={() => onSelect(index)}
-            className="group flex items-center gap-4 text-left"
-          >
-            <span
-              className={`h-0.5 bg-accent-yellow transition-all duration-500 ${
-                isActive ? 'w-10 opacity-100' : 'w-4 opacity-25'
-              }`}
-            />
-            <span
-              className={`font-display text-3xl lg:text-4xl uppercase transition-colors duration-500 ${
-                isActive
-                  ? 'text-accent-yellow'
-                  : 'text-dark-tertiary group-hover:text-light-secondary'
-              }`}
-            >
-              {group.category}
-            </span>
-          </button>
-        )
-      })}
-    </nav>
-  )
-}
-
-export default function About() {
-  const { active, refs } = useActiveGroup(groups.length)
-
+function RoleCard({ role }: { role: Role }) {
   const handleHashLinkClick = (event: MouseEvent<HTMLAnchorElement>) => {
     const href = event.currentTarget.getAttribute('href')
     if (!href || !href.startsWith('#')) return
@@ -214,35 +147,63 @@ export default function About() {
     window.history.replaceState(null, '', href)
   }
 
-  const renderDetail = (item: Detail, index: number) => (
-    <li key={index} className="text-sm md:text-base text-light-primary opacity-80 leading-relaxed">
-      {typeof item === 'string' ? (
-        item
-      ) : (
-        <>
-          {item.prefix}
-          <a
-            href={item.href}
-            onClick={item.href.startsWith('#') ? handleHashLinkClick : undefined}
-            className="underline underline-offset-2 text-inherit hover:text-accent-yellow transition-colors duration-300"
-          >
-            {item.linkText}
-          </a>
-          {item.suffix}
-        </>
+  return (
+    <div className="h-full bg-dark-secondary p-5 md:p-6 rounded-lg border border-dark-tertiary hover:border-accent-yellow transition-colors duration-300 flex flex-col">
+      <h3 className="text-base md:text-lg leading-snug font-medium text-light-primary">
+        {role.title}
+      </h3>
+      <p className="mt-1 text-accent-yellow text-sm md:text-base">@{role.organization}</p>
+
+      {role.period && (
+        <p className="mt-2 text-xs tracking-wider uppercase text-light-secondary">
+          {role.period}
+        </p>
       )}
-    </li>
+
+      {!!role.details.length && (
+        <ul className="mt-4 pl-4 list-disc space-y-1.5">
+          {role.details.map((item, index) => (
+            <li
+              key={index}
+              className="text-sm text-light-primary opacity-80 leading-relaxed"
+            >
+              {typeof item === 'string' ? (
+                item
+              ) : (
+                <>
+                  {item.prefix}
+                  <a
+                    href={item.href}
+                    onClick={item.href.startsWith('#') ? handleHashLinkClick : undefined}
+                    className="underline underline-offset-2 text-inherit hover:text-accent-yellow transition-colors duration-300"
+                  >
+                    {item.linkText}
+                  </a>
+                  {item.suffix}
+                </>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   )
+}
+
+export default function About() {
+  const [activeTab, setActiveTab] = useState(1) // default to experience — the meat
+
+  const activeGroup = groups[activeTab]
 
   return (
-    <section id="about" className="relative py-20 px-4 sm:px-6">
+    <section id="about" className="py-20 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.6 }}
-          className="mb-12 md:mb-16"
+          className="mb-10 md:mb-12"
         >
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl uppercase mb-4">
             <span className="text-accent-yellow">{'//'}</span> The Story So Far
@@ -250,68 +211,50 @@ export default function About() {
           <div className="w-24 h-1 bg-accent-yellow" />
         </motion.div>
 
-        <div className="md:grid md:grid-cols-[14rem_1fr] md:gap-12 lg:gap-20">
-          {/* Sticky category nav — desktop only */}
-          <div className="hidden md:block">
-            <div className="sticky top-32">
-              <CategoryRail
-                active={active}
-                onSelect={(index) => {
-                  refs.current[index]?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                }}
-              />
-            </div>
-          </div>
-
-          {/* Entries */}
-          <div className="min-w-0 space-y-16 md:space-y-24">
-            {groups.map((group, groupIndex) => (
-              <div
+        {/* Tabs */}
+        <div
+          role="tablist"
+          aria-label="About categories"
+          className="flex gap-6 sm:gap-10 mb-8 md:mb-10 border-b border-dark-tertiary"
+        >
+          {groups.map((group, index) => {
+            const isActive = index === activeTab
+            return (
+              <button
                 key={group.category}
-                data-index={groupIndex}
-                ref={(node) => {
-                  refs.current[groupIndex] = node
-                }}
+                role="tab"
+                aria-selected={isActive}
+                onClick={() => setActiveTab(index)}
+                className={`relative pb-3 font-display text-2xl sm:text-3xl md:text-4xl uppercase transition-colors duration-300 ${
+                  isActive ? 'text-accent-yellow' : 'text-dark-tertiary hover:text-light-secondary'
+                }`}
               >
-                {/* Mobile-only category heading */}
-                <h3 className="md:hidden font-display text-4xl uppercase text-accent-yellow opacity-80 mb-6">
-                  {group.category}
-                </h3>
-
-                <div className="space-y-10 md:space-y-12">
-                  {group.roles.map((role, roleIndex) => (
-                    <motion.div
-                      key={`${role.organization}-${role.title}`}
-                      initial={{ opacity: 0, y: 24 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true, margin: '-60px' }}
-                      transition={{ delay: roleIndex * 0.06, duration: 0.5 }}
-                    >
-                      <h4 className="text-lg leading-8 flex flex-wrap items-baseline gap-x-2">
-                        <span className="bg-accent-yellow text-dark-primary px-1.5 py-0.5 text-base font-medium">
-                          {role.title}
-                        </span>
-                        <span className="text-accent-yellow text-base">@{role.organization}</span>
-                      </h4>
-
-                      {role.period && (
-                        <p className="text-xs md:text-sm font-normal tracking-wider mt-2 uppercase text-light-secondary">
-                          {role.period}
-                        </p>
-                      )}
-
-                      {!!role.details.length && (
-                        <ul className="mt-3 pl-5 list-disc space-y-1.5 max-w-2xl">
-                          {role.details.map(renderDetail)}
-                        </ul>
-                      )}
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
+                {group.category}
+                {isActive && (
+                  <motion.span
+                    layoutId="about-tab-underline"
+                    className="absolute left-0 right-0 -bottom-px h-0.5 bg-accent-yellow"
+                  />
+                )}
+              </button>
+            )
+          })}
         </div>
+
+        {/* Active group */}
+        <motion.div
+          key={activeGroup.category}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25 }}
+          className={`grid gap-4 md:gap-6 ${
+            activeGroup.roles.length > 1 ? 'md:grid-cols-2' : 'md:max-w-2xl'
+          }`}
+        >
+          {activeGroup.roles.map((role) => (
+            <RoleCard key={`${role.organization}-${role.title}`} role={role} />
+          ))}
+        </motion.div>
       </div>
     </section>
   )
