@@ -70,3 +70,13 @@ export const PIXEL_FONT: Record<string, number[][] | null> = {
   "'": [[0,0,1,0,0],[0,0,1,0,0],[0,1,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]],
   ' ': null,
 }
+
+// The hero lettering, in scene units: 6 columns per letter, two rows, centred on the origin.
+// Shared by the 3D scene and the static lettering shown before it mounts or when WebGL is unavailable.
+export const NAME_PIXELS = ['OMAR', 'IBRAHIM'].flatMap((word, row) =>
+  [...word].flatMap((letter, column) =>
+    (PIXEL_FONT[letter] ?? []).flatMap((line, y) =>
+      line.flatMap((filled, x) => filled ? [{ x: column * 6 + x - 20, y: 7.5 - row * 9 - y }] : [])
+    )
+  )
+)

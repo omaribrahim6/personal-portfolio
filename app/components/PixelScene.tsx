@@ -3,22 +3,13 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js'
-import { PIXEL_FONT } from './pixelFont'
+import { NAME_PIXELS as pixels } from './pixelFont'
 
 type Props = {
   scatter: number
   paused: boolean
   onStateChange: (state: 'ready' | 'unavailable') => void
 }
-
-// Keep the original hand-drawn alphabet as the visual identity.
-const pixels = ['OMAR', 'IBRAHIM'].flatMap((word, row) =>
-  [...word].flatMap((letter, column) =>
-    (PIXEL_FONT[letter] ?? []).flatMap((line, y) =>
-      line.flatMap((filled, x) => filled ? [{ x: column * 6 + x - 20, y: 7.5 - row * 9 - y }] : [])
-    )
-  )
-)
 
 // Deterministic destinations avoid a different composition on every render.
 const noise = (index: number, seed: number) => {

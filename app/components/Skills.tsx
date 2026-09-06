@@ -1,110 +1,161 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { useInView } from 'framer-motion'
-import { useRef } from 'react'
+import { useState, type PointerEvent } from 'react'
+import { ArrowUpRight } from 'lucide-react'
+import styles from './Skills.module.css'
 
-const skillCategories = [
+type Receipt = { label: string; note: string; href: string }
+type Skill = { name: string; receipts?: Receipt[] }
+type Group = { title: string; skills: Skill[] }
+
+// Every receipt points at something else on this page. Nothing here is claimed without a place to check it.
+const r = {
+  clascade: { label: 'Clascade', note: 'project · cuHacking 2026', href: '#project-0' },
+  revenant: { label: 'Revenant', note: 'project · GenAI Genesis', href: '#project-1' },
+  queryforge: { label: 'QueryForge', note: 'project · MindBridge challenge', href: '#project-2' },
+  roadsense: { label: 'RoadSense', note: 'project · Hack the Future', href: '#project-3' },
+  journale: { label: 'Journale AI', note: 'contract · developer & security analyst', href: '#story-journale' },
+  uomsa: { label: 'uomsa.ca', note: 'uOttawa MSA', href: '#story-uomsa' },
+  ieee: { label: 'IEEE workshops', note: '4 sessions · 100+ students', href: '#story-ieee' },
+  cuhacking: { label: 'cuHacking', note: 'penetration testing', href: '#story-cuhacking' },
+  bearhacks: { label: 'BearHacks', note: 'penetration testing', href: '#story-bearhacks' },
+  freelance: { label: 'Client sites', note: 'freelance · 5+ in production', href: '#story-freelance' },
+  eof: { label: 'empowerorphans.com', note: 'Empower Orphans Foundation', href: '#story-eof-web' },
+  cumsa: { label: 'cumsa.ca', note: 'security audit & auth', href: '#story-cumsa' },
+  ctf: { label: 'Three CTF finishes', note: 'wins', href: '#awards' },
+  bsides: { label: 'BSides Ottawa CTF', note: 'AI sub-agents on the board', href: '#awards' },
+  site: { label: 'This site', note: 'you’re looking at it', href: '#home' },
+}
+
+const groups: Group[] = [
   {
     title: 'Languages',
-    skills: ['Python', 'TypeScript', 'JavaScript', 'C++', 'Java', 'SQL', 'Bash'],
+    skills: [
+      { name: 'Python', receipts: [r.queryforge, r.roadsense, r.revenant] },
+      { name: 'TypeScript', receipts: [r.clascade, r.site] },
+      { name: 'JavaScript', receipts: [r.uomsa, r.eof, r.freelance] },
+      { name: 'C++' },
+      { name: 'Java' },
+      { name: 'SQL', receipts: [r.queryforge, r.uomsa] },
+      { name: 'Bash', receipts: [r.freelance, r.ieee] },
+    ],
   },
   {
     title: 'AI & Machine Learning',
-    skills: ['Computer Vision', 'YOLOv8', 'OpenCV', 'Ollama', 'RAG', 'Agentic AI', 'LLM Integration', 'Prompt Engineering'],
+    skills: [
+      { name: 'Computer Vision', receipts: [r.roadsense] },
+      { name: 'YOLOv8', receipts: [r.roadsense] },
+      { name: 'OpenCV', receipts: [r.roadsense] },
+      { name: 'Ollama', receipts: [r.queryforge] },
+      { name: 'RAG', receipts: [r.clascade, r.revenant] },
+      { name: 'Agentic AI', receipts: [r.queryforge, r.bsides] },
+      { name: 'LLM Integration', receipts: [r.journale, r.clascade, r.revenant] },
+      { name: 'Prompt Engineering', receipts: [r.queryforge] },
+    ],
   },
   {
     title: 'Frameworks & Libraries',
-    skills: ['Next.js', 'React', 'Node.js', 'FastAPI', 'Tailwind CSS', 'Framer Motion'],
+    skills: [
+      { name: 'Next.js', receipts: [r.clascade, r.roadsense, r.revenant, r.uomsa, r.eof, r.freelance, r.site] },
+      { name: 'React', receipts: [r.uomsa, r.site] },
+      { name: 'Node.js' },
+      { name: 'FastAPI', receipts: [r.revenant] },
+      { name: 'Tailwind CSS', receipts: [r.eof, r.site] },
+      { name: 'Framer Motion', receipts: [r.site] },
+    ],
   },
   {
     title: 'Infrastructure & DevOps',
-    skills: ['Linux', 'Docker', 'Nginx', 'CI/CD', 'GitHub Actions', 'PostgreSQL', 'Redis', 'Supabase', 'Cloudflare'],
+    skills: [
+      { name: 'Linux', receipts: [r.freelance, r.ieee] },
+      { name: 'Docker', receipts: [r.revenant, r.ieee, r.freelance] },
+      { name: 'Nginx' },
+      { name: 'CI/CD', receipts: [r.ieee] },
+      { name: 'GitHub Actions', receipts: [r.ieee] },
+      { name: 'PostgreSQL', receipts: [r.revenant, r.uomsa] },
+      { name: 'Redis', receipts: [r.revenant] },
+      { name: 'Supabase', receipts: [r.roadsense, r.eof] },
+      { name: 'Cloudflare' },
+    ],
   },
   {
     title: 'Security',
-    skills: ['Penetration Testing', 'Burp Suite', 'Kali Linux', 'Web Security', 'Secure Coding', 'CTF'],
+    skills: [
+      { name: 'Penetration Testing', receipts: [r.journale, r.cuhacking, r.bearhacks] },
+      { name: 'Burp Suite', receipts: [r.journale] },
+      { name: 'Kali Linux' },
+      { name: 'Web Security', receipts: [r.journale, r.cumsa] },
+      { name: 'Secure Coding', receipts: [r.eof] },
+      { name: 'CTF', receipts: [r.ctf] },
+    ],
   },
 ]
 
-function SkillCategory({ category, index }: { category: typeof skillCategories[0]; index: number }) {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: '-100px' })
-
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 30 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-      transition={{ delay: index * 0.1, duration: 0.6 }}
-    >
-      <h3 className="font-display text-xl md:text-3xl uppercase mb-4 md:mb-6 text-accent-yellow tracking-wide">
-        {category.title}
-      </h3>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4">
-        {category.skills.map((skill, skillIndex) => (
-          <motion.div
-            key={skill}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
-            transition={{ delay: index * 0.1 + skillIndex * 0.05, duration: 0.4 }}
-            whileHover={{ scale: 1.05, y: -5 }}
-            className="bg-dark-secondary px-3 py-2.5 md:px-4 md:py-3 rounded-lg border border-dark-tertiary hover:border-accent-yellow transition-all duration-300 text-center cursor-pointer group"
-          >
-            <span className="text-sm md:text-base text-light-primary font-medium group-hover:text-accent-yellow transition-colors duration-300">
-              {skill}
-            </span>
-          </motion.div>
-        ))}
-      </div>
-    </motion.div>
-  )
-}
+const all = groups.flatMap(group => group.skills.map(skill => ({ ...skill, group: group.title })))
+const withReceipts = all.filter(skill => skill.receipts?.length).length
 
 export default function Skills() {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: '-100px' })
+  const [selected, setSelected] = useState('Next.js')
+  const [preview, setPreview] = useState<string | null>(null)
+  const current = all.find(skill => skill.name === (preview ?? selected)) ?? all[0]
+
+  function enter(event: PointerEvent<HTMLButtonElement>, name: string) {
+    if (event.pointerType !== 'touch') setPreview(name)
+  }
 
   return (
-    <section id="skills" className="min-h-screen py-20 px-4 sm:px-6">
-      <div className="max-w-6xl mx-auto">
-        <motion.div
-          ref={ref}
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ duration: 0.6 }}
-          className="mb-16"
-        >
-          <h2 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl uppercase mb-4">
-            <span className="text-accent-yellow">{'//'}</span> skills & tools
-          </h2>
-          <p className="text-light-secondary text-lg md:text-xl">
-            technologies I work with
-          </p>
-          <div className="w-24 h-1 bg-accent-yellow mt-4" />
-        </motion.div>
-
-        <div className="space-y-8 md:space-y-12">
-          {skillCategories.map((category, index) => (
-            <SkillCategory key={category.title} category={category} index={index} />
-          ))}
+    <section id="skills" className={styles.section} aria-labelledby="skills-title">
+      <div className={styles.container}>
+        <div className={styles.heading}>
+          <div><p className={styles.kicker}>with receipts</p><h2 id="skills-title"><span>{'//'}</span> skills &amp; tools</h2></div>
+          <p>technologies I work with<br /><span>Pick a tool. The receipt shows where on this page I actually used it.</span></p>
         </div>
 
-        {/* Additional info */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-          transition={{ delay: 0.8, duration: 0.6 }}
-          className="mt-8 md:mt-12 p-5 md:p-6 bg-dark-secondary rounded-lg border border-dark-tertiary"
-        >
-          <p className="text-sm md:text-base text-light-primary leading-relaxed">
-            <span className="text-accent-yellow font-semibold">Always learning.</span> Most of what I know
-            came from shipping under a deadline — hackathons, CTFs, and production sites people actually
-            depend on. Currently going deeper on agentic AI systems and offensive security.
-          </p>
-        </motion.div>
+        <div className={styles.body}>
+          <div>
+            <div className={styles.groups}>
+              {groups.map(group => (
+                <div key={group.title} className={styles.group}>
+                  <h3>{group.title}</h3>
+                  <div className={styles.chips} onPointerLeave={() => setPreview(null)}>
+                    {group.skills.map(skill => (
+                      <button key={skill.name} type="button" className={styles.chip} data-has={!!skill.receipts?.length}
+                        aria-pressed={selected === skill.name} onClick={() => setSelected(skill.name)}
+                        onPointerEnter={event => enter(event, skill.name)}>
+                        <i aria-hidden="true" />{skill.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className={styles.note}>
+              <strong>Always learning.</strong> Most of what I know came from shipping under a deadline — hackathons, CTFs, and production sites people actually depend on. Currently going deeper on agentic AI systems and offensive security.
+            </p>
+          </div>
+
+          <aside className={styles.receipt} aria-live="polite" aria-label="Where this tool was used">
+            <div className={styles.overline}><span>receipt</span><span>{current.group}</span></div>
+            <h3>{current.name}</h3>
+            {current.receipts?.length ? (
+              <>
+                <p className={styles.lead}>seen in</p>
+                <ul className={styles.receipts}>
+                  {current.receipts.map(receipt => (
+                    <li key={receipt.href + receipt.label}>
+                      <a href={receipt.href}>{receipt.label}<ArrowUpRight size={13} /></a>
+                      <span>{receipt.note}</span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : (
+              <p className={styles.none}>Nothing public to point at yet. Coursework and side work so far — ask me about it.</p>
+            )}
+            <p className={styles.receiptFoot}>{withReceipts} of {all.length} tools point at something you can check.</p>
+          </aside>
+        </div>
       </div>
     </section>
   )
 }
-

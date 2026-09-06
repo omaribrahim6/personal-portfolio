@@ -1,0 +1,51 @@
+.section { padding: 110px 24px; }
+.container { max-width: 1152px; margin: 0 auto; }
+.heading { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; padding-bottom: 42px; }
+.kicker { font: 11px ui-monospace, SFMono-Regular, Consolas, monospace; color: #999989; margin-bottom: 14px; }
+.heading h2 { font: 64px/.95 var(--font-bebas), sans-serif; text-transform: uppercase; }
+.heading h2 span { color: #ffd700; }
+.heading > p { color: #b0b0a2; font-size: 14px; line-height: 1.8; text-align: right; }
+.heading > p > span { color: #7f8274; font-size: 11px; }
+.body { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 48px; align-items: start; }
+.groups { display: grid; gap: 30px; }
+.group h3 { font: 10px ui-monospace, SFMono-Regular, Consolas, monospace; letter-spacing: .12em; text-transform: uppercase; color: #999989; margin-bottom: 12px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { display: inline-flex; align-items: center; gap: 9px; padding: 9px 13px; border: 1px solid #ffffff15; border-radius: 3px; background: #20211c; color: #d0caa9; font-size: 13px; transition: border-color .2s, background .2s, color .2s; }
+.chip i { flex: none; width: 6px; height: 6px; background: #e4c748; box-shadow: 1px 1px 0 #8d7a26; }
+.chip[data-has=false] i { background: transparent; box-shadow: none; border: 1px solid #6b6b5e; }
+.chip:hover { border-color: #b29b4266; background: #24251e; color: #f3e6ac; }
+.chip[aria-pressed=true] { border-color: #ffd700; color: #ffd700; }
+.receipt { position: sticky; top: 84px; display: flex; flex-direction: column; min-height: 380px; border: 1px solid #ffffff15; border-radius: 5px; background-color: #20211c; background-image: radial-gradient(#ffffff17 .7px, transparent .7px); background-size: 20px 20px; padding: 20px 22px 22px; }
+.receipt::before, .receipt::after { position: absolute; content: '+'; font: 13px monospace; color: #747365; top: 5px; }
+.receipt::before { left: 8px; }
+.receipt::after { right: 8px; }
+.overline { display: flex; justify-content: space-between; gap: 16px; font: 10px ui-monospace, SFMono-Regular, Consolas, monospace; color: #b1ad97; }
+.overline span:last-child { color: #7b7d6b; font-size: 9px; text-align: right; }
+.receipt h3 { margin: 28px 0 22px; font: 54px/1 var(--font-bebas), sans-serif; text-transform: uppercase; letter-spacing: .01em; color: #ebe9dd; overflow-wrap: anywhere; }
+.lead { font: 10px ui-monospace, SFMono-Regular, Consolas, monospace; letter-spacing: .1em; text-transform: uppercase; color: #ccb966; }
+.receipts { list-style: none; margin-top: 8px; }
+.receipts li { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 10px 0; border-top: 1px solid #ffffff12; }
+.receipts a { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: #e4d27c; transition: color .2s; }
+.receipts a svg { transition: transform .2s; }
+.receipts a:hover { color: #ffd700; }
+.receipts a:hover svg { transform: translate(2px, -2px); }
+.receipts span { font: 10px ui-monospace, SFMono-Regular, Consolas, monospace; color: #868b77; text-align: right; }
+.none { margin-top: 10px; font-size: 14px; line-height: 1.7; color: #b6b7ab; }
+.receiptFoot { margin-top: auto; padding-top: 18px; font: 9px ui-monospace, SFMono-Regular, Consolas, monospace; color: #7b7d6b; }
+.note { margin-top: 30px; padding: 18px 20px; border: 1px solid #ffffff15; border-radius: 5px; font-size: 14px; line-height: 1.75; color: #b6b7ab; }
+.note strong { color: #ffd700; font-weight: 500; }
+@media (max-width: 1100px) { .container { max-width: calc(100% - 70px); } .body { gap: 32px; } }
+@media (max-width: 900px) {
+  .body { grid-template-columns: 1fr; gap: 20px; }
+  .receipt { top: auto; bottom: 12px; min-height: 0; max-height: 44vh; overflow: auto; padding: 14px 16px; box-shadow: 0 -14px 30px #1a1a1acc; }
+  .receipt::before, .receipt::after, .receiptFoot { display: none; }
+  .receipt h3 { margin: 12px 0 10px; font-size: 30px; }
+  .receipts li { padding: 7px 0; }
+}
+@media (max-width: 767px) {
+  .section { padding: 75px 22px; } .container { max-width: none; }
+  .heading { display: block; padding-bottom: 28px; } .heading h2 { font-size: 46px; }
+  .heading > p { margin-top: 20px; font-size: 13px; text-align: left; } .heading > p > span { font-size: 10px; }
+  .chip { padding: 8px 11px; font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { .section * { transition: none !important; } }

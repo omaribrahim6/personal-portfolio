@@ -1,9 +1,10 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ArrowDown, ArrowUpRight, Pause, Play, RotateCcw } from 'lucide-react'
 import styles from './PixelExperience.module.css'
+import PixelLettering from './PixelLettering'
 
 const PixelScene = dynamic(() => import('./PixelScene'), { ssr: false })
 
@@ -11,6 +12,13 @@ export default function PixelExperience() {
   const [scatter, setScatter] = useState(0)
   const [paused, setPaused] = useState(false)
   const [sceneState, setSceneState] = useState<'loading' | 'ready' | 'unavailable'>('loading')
+  const [blueprint, setBlueprint] = useState(false)
+
+  // Only show the blueprint if the scene is taking a moment. A cached load never flashes it.
+  useEffect(() => {
+    const timer = setTimeout(() => setBlueprint(true), 150)
+    return () => clearTimeout(timer)
+  }, [])
 
   function updateScatter(value: number) {
     setScatter(value)
@@ -38,10 +46,11 @@ export default function PixelExperience() {
           </div>
 
           <div className={styles.stage}>
-            <h1 id="spatial-name" aria-label="Omar Ibrahim" className={sceneState === 'ready' ? styles.srOnly : styles.fallback}>OMAR<br />IBRAHIM</h1>
+            <h1 id="spatial-name" className={styles.srOnly}>Omar Ibrahim</h1>
             <div className={styles.canvas} aria-hidden="true">
               <PixelScene scatter={scatter} paused={paused} onStateChange={setSceneState} />
             </div>
+            <PixelLettering mode={sceneState === 'unavailable' ? 'solid' : 'blueprint'} visible={sceneState === 'unavailable' || (sceneState === 'loading' && blueprint)} />
             <div className={styles.stageAnnotation} aria-hidden="true"><span>BUILD.</span><span>BREAK.</span><span>REPEAT.</span></div>
             <span className={styles.coordinate} aria-hidden="true">01 / a work in progress</span>
           </div>
@@ -79,7 +88,7 @@ export default function PixelExperience() {
 
           <footer className={styles.footer}>
             <a href="#about">The story continues <ArrowDown size={13} /></a>
-            <span role="status">{sceneState === 'unavailable' ? 'Static view · 3D unavailable on this browser' : sceneState === 'loading' ? 'Preparing the pixels' : 'Pull things apart. Put them back.'}</span>
+            <span role="status">{sceneState === 'unavailable' ? 'Static view · 3D unavailable on this browser' : sceneState === 'loading' ? 'Preparing the pixels' : ''}</span>
           </footer>
         </section>
     </div>
