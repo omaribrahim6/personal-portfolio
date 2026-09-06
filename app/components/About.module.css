@@ -15,7 +15,6 @@
 .body { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 48px; align-items: start; }
 .ledger { position: sticky; top: 84px; border: 1px solid #ffffff15; border-radius: 5px; background-color: #20211c; background-image: radial-gradient(#ffffff17 .7px, transparent .7px); background-size: 20px 20px; padding: 20px 20px 16px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
 .ledgerHead { display: flex; justify-content: space-between; gap: 16px; font-size: 10px; color: #b1ad97; margin-bottom: 18px; }
-.ledgerHead span:last-child { color: #e7d277; text-align: right; }
 .axis, .row { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 0 12px; align-items: center; }
 .grid { display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)) 12px; gap: 3px; }
 .years { height: 14px; font-size: 9px; color: #8b8a7b; }
@@ -58,7 +57,7 @@
   .filters { padding-bottom: 28px; }
   .axis, .row { grid-template-columns: 70px minmax(0, 1fr); gap: 0 8px; } .grid { gap: 2px; }
   .ledger { padding: 16px 14px 14px; }
-  .ledgerHead { flex-direction: column; gap: 4px; } .ledgerHead span:last-child { text-align: left; }
+  .ledgerHead { flex-direction: column; gap: 4px; }
   .entry { padding: 18px 18px 20px; } .entry h3 { font-size: 26px; }
 }
 @media (prefers-reduced-motion: reduce) { .section * { transition: none !important; } }

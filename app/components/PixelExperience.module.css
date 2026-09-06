@@ -2,7 +2,7 @@
 .header { max-width: 1280px; margin: 0 auto; padding: 28px 64px 0 32px; display: flex; align-items: center; gap: 28px; }
 .monogram { font-size: 32px; font-weight: 650; letter-spacing: -3px; line-height: 1; }
 .monogram span { color: #ffd700; }
-.edition, .headerNav, .intro span, .stageAnnotation, .coordinate, .workbench, .links, .footer { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 11px; }
+.edition, .headerNav, .intro span, .coordinate, .workbench, .links, .footer { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 11px; }
 .edition { color: #85857e; }
 .headerNav { margin-left: auto; display: flex; align-items: center; gap: 28px; color: #b9b8aa; }
 .headerNav a { display: inline-flex; align-items: center; gap: 9px; padding: 9px 0; }
@@ -17,7 +17,6 @@
 .stage::before { left: 0; } .stage::after { right: 0; }
 .canvas { position: absolute; inset: 0; }
 .canvas canvas { display: block; width: 100%; height: 100%; }
-.stageAnnotation { position: absolute; right: 5%; top: 13%; display: flex; flex-direction: column; color: #8b8a7b; letter-spacing: .16em; line-height: 1.7; pointer-events: none; }
 .coordinate { position: absolute; right: 0; bottom: 14px; color: #76766c; pointer-events: none; }
 .lettering { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0; transition: opacity .5s; }
 .lettering[data-visible=true] { opacity: 1; }
@@ -38,7 +37,7 @@
 .links a, .footer a { display: inline-flex; align-items: center; gap: 10px; }
 .links a:first-child { color: #ffd700; }
 .links .mobileSocial { display: none; }
-.footer { padding: 38px 0 24px; display: flex; justify-content: space-between; color: #85857e; gap: 20px; }
+.footer { padding: 38px 0 24px; display: flex; justify-content: flex-end; color: #85857e; gap: 20px; }
 .experiment a, .experiment button { transition: color .2s, background .2s; }
 .experiment a:hover, .experiment button:hover { color: #ffd700; }
 .experiment button:disabled, .experiment input:disabled { opacity: .4; }
@@ -52,7 +51,6 @@
   .intro > p { font-size: 16px; }
   .intro span { font-size: 9px; }
   .stage { height: clamp(235px, 60vw, 390px); margin-top: 26px; background-size: 18px 18px; }
-  .stageAnnotation { top: 9%; right: 3%; font-size: 9px; }
   .coordinate { font-size: 9px; bottom: 3px; }
   .workbench { flex-wrap: wrap; gap: 8px; padding: 14px 0; }
   .explodeControl { gap: 10px; flex: 1 1 100%; }

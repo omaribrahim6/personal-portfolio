@@ -51,7 +51,6 @@ export default function PixelExperience() {
               <PixelScene scatter={scatter} paused={paused} onStateChange={setSceneState} />
             </div>
             <PixelLettering mode={sceneState === 'unavailable' ? 'solid' : 'blueprint'} visible={sceneState === 'unavailable' || (sceneState === 'loading' && blueprint)} />
-            <div className={styles.stageAnnotation} aria-hidden="true"><span>BUILD.</span><span>BREAK.</span><span>REPEAT.</span></div>
             <span className={styles.coordinate} aria-hidden="true">01 / a work in progress</span>
           </div>
 
@@ -87,7 +86,6 @@ export default function PixelExperience() {
           </div>
 
           <footer className={styles.footer}>
-            <a href="#about">The story continues <ArrowDown size={13} /></a>
             <span role="status">{sceneState === 'unavailable' ? 'Static view · 3D unavailable on this browser' : sceneState === 'loading' ? 'Preparing the pixels' : ''}</span>
           </footer>
         </section>

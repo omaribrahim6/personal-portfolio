@@ -91,6 +91,16 @@ const roles: Role[] = [
     ],
   },
   {
+    id: 'redshifted', category: 'volunteer', title: 'Mentor & Judge', organization: 'Redshifted Catalyst Hackathon', label: 'Redshifted',
+    period: 'Mar 2026', start: '2026-03', end: '2026-03',
+    details: [
+      'Mentored high school teams designing hardware for a space-survival challenge, taking them from idea to prototype to pitch in a few hours',
+      'Mentored teams in C++ as they built everything from alien proximity detectors to remote-controlled rovers',
+      'Sat on the judging panel for the advanced teams, evaluating their projects and final pitches',
+      'Supported by Thales, CIRA, the uOttawa Faculty of Engineering, and ElevenLabs',
+    ],
+  },
+  {
     id: 'cumsa', category: 'volunteer', title: 'Web Security', organization: 'CUMSA', label: 'CUMSA',
     details: ['Security audit, fixes, and authentication logic for cumsa.ca'],
   },
@@ -98,9 +108,7 @@ const roles: Role[] = [
 
 const filters: [Category | 'all', string][] = [['all', 'everything'], ['experience', 'experience'], ['volunteer', 'volunteer'], ['education', 'education']]
 const MONTH_LETTERS = 'JFMAMJJASOND'
-const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 const monthIndex = (ym: string) => { const [year, month] = ym.split('-').map(Number); return year * 12 + month - 1 }
-const monthName = (index: number) => `${MONTH_NAMES[index % 12]} ${Math.floor(index / 12)}`
 
 export default function About() {
   const [filter, setFilter] = useState<Category | 'all'>('all')
@@ -120,15 +128,13 @@ export default function About() {
     const rows = dated
       .map(role => ({ role, from: monthIndex(role.start!) - first, to: Math.min(endOf(role), nowIndex) - first, continues: endOf(role) > nowIndex }))
       .sort((a, b) => a.from - b.from || a.to - b.to)
-    const load = Array.from({ length: cols }, (_, col) => rows.filter(row => row.from <= col && col <= row.to).length)
-    const peak = Math.max(...load)
     const years = Array.from({ length: cols }, (_, col) => first + col).flatMap((index, col) => col === 0 || index % 12 === 0 ? [{ col, year: Math.floor(index / 12) }] : [])
     const entries = [...roles].sort((a, b) => {
       const endA = a.end ? endOf(a) : -Infinity
       const endB = b.end ? endOf(b) : -Infinity
       return endB - endA || monthIndex(a.start ?? '9999-01') - monthIndex(b.start ?? '9999-01')
     })
-    return { first, cols, rows, peak, peakMonth: monthName(load.indexOf(peak) + first), years, entries }
+    return { first, cols, rows, years, entries }
   }, [])
 
   const shown = ledger.entries.filter(role => filter === 'all' || role.category === filter)
@@ -204,7 +210,7 @@ export default function About() {
 
         <div className={styles.body}>
           <div className={styles.ledger} style={{ '--cols': ledger.cols } as CSSProperties}>
-            <div className={styles.ledgerHead}><span>the ledger · one block per month</span><span>peak load: {ledger.peak} at once · {ledger.peakMonth}</span></div>
+            <div className={styles.ledgerHead}><span>the ledger · one block per month</span></div>
             <div className={styles.axis} aria-hidden="true">
               <span />
               <div className={`${styles.grid} ${styles.years}`}>{ledger.years.map(({ col, year }) => <span key={year} style={{ gridColumn: col + 1 }}>{year}</span>)}</div>
