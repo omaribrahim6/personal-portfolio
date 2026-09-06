@@ -1,4 +1,4 @@
-import Hero from './components/Hero'
+import PixelExperience from './components/PixelExperience'
 import About from './components/About'
 import Projects from './components/Projects'
 import Awards from './components/Awards'
@@ -15,7 +15,7 @@ export default function Home() {
       <Navigation />
       <BackToTop />
       <main className="relative z-10">
-        <Hero />
+        <PixelExperience />
         <About />
         <Projects />
         <Awards />
@@ -25,4 +25,3 @@ export default function Home() {
     </>
   )
 }
-

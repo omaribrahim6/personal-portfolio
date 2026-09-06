@@ -1,0 +1,66 @@
+.experiment { position: relative; isolation: isolate; }
+.header { max-width: 1280px; margin: 0 auto; padding: 28px 64px 0 32px; display: flex; align-items: center; gap: 28px; }
+.monogram { font-size: 32px; font-weight: 650; letter-spacing: -3px; line-height: 1; }
+.monogram span { color: #ffd700; }
+.edition, .viewSwitch, .intro span, .stageAnnotation, .coordinate, .workbench, .links, .footer { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 11px; }
+.edition { color: #85857e; }
+.viewSwitch { margin-left: auto; display: flex; padding: 4px; border: 1px solid #ffffff1c; border-radius: 7px; gap: 3px; }
+.viewSwitch button { padding: 8px 12px; border-radius: 4px; color: #aaa99f; transition: background .2s, color .2s; }
+.viewSwitch button[aria-pressed=true] { background: #36362e; color: #f3e6ac; }
+.hero { max-width: 1280px; margin: 0 auto; padding: 58px 96px 0 32px; min-height: calc(100svh - 78px); }
+.intro { display: flex; justify-content: space-between; align-items: center; }
+.intro > p { font-size: 19px; color: #c4c3b8; }
+.intro span { color: #aaa99f; display: flex; align-items: center; gap: 8px; }
+.intro i { width: 5px; height: 5px; border-radius: 50%; background: #ffd700; box-shadow: 0 0 10px #ffd70055; }
+.stage { position: relative; height: clamp(320px, 40vw, 465px); margin-top: 18px; background-image: radial-gradient(#ffffff12 .7px, transparent .7px); background-size: 22px 22px; }
+.stage::before, .stage::after { position: absolute; content: '+'; font: 15px monospace; color: #747365; top: 0; }
+.stage::before { left: 0; } .stage::after { right: 0; }
+.canvas { position: absolute; inset: 0; }
+.canvas canvas { display: block; width: 100%; height: 100%; }
+.stageAnnotation { position: absolute; right: 5%; top: 13%; display: flex; flex-direction: column; color: #8b8a7b; letter-spacing: .16em; line-height: 1.7; pointer-events: none; }
+.coordinate { position: absolute; right: 0; bottom: 14px; color: #76766c; pointer-events: none; }
+.fallback { position: absolute; inset: 20px 0; display: flex; align-items: center; color: #ffd700; font-family: var(--font-bebas), sans-serif; font-size: clamp(90px, 14vw, 180px); line-height: .9; letter-spacing: .04em; }
+.srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.workbench { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 15px 0; border-top: 1px solid #ffffff1c; border-bottom: 1px solid #ffffff1c; color: #aaa99f; }
+.explodeControl { display: flex; align-items: center; gap: 16px; }
+.explodeControl input { width: clamp(100px, 17vw, 210px); height: 24px; accent-color: #ffd700; }
+.actions { display: flex; align-items: center; gap: 18px; }
+.breakButton { display: flex; align-items: center; gap: 10px; color: #e8d989; }
+.pauseButton { padding: 7px; color: #b9b8aa; border-left: 1px solid #ffffff20; }
+.description { display: grid; grid-template-columns: 1.4fr 1fr; gap: clamp(30px, 7vw, 104px); padding-top: 33px; }
+.description > p { font-size: clamp(20px, 2.1vw, 28px); line-height: 1.45; letter-spacing: -.035em; text-wrap: pretty; }
+.description strong { color: #ffd700; font-weight: 500; }
+.description > div > p { font-size: 14px; line-height: 1.8; color: #aaa99f; max-width: 400px; }
+.links { display: flex; gap: 28px; margin-top: 18px; }
+.links a, .footer a { display: inline-flex; align-items: center; gap: 10px; }
+.links a:first-child { color: #ffd700; }
+.links .mobileSocial { display: none; }
+.footer { padding: 38px 0 24px; display: flex; justify-content: space-between; color: #85857e; gap: 20px; }
+.experiment a, .experiment button { transition: color .2s, background .2s; }
+.experiment a:hover, .experiment button:hover { color: #ffd700; }
+.experiment button:disabled, .experiment input:disabled { opacity: .4; }
+.experiment :is(a, button, input):focus-visible { outline: 2px solid #ffd700; outline-offset: 5px; }
+@media (min-width: 1600px) { .hero { padding-top: 80px; } .stage { height: 490px; } }
+@media (max-width: 767px) {
+  .header { padding: 20px 22px 0; gap: 14px; }
+  .edition { display: none; }
+  .viewSwitch { font-size: 10px; }
+  .hero { padding: 44px 22px 0; min-height: auto; }
+  .intro > p { font-size: 16px; }
+  .intro span { font-size: 9px; }
+  .stage { height: clamp(235px, 60vw, 390px); margin-top: 26px; background-size: 18px 18px; }
+  .stageAnnotation { top: 9%; right: 3%; font-size: 9px; }
+  .coordinate { font-size: 9px; bottom: 3px; }
+  .workbench { flex-wrap: wrap; gap: 8px; padding: 14px 0; }
+  .explodeControl { gap: 10px; flex: 1 1 100%; }
+  .explodeControl input { flex: 1; }
+  .actions { justify-content: space-between; width: 100%; }
+  .description { grid-template-columns: 1fr; gap: 22px; padding-top: 28px; }
+  .description > p { font-size: 24px; max-width: 550px; }
+  .description > div > p { font-size: 13px; }
+  .links { flex-wrap: wrap; gap: 18px 24px; }
+  .links .mobileSocial { display: inline-flex; }
+  .footer { padding-top: 32px; font-size: 9px; }
+  .footer > span { max-width: 140px; text-align: right; }
+}
+@media (prefers-reduced-motion: reduce) { .experiment *, .experiment *::before, .experiment *::after { transition: none !important; scroll-behavior: auto; } }
