@@ -2,9 +2,10 @@
 
 import { motion } from 'framer-motion'
 import { useInView } from 'framer-motion'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Mail, FileText, Copy, Check } from 'lucide-react'
 import { Github, Linkedin } from './BrandIcons'
+import PixelContact from './PixelContact'
 
 const socialLinks = [
   { icon: Github, href: 'https://github.com/omaribrahim6', label: 'GitHub' },
@@ -16,13 +17,24 @@ export default function Contact() {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
   const [copied, setCopied] = useState(false)
+  const [copyError, setCopyError] = useState(false)
+  const copyTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => () => { if (copyTimeout.current) clearTimeout(copyTimeout.current) }, [])
 
   const email = 'omarmgmi08@gmail.com'
 
-  const copyEmail = () => {
-    navigator.clipboard.writeText(email)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+  const copyEmail = async () => {
+    if (copyTimeout.current) clearTimeout(copyTimeout.current)
+    try {
+      await navigator.clipboard.writeText(email)
+      setCopied(true)
+      setCopyError(false)
+      copyTimeout.current = setTimeout(() => setCopied(false), 2000)
+    } catch {
+      setCopied(false)
+      setCopyError(true)
+    }
   }
 
   return (
@@ -36,14 +48,8 @@ export default function Contact() {
           className="text-center"
         >
           {/* Main CTA */}
-          <motion.h2
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="font-display text-[clamp(3rem,15vw,9rem)] uppercase mb-6 sm:mb-8 hover:text-accent-yellow transition-colors duration-300"
-          >
-            LET&apos;S TALK
-          </motion.h2>
+          <p className="mb-7 text-xs font-mono text-light-secondary">one more thing to build?</p>
+          <PixelContact email={email} />
 
           <motion.p
             initial={{ opacity: 0 }}
@@ -75,12 +81,16 @@ export default function Contact() {
               <button
                 onClick={copyEmail}
                 className="p-2 hover:bg-accent-yellow hover:text-dark-primary rounded-sm transition-all duration-300 shrink-0"
-                aria-label="Copy email"
+                aria-label={copied ? 'Email copied' : 'Copy email'}
               >
                 {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
               </button>
             </div>
           </motion.div>
+
+          <p className="min-h-5 mb-6 text-xs text-light-secondary" role="status">
+            {copied ? 'Email copied to clipboard.' : copyError ? 'Could not copy. You can select the address or use the email link.' : ''}
+          </p>
 
           {/* Social links */}
           <motion.div

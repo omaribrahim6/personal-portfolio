@@ -1,10 +1,9 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useInView } from 'framer-motion'
-import { useRef } from 'react'
-import { ExternalLink, Trophy } from 'lucide-react'
-import { Github } from './BrandIcons'
+import { ArrowUpRight } from 'lucide-react'
+import ProjectArtifact from './ProjectArtifact'
+import styles from './Projects.module.css'
 
 type Project = {
   number: string
@@ -57,118 +56,41 @@ const projects: Project[] = [
 ]
 
 function ProjectCard({ project, index }: { project: Project; index: number }) {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: '-100px' })
+  const links = [
+    ...(project.demo ? [{ href: project.demo, label: project.demoLabel ?? 'Demo' }] : []),
+    ...(project.github ? [{ href: project.github, label: 'Code' }] : []),
+    ...(project.devpost ? [{ href: project.devpost, label: 'Devpost' }] : []),
+  ]
+
   return (
-    <div className="relative h-full">
-      <motion.div
-        ref={ref}
-        initial={{ opacity: 0, y: 50 }}
-        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-        transition={{ delay: index * 0.15, duration: 0.6 }}
-        className="group relative bg-dark-secondary p-5 md:p-8 rounded-lg border-2 border-dark-tertiary hover:border-accent-yellow transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-accent-yellow/10 h-full flex flex-col"
-      >
-        {/* Project number */}
-        <div className="absolute -top-3 -left-3 w-14 h-14 md:w-16 md:h-16 bg-accent-yellow rounded-full flex items-center justify-center">
-          <span className="font-display text-xl md:text-2xl text-dark-primary">{project.number}</span>
+    <motion.article className={styles.project} initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }} transition={{ duration: .6 }} aria-labelledby={`project-${index}`}>
+      <div className={styles.projectCopy}>
+        <div className={styles.projectNumber}><span>{project.number}</span><span>{project.award}</span></div>
+        <h3 id={`project-${index}`}>{project.title}</h3>
+        <p className={styles.description}>{project.description}</p>
+        <ul className={styles.tags} aria-label={`${project.title} technologies`}>
+          {project.tags.map(tag => <li key={tag}>{tag}</li>)}
+        </ul>
+        <div className={styles.links}>
+          {links.map(link => <a key={link.href} href={link.href} target="_blank" rel="noopener noreferrer">{link.label}<ArrowUpRight size={15} /></a>)}
         </div>
-
-        <div className="mt-4 flex flex-col grow">
-          <h3 className="font-display text-2xl md:text-4xl uppercase mb-2 group-hover:text-accent-yellow transition-colors duration-300">
-            {project.title}
-          </h3>
-          {project.award && (
-            <p className="inline-flex self-start items-center gap-2 mb-4 px-2.5 py-1 text-xs md:text-sm uppercase tracking-wider text-accent-yellow border border-accent-yellow/40 bg-accent-yellow/5 rounded-sm">
-              <Trophy className="w-3.5 h-3.5 shrink-0" />
-              <span>{project.award}</span>
-            </p>
-          )}
-          <p className="text-base md:text-lg text-light-primary mb-6 leading-relaxed grow">
-            {project.description}
-          </p>
-
-          {/* Tech stack tags */}
-          <div className="flex flex-wrap gap-2 mb-6">
-            {project.tags.map((tag) => (
-              <span
-                key={tag}
-                className="px-3 py-1 text-sm bg-dark-primary text-accent-yellow border border-dark-tertiary rounded-md"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-
-          {/* Links */}
-          <div className="flex flex-wrap gap-4 items-start mt-auto">
-            {project.github ? (
-              <a
-                href={project.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2 bg-dark-primary hover:bg-accent-yellow text-light-primary hover:text-dark-primary rounded-lg transition-all duration-300"
-              >
-                <Github className="w-4 h-4" />
-                <span>Code</span>
-              </a>
-            ) : null}
-            {project.demo && (
-              <a
-                href={project.demo}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2 bg-dark-primary hover:bg-accent-yellow text-light-primary hover:text-dark-primary rounded-lg transition-all duration-300"
-              >
-                <ExternalLink className="w-4 h-4" />
-                <span>{project.demoLabel ?? 'Demo'}</span>
-              </a>
-            )}
-            {project.devpost && (
-              <a
-                href={project.devpost}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2 bg-dark-primary hover:bg-accent-yellow text-light-primary hover:text-dark-primary rounded-lg transition-all duration-300"
-              >
-                <Trophy className="w-4 h-4" />
-                <span>Devpost</span>
-              </a>
-            )}
-          </div>
-        </div>
-      </motion.div>
-
-    </div>
+      </div>
+      <ProjectArtifact index={index} title={project.title} />
+    </motion.article>
   )
 }
 
 export default function Projects() {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: '-100px' })
-
   return (
-    <section id="projects" className="min-h-screen py-20 px-4 sm:px-6">
-      <div className="max-w-6xl mx-auto">
-        <motion.div
-          ref={ref}
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ duration: 0.6 }}
-          className="mb-16"
-        >
-          <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl uppercase mb-4">
-            <span className="text-accent-yellow">{'//'}</span> my projects
-          </h2>
-          <p className="text-light-secondary text-lg md:text-xl">
-            hackathon wins and things I build for fun
-          </p>
-          <div className="w-24 h-1 bg-accent-yellow mt-4" />
-        </motion.div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-          {projects.map((project, index) => (
-            <ProjectCard key={index} project={project} index={index} />
-          ))}
+    <section id="projects" className={styles.section} aria-labelledby="projects-title">
+      <div className={styles.container}>
+        <div className={styles.heading}>
+          <div><p className={styles.kicker}>ideas, made real</p><h2 id="projects-title"><span>{'//'}</span> my projects</h2></div>
+          <p>hackathon wins and things I build for fun<br /><span>There’s a little something to play with in each one.</span></p>
+        </div>
+        <div className={styles.projectList}>
+          {projects.map((project, index) => <ProjectCard key={project.title} project={project} index={index} />)}
         </div>
       </div>
     </section>

@@ -1,0 +1,30 @@
+.section { padding: 110px 24px; }
+.container { max-width: 1152px; margin: 0 auto; }
+.heading { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; padding-bottom: 42px; }
+.kicker { font: 11px ui-monospace, monospace; color: #999989; margin-bottom: 14px; }
+.heading h2 { font: 64px/.95 var(--font-bebas), sans-serif; text-transform: uppercase; }
+.heading h2 span { color: #ffd700; }
+.heading > p { color: #b0b0a2; font-size: 14px; line-height: 1.8; }
+.heading > p > span { color: #7f8274; font-size: 11px; }
+.project { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 65px; padding: 56px 0; border-top: 1px solid #ffffff20; align-items: center; }
+.project:last-child { border-bottom: 1px solid #ffffff20; }
+.project:nth-child(even) .projectCopy { order: 2; }
+.projectNumber { display: flex; gap: 16px; align-items: baseline; font: 10px/1.7 ui-monospace, monospace; color: #ccb966; }
+.projectNumber > span:first-child { color: #74776b; font-size: 12px; }
+.projectCopy h3 { margin: 13px 0 17px; font: 52px/1 var(--font-bebas), sans-serif; text-transform: uppercase; color: #ebe9dd; }
+.description { font-size: 15px; line-height: 1.85; color: #b6b7ab; text-wrap: pretty; }
+.tags { display: flex; flex-wrap: wrap; gap: 8px 14px; list-style: none; margin-top: 23px; color: #868b77; font: 10px/1.5 ui-monospace, monospace; }
+.tags li { white-space: nowrap; }
+.links { display: flex; flex-wrap: wrap; gap: 25px; margin-top: 25px; font: 11px ui-monospace, monospace; }
+.links a { display: inline-flex; align-items: center; gap: 10px; color: #e4d27c; padding-bottom: 6px; border-bottom: 1px solid #b1a25755; transition: color .2s, border-color .2s; }
+.links a svg { transition: transform .2s; }.links a:hover { color: #ffd700; border-color: #ffd700; }.links a:hover svg { transform: translate(2px, -2px); }
+@media (max-width: 1100px) { .container { max-width: calc(100% - 70px); } .project { gap: 32px; } }
+@media (max-width: 767px) {
+  .section { padding: 75px 22px; }.container { max-width: none; }
+  .heading { display: block; padding-bottom: 30px; }.heading h2 { font-size: 46px; }.heading > p { margin-top: 20px; font-size: 13px; }.heading > p > span { font-size: 10px; }
+  .project { grid-template-columns: 1fr; gap: 28px; padding: 35px 0 40px; }
+  .project:nth-child(even) .projectCopy { order: initial; }
+  .projectCopy h3 { font-size: 43px; margin-bottom: 15px; }.description { font-size: 14px; line-height: 1.9; }
+  .tags { margin-top: 18px; }.links { margin-top: 22px; }
+}
+@media (prefers-reduced-motion: reduce) { .links a, .links a svg { transition: none; } }

@@ -2,11 +2,11 @@
 .header { max-width: 1280px; margin: 0 auto; padding: 28px 64px 0 32px; display: flex; align-items: center; gap: 28px; }
 .monogram { font-size: 32px; font-weight: 650; letter-spacing: -3px; line-height: 1; }
 .monogram span { color: #ffd700; }
-.edition, .viewSwitch, .intro span, .stageAnnotation, .coordinate, .workbench, .links, .footer { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 11px; }
+.edition, .headerNav, .intro span, .stageAnnotation, .coordinate, .workbench, .links, .footer { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 11px; }
 .edition { color: #85857e; }
-.viewSwitch { margin-left: auto; display: flex; padding: 4px; border: 1px solid #ffffff1c; border-radius: 7px; gap: 3px; }
-.viewSwitch button { padding: 8px 12px; border-radius: 4px; color: #aaa99f; transition: background .2s, color .2s; }
-.viewSwitch button[aria-pressed=true] { background: #36362e; color: #f3e6ac; }
+.headerNav { margin-left: auto; display: flex; align-items: center; gap: 28px; color: #b9b8aa; }
+.headerNav a { display: inline-flex; align-items: center; gap: 9px; padding: 9px 0; }
+.headerNav a:last-child { color: #f3e6ac; }
 .hero { max-width: 1280px; margin: 0 auto; padding: 58px 96px 0 32px; min-height: calc(100svh - 78px); }
 .intro { display: flex; justify-content: space-between; align-items: center; }
 .intro > p { font-size: 19px; color: #c4c3b8; }
@@ -44,7 +44,7 @@
 @media (max-width: 767px) {
   .header { padding: 20px 22px 0; gap: 14px; }
   .edition { display: none; }
-  .viewSwitch { font-size: 10px; }
+  .headerNav { font-size: 10px; gap: 20px; }
   .hero { padding: 44px 22px 0; min-height: auto; }
   .intro > p { font-size: 16px; }
   .intro span { font-size: 9px; }

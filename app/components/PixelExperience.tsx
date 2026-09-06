@@ -3,13 +3,11 @@
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
 import { ArrowDown, ArrowUpRight, Pause, Play, RotateCcw } from 'lucide-react'
-import Hero from './Hero'
 import styles from './PixelExperience.module.css'
 
 const PixelScene = dynamic(() => import('./PixelScene'), { ssr: false })
 
 export default function PixelExperience() {
-  const [classic, setClassic] = useState(false)
   const [scatter, setScatter] = useState(0)
   const [paused, setPaused] = useState(false)
   const [sceneState, setSceneState] = useState<'loading' | 'ready' | 'unavailable'>('loading')
@@ -23,17 +21,16 @@ export default function PixelExperience() {
   }
 
   return (
-    <div className={styles.experiment}>
+    <div id="home" className={styles.experiment}>
       <header className={styles.header}>
-        <a href="#" className={styles.monogram} aria-label="Omar Ibrahim, home">oi<span>.</span></a>
-        <span className={styles.edition}>a little experiment in dimension</span>
-        <div className={styles.viewSwitch} role="group" aria-label="Hero version">
-          <button aria-pressed={!classic} onClick={() => { if (classic) { setClassic(false); setSceneState('loading') } }}>3D experiment</button>
-          <button aria-pressed={classic} onClick={() => setClassic(true)}>Original</button>
-        </div>
+        <a href="#home" className={styles.monogram} aria-label="Omar Ibrahim, home">oi<span>.</span></a>
+        <span className={styles.edition}>developer & security auditor</span>
+        <nav className={styles.headerNav} aria-label="Main navigation">
+          <a href="#projects">Selected work <ArrowDown size={12} /></a>
+          <a href="#contact">Let’s talk <ArrowUpRight size={12} /></a>
+        </nav>
       </header>
 
-      {classic ? <Hero /> : (
         <section className={styles.hero} aria-labelledby="spatial-name">
           <div className={styles.intro}>
             <p>hi, my name is</p>
@@ -85,7 +82,6 @@ export default function PixelExperience() {
             <span role="status">{sceneState === 'unavailable' ? 'Static view · 3D unavailable on this browser' : sceneState === 'loading' ? 'Preparing the pixels' : 'Pull things apart. Put them back.'}</span>
           </footer>
         </section>
-      )}
     </div>
   )
 }

@@ -11,7 +11,7 @@ type Props = {
   onStateChange: (state: 'ready' | 'unavailable') => void
 }
 
-// Both renderers use the original hand-drawn pixel alphabet.
+// Keep the original hand-drawn alphabet as the visual identity.
 const pixels = ['OMAR', 'IBRAHIM'].flatMap((word, row) =>
   [...word].flatMap((letter, column) =>
     (PIXEL_FONT[letter] ?? []).flatMap((line, y) =>

@@ -7,10 +7,11 @@ import Contact from './components/Contact'
 import Navigation from './components/Navigation'
 import CursorFollower from './components/CursorFollower'
 import BackToTop from './components/BackToTop'
+import ExperienceShell from './components/ExperienceShell'
 
 export default function Home() {
   return (
-    <>
+    <ExperienceShell>
       <CursorFollower />
       <Navigation />
       <BackToTop />
@@ -22,6 +23,6 @@ export default function Home() {
         <Skills />
         <Contact />
       </main>
-    </>
+    </ExperienceShell>
   )
 }

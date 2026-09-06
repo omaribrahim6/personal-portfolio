@@ -194,3 +194,11 @@
   }
 }
 
+:where(a, button, input):focus-visible {
+  outline: 2px solid #ffd700;
+  outline-offset: 5px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}

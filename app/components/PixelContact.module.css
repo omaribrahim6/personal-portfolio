@@ -1,0 +1,7 @@
+.heading { width: 100%; max-width: 1060px; margin: 0 auto 20px; }
+.heading a { display: block; }
+.heading svg { width: 100%; overflow: visible; display: block; }
+.pixel { transition: transform .25s ease-out; }
+.label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+@media (max-width: 767px) { .heading { margin-bottom: 25px; } }
+@media (prefers-reduced-motion: reduce) { .pixel { transition: none; transform: none !important; } }

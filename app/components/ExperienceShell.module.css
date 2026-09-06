@@ -1,0 +1,12 @@
+.progress { position: fixed; inset: 0 0 auto; height: 2px; background: #ffd700; transform-origin: left; z-index: 60; pointer-events: none; }
+.chapters { position: fixed; left: 20px; top: 50%; transform: translateY(-50%); z-index: 40; display: flex; flex-direction: column; gap: 4px; }
+.chapters a { display: flex; position: relative; width: 28px; height: 30px; align-items: center; justify-content: center; }
+.mark { height: 4px; width: 4px; background: #6b6b5e; transition: height .2s, background .2s; }
+.chapters a[aria-current] .mark { height: 18px; background: #ffd700; }
+.chapterLabel { position: absolute; left: 30px; white-space: nowrap; padding: 8px 12px; background: #262621; border: 1px solid #ffffff15; border-radius: 3px; font: 11px ui-monospace, monospace; color: #e6e3d1; opacity: 0; pointer-events: none; transform: translateX(-5px); transition: opacity .2s, transform .2s; }
+.chapterLabel small { color: #ffd700; margin-right: 8px; }
+.chapters a:hover .chapterLabel, .chapters a:focus-visible .chapterLabel { opacity: 1; transform: translateX(0); }
+.skip { position: fixed; left: 20px; top: 12px; transform: translateY(-160%); padding: 14px 20px; background: #ffd700; color: #1a1a1a; z-index: 70; }
+.skip:focus-visible { transform: none; }
+@media (max-width: 1320px) { .chapters { display: none; } }
+@media (prefers-reduced-motion: reduce) { .chapters * { transition: none; } }
