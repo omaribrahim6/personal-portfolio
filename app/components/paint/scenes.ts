@@ -601,8 +601,8 @@ const trail: Scene = {
     night(ctx, W, H, '#0e1034', '#3a2c7a', 111, 260)
     const near = { lit: ['#f38469', '#cf4d58'] as [string, string], shadow: ['#3a2150', '#1f1538'] as [string, string], crest: '#ffc0a6' }
     const far = { lit: ['#d6607c', '#a0436f'] as [string, string], shadow: ['#382a62', '#271b49'] as [string, string], crest: '#ffb39c' }
-    dune(ctx, H, { peak: [W * .8, H * .68], left: [W * .3, H * .86], right: [W * 1.3, H * .84], foot: [W * .96, H * .92], ...far }, 112)
-    dune(ctx, H, { peak: [W * .28, H * .74], left: [W * -.3, H * .94], right: [W * .8, H * .96], foot: [W * .44, H * 1.02], ...near }, 113)
+    dune(ctx, H, { peak: [W * .8, H * .68], left: [W * .3, H * .9], right: [W * 1.5, H * .9], foot: [W * .98, H * 1.04], ...far }, 112)
+    dune(ctx, H, { peak: [W * .28, H * .74], left: [W * -.3, H * .98], right: [W * 1.1, H * 1.06], foot: [W * .46, H * 1.04], ...near }, 113)
     grain(ctx, W, H, 114)
   },
 }
