@@ -1,28 +1,23 @@
-import PixelExperience from './components/PixelExperience'
-import About from './components/About'
-import Projects from './components/Projects'
-import Awards from './components/Awards'
-import Skills from './components/Skills'
-import Contact from './components/Contact'
-import Navigation from './components/Navigation'
-import CursorFollower from './components/CursorFollower'
-import BackToTop from './components/BackToTop'
-import ExperienceShell from './components/ExperienceShell'
+import Hero from './components/Hero'
+import Shore from './components/Shore'
+import Story from './components/Story'
+import Toolkit from './components/Toolkit'
+import Wins from './components/Wins'
+import Works from './components/Works'
+import World from './components/World'
 
+// One night's walk, dusk to dawn: six paintings under a single sky, and the portfolio written on the ground between them.
 export default function Home() {
   return (
-    <ExperienceShell>
-      <CursorFollower />
-      <Navigation />
-      <BackToTop />
-      <main className="relative z-10">
-        <PixelExperience />
-        <About />
-        <Projects />
-        <Awards />
-        <Skills />
-        <Contact />
+    <World>
+      <main>
+        <Hero />
+        <Story />
+        <Works />
+        <Wins />
+        <Toolkit />
+        <Shore />
       </main>
-    </ExperienceShell>
+    </World>
   )
 }

@@ -1,0 +1,17 @@
+.page {
+  position: relative;
+  z-index: 1;
+}
+
+.skip {
+  position: fixed;
+  top: .75rem;
+  left: .75rem;
+  z-index: 100;
+  padding: .7rem 1rem;
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-size: .85rem;
+  transform: translateY(-200%);
+}
+.skip:focus { transform: none; }

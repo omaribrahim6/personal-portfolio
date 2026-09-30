@@ -1,0 +1,80 @@
+.ground { --accent: var(--color-coral); }
+
+.filters { margin-bottom: clamp(1.5rem, 4vw, 2.5rem); }
+
+.list { border-bottom: 1px solid rgba(242, 236, 219, .13); }
+
+.row {
+  display: grid;
+  grid-template-columns: 2.6rem minmax(0, 1fr);
+  gap: .5rem 1.1rem;
+  padding: clamp(1.5rem, 3vw, 2.2rem) 0;
+  border-top: 1px solid rgba(242, 236, 219, .13);
+}
+
+.when {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 1.4em;
+  opacity: .66;
+}
+.when span + span { color: var(--color-coral); }
+
+.what h3 {
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 4.4vw, 3.3rem);
+  font-weight: 300;
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+  line-height: 1;
+  letter-spacing: -.03em;
+  text-wrap: balance;
+  transition: color .3s ease;
+}
+.row:hover h3 { color: #ffd3c0; }
+
+.event {
+  margin-top: .5rem;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--color-peri);
+}
+
+.detail {
+  max-width: 38rem;
+  margin-top: .7rem;
+  font-size: .98rem;
+  color: rgba(242, 236, 219, .8);
+  text-wrap: pretty;
+}
+
+.build { margin-top: .8rem; font-size: .88rem; color: var(--color-gold); }
+
+.count { margin-top: 1.4rem; opacity: .55; }
+
+/* ---------------------------------------------------------------------- marks */
+
+.mark { width: 2.6rem; height: 3.8rem; overflow: visible; }
+.mark * { transition: transform .6s cubic-bezier(.2, .8, .2, 1), opacity .4s ease, fill .4s ease, stroke .4s ease; }
+
+.pole, .base { stroke: rgba(242, 236, 219, .55); stroke-width: 1.2; stroke-linecap: round; fill: none; }
+.flag { fill: rgba(246, 134, 106, .7); transform: translateY(20px); }
+.row:hover .flag, .row:focus-within .flag, .row[data-lit='true'] .flag { fill: var(--color-coral); transform: none; }
+
+.stone { fill: rgba(142, 156, 238, .7); transform-box: fill-box; transform-origin: center; }
+/* Three stones wait; the fourth is set on top. */
+.stone[data-stone='3'] { fill: var(--color-coral); transform: translateY(-14px); opacity: 0; }
+.row:hover .stone, .row:focus-within .stone, .row[data-lit='true'] .stone { fill: var(--color-peri); }
+.row:hover .stone[data-stone='3'], .row:focus-within .stone[data-stone='3'], .row[data-lit='true'] .stone[data-stone='3'] { fill: var(--color-coral); transform: none; opacity: 1; }
+
+.halo { fill: none; stroke: rgba(246, 180, 85, .0); stroke-width: 1; transform-box: fill-box; transform-origin: center; transform: scale(.7); }
+.disc { fill: var(--color-gold); }
+.bite { fill: #0d0e2c; }
+.row:hover .bite, .row:focus-within .bite, .row[data-lit='true'] .bite { transform: translate(14px, -10px); opacity: 0; }
+.row:hover .halo, .row:focus-within .halo, .row[data-lit='true'] .halo { stroke: rgba(246, 180, 85, .5); transform: none; }
+
+@media (min-width: 820px) {
+  .row { grid-template-columns: 11rem 3rem minmax(0, 1fr); gap: 0 2rem; align-items: start; }
+  .when { grid-column: auto; flex-direction: column; gap: .5rem; padding-top: .7rem; }
+  .mark { margin-top: -.2rem; }
+}

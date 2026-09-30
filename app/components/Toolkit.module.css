@@ -1,0 +1,123 @@
+.ground { --accent: var(--color-coral); }
+
+.body {
+  display: grid;
+  gap: clamp(2.5rem, 6vw, 5rem);
+}
+
+.groups { display: grid; }
+
+.group {
+  display: grid;
+  gap: .9rem;
+  padding: clamp(1.4rem, 2.6vw, 2rem) 0;
+  border-top: 1px solid rgba(242, 236, 219, .14);
+}
+.group:last-child { border-bottom: 1px solid rgba(242, 236, 219, .14); }
+.group h3 { padding-top: .75rem; opacity: .62; }
+
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .1rem clamp(1rem, 2.2vw, 1.9rem);
+}
+
+/* Tools are set as words, not chips. */
+.tool {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .42rem 0;
+  color: rgba(242, 236, 219, .78);
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 2.1vw, 1.7rem);
+  font-weight: 300;
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+  line-height: 1.2;
+  letter-spacing: -.015em;
+  transition: color .25s ease;
+}
+.tool:hover, .tool[data-current='true'] { color: #fff; }
+.tool[aria-pressed='true'] { color: #ffb7a0; }
+
+.bud { width: .82rem; height: .82rem; flex: none; overflow: visible; }
+.petals {
+  fill: var(--color-ember);
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(.34);
+  transition: transform .5s cubic-bezier(.3, 1.5, .4, 1), fill .3s ease;
+}
+.seed { fill: #2a0d20; opacity: 0; transition: opacity .3s ease; }
+.tool[data-has='false'] .petals { fill: none; stroke: rgba(242, 236, 219, .5); stroke-width: 2.4; }
+.tool[data-current='true'] .petals, .tool[aria-pressed='true'] .petals { transform: scale(1); fill: #ef5a3c; }
+.tool[data-current='true'][data-has='false'] .petals, .tool[aria-pressed='true'][data-has='false'] .petals { fill: none; stroke-width: 1; }
+.tool[data-current='true'][data-has='true'] .seed, .tool[aria-pressed='true'][data-has='true'] .seed { opacity: 1; }
+
+.note {
+  max-width: 40rem;
+  margin-top: 2rem;
+  font-size: .98rem;
+  color: rgba(242, 236, 219, .8);
+}
+.note strong { font-family: var(--font-display); font-style: italic; font-weight: 400; font-size: 1.15em; color: var(--color-cream); }
+
+/* ------------------------------------------------------------------ receipt */
+
+.receipt {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  margin-inline: -1.25rem;
+  padding: 1.1rem 1.25rem 1.3rem;
+  border-top: 1px solid rgba(242, 236, 219, .22);
+  background: var(--ground);
+}
+
+.overline { display: flex; justify-content: space-between; gap: 1rem; opacity: .62; }
+.overline span:first-child { color: var(--color-coral); }
+
+.receipt h3 {
+  margin-top: .35rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 4.4vw, 3.4rem);
+  font-weight: 300;
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+  line-height: 1;
+  letter-spacing: -.03em;
+}
+
+.lead { margin-top: .5rem; font-family: var(--font-display); font-style: italic; opacity: .7; }
+
+.receipts { display: flex; flex-wrap: wrap; gap: 0 1.3rem; margin-top: .1rem; }
+.receipts a { font-size: .98rem; }
+/* The notes are read out, and shown once there is room for them. */
+.receipts span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+.none { max-width: 24rem; margin-top: .5rem; font-size: .95rem; opacity: .78; }
+
+.receiptFoot { display: none; margin-top: 1.4rem; font-size: .8rem; opacity: .5; }
+
+@media (min-width: 760px) {
+  .group { grid-template-columns: 11rem minmax(0, 1fr); gap: 2rem; }
+}
+
+@media (min-width: 1000px) {
+  .body { grid-template-columns: minmax(0, 1fr) minmax(0, 21rem); align-items: start; }
+  .receipt {
+    top: 6rem;
+    bottom: auto;
+    margin: 0;
+    padding: .2rem 0 .4rem 2.2rem;
+    border-top: 0;
+    border-left: 1px solid rgba(242, 236, 219, .22);
+    background: none;
+  }
+  .receipt h3 { margin-top: .5rem; }
+  .lead, .none { margin-top: .9rem; }
+  .receipts { display: grid; gap: .5rem; margin-top: .6rem; }
+  .receipts li { display: grid; }
+  .receipts a { font-size: 1.02rem; }
+  .receipts span { position: static; width: auto; height: auto; clip-path: none; white-space: normal; font-size: .82rem; opacity: .6; }
+  .receiptFoot { display: block; }
+}

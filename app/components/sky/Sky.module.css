@@ -1,0 +1,21 @@
+.sky {
+  position: fixed;
+  inset: 0;
+  height: 100lvh;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.sky canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.sky canvas[data-ready] { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sky canvas { transition: none; }
+}

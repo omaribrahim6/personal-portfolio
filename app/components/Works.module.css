@@ -1,0 +1,70 @@
+.ground { --accent: var(--color-coral); }
+
+.list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(5rem, 13vw, 11rem);
+  padding-top: clamp(1rem, 3vw, 2.5rem);
+}
+
+.work {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(2.2rem, 5vw, 3rem);
+  align-items: center;
+}
+
+.work > button { max-width: 22rem; justify-self: center; }
+
+.number {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem 1.4em;
+  margin-bottom: 1.2rem;
+}
+.number span:first-child { opacity: .6; }
+.number span:last-child { color: var(--color-gold); }
+
+.copy h3 {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 7.4vw, 6.2rem);
+  font-weight: 300;
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+  line-height: .92;
+  letter-spacing: -.04em;
+  scroll-margin-top: 9rem;
+}
+
+.description {
+  max-width: 36rem;
+  margin-top: 1.5rem;
+  color: rgba(242, 236, 219, .86);
+  text-wrap: pretty;
+}
+
+/* Tools as a plain run of words, separated by slashes. */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 36rem;
+  margin-top: 1.4rem;
+  font-size: .86rem;
+  color: var(--color-peri);
+}
+.tags li:not(:last-child)::after { content: '/'; margin: 0 .7em; opacity: .45; }
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem 1.8rem;
+  margin-top: 1.7rem;
+  font-size: .98rem;
+}
+
+@media (min-width: 860px) {
+  .work { grid-template-columns: minmax(0, 23rem) minmax(0, 1fr); gap: clamp(3.5rem, 8vw, 8rem); }
+  .work > button { max-width: none; }
+  /* Windows alternate sides, the way you would pass them on a walk. */
+  .work:nth-child(even) { grid-template-columns: minmax(0, 1fr) minmax(0, 23rem); }
+  .work:nth-child(even) > button { order: 2; }
+}

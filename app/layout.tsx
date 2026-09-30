@@ -1,17 +1,27 @@
-import type { Metadata } from 'next'
-import { Inter, Bebas_Neue } from 'next/font/google'
+import type { Metadata, Viewport } from 'next'
+import { Fraunces, Hanken_Grotesk, Michroma } from 'next/font/google'
 import './globals.css'
 
-const inter = Inter({ 
+// A soft, slightly odd serif for the big words, in the spirit of a painted paperback cover.
+const fraunces = Fraunces({
   subsets: ['latin'],
-  variable: '--font-inter',
+  style: ['normal', 'italic'],
+  axes: ['opsz', 'SOFT', 'WONK'],
+  variable: '--font-fraunces',
   display: 'swap',
 })
 
-const bebasNeue = Bebas_Neue({ 
+const hanken = Hanken_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-hanken',
+  display: 'swap',
+})
+
+// Wide, squared capitals for captions and coordinates.
+const michroma = Michroma({
   weight: '400',
   subsets: ['latin'],
-  variable: '--font-bebas',
+  variable: '--font-michroma',
   display: 'swap',
 })
 
@@ -60,17 +70,21 @@ export const metadata: Metadata = {
   },
 }
 
+export const viewport: Viewport = {
+  themeColor: '#11123a',
+  colorScheme: 'dark',
+}
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${bebasNeue.variable}`}>
+    <html lang="en" className={`${fraunces.variable} ${hanken.variable} ${michroma.variable}`}>
       <body>
         {children}
       </body>
     </html>
   )
 }
-
