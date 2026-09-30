@@ -63,7 +63,7 @@ export default function Nav({ active, tone, progress }: { active: string; tone: 
         <nav className={styles.links} aria-label="Chapters">
           {chapters.slice(1).map(chapter => (
             <a key={chapter.id} href={`#${chapter.id}`} className="label" aria-current={active === chapter.id ? 'location' : undefined}>
-              <i>{chapter.numeral}</i>{short[chapter.id]}
+              <i aria-hidden="true">{chapter.numeral}</i>{short[chapter.id]}
             </a>
           ))}
           <a className="label" href={links.resume} target="_blank" rel="noopener noreferrer">Résumé <ArrowUpRight size={11} /></a>

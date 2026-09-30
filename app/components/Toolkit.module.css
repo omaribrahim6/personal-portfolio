@@ -68,8 +68,8 @@
   position: sticky;
   bottom: 0;
   z-index: 5;
-  margin-inline: -1.25rem;
-  padding: 1.1rem 1.25rem 1.3rem;
+  margin-inline: calc(var(--edge) * -1);
+  padding: 1.1rem var(--edge) 1.3rem;
   border-top: 1px solid rgba(242, 236, 219, .22);
   background: var(--ground);
 }

@@ -23,7 +23,7 @@ export const keys: Key[] = [
     top: '#11123a', mid: '#36297a', low: '#8a4a8e',
     glow: '#f0596a', glowAt: [.3, .72], stars: 1,
     orb: [[.305, .84, .012], [.86, .905, .01]], orbCol: '#f3d3a6', orbAmount: 1, halo: .16,
-    a: [[.715, .29, .385], [.6, .275, .19]], aAlpha: 1,
+    a: [[.715, .29, .385], [.6, .262, .19]], aAlpha: 1,
     b: [[-.6, .2, .4], [-.8, .3, .2]], bAlpha: 0, ...blueBank,
   },
   { // II · the dunes, deep night
@@ -80,7 +80,7 @@ export function skyAt(chapter: number, aspect: number): SkyState {
   const raw = c - i
   const t = raw * raw * (3 - 2 * raw)
   const from = keys[i], to = keys[i + 1]
-  const portrait = Math.min(1, Math.max(0, (1.05 - aspect) / .45))
+  const portrait = Math.min(1, Math.max(0, (1.25 - aspect) / .45))
   const place = (k: Key, name: 'orb' | 'a' | 'b') => lerp3(k[name][0], k[name][1], portrait)
   const color = (name: 'top' | 'mid' | 'low' | 'glow' | 'orbCol' | 'bLit' | 'bShade' | 'bDeep' | 'bTop') => lerp3(rgb(from[name]), rgb(to[name]), t)
   return {

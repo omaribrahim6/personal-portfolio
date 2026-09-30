@@ -167,7 +167,6 @@ export type Foliage = { dark: string; mid: string; lit: string; dab: string; dee
 
 export const OAK: Foliage = { dark: '#0c1d24', mid: '#1b3a3a', lit: '#4d7a5c', dab: '#9cb877', deep: '#07131a' }
 export const HEDGE: Foliage = { dark: '#0a0c4a', mid: '#2128a0', lit: '#4c59d8', dab: '#a3adf6', deep: '#05062e' }
-export const PALM: Foliage = { dark: '#07131a', mid: '#0e2426', lit: '#1d3d38', dab: '#3c6a58', deep: '#040b10' }
 
 type Clump = { x: number; y: number; r: number; lit: number }
 

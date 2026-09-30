@@ -1,5 +1,3 @@
-import { bank, thunderhead } from './clouds'
-
 export const vertex = `
 attribute vec2 aPosition;
 void main() { gl_Position = vec4(aPosition, 0., 1.); }
@@ -13,40 +11,11 @@ precision mediump float;
 #endif
 `
 
-// Pass one, run rarely: the shape of a cloud, drawn into a texture.
-// Cloud lobes are spheres. For each texel we find the one nearest the viewer and keep its surface normal,
-// plus how much a neighbouring lobe overhangs it. That is ~100 sphere tests per texel, far too many to repeat
-// for every pixel of every frame, so it happens once (and during the opening, while the cloud is still growing).
-export const bake = `${header}
-uniform vec2 uSize;
-uniform vec4 uBox;
-uniform float uBloom;
-uniform float uWhich;
-
-#define L(cx, cy, rad, dz, dl) { float r = rad * smoothstep(dl, dl + .45, bloom); vec2 d = q - vec2(cx, cy); float d2 = dot(d, d); float rr = r * r; if (d2 < rr * 2.) { float dist = sqrt(d2); if (d2 < rr) { float s = sqrt(rr - d2); edge = max(edge, r - dist); if (s + dz > h1) { h1 = s + dz; n = vec3(d, s) / r; } } else { occ = max(occ, (1. - (dist - r) / (.42 * r)) * (dz + r * .6)); } } }
-
-void thunderhead(in vec2 q, in float bloom, inout vec3 n, inout float h1, inout float occ, inout float edge) {
-  ${thunderhead.source}
-}
-
-void bank(in vec2 q, in float bloom, inout vec3 n, inout float h1, inout float occ, inout float edge) {
-  ${bank.source}
-}
-
-void main() {
-  vec2 q = uBox.xy + gl_FragCoord.xy / uSize * uBox.zw;
-  vec3 n = vec3(0., 0., 1.);
-  float h1 = -9., occ = -9., edge = 0.;
-  if (uWhich < .5) thunderhead(q, uBloom, n, h1, occ, edge);
-  else bank(q, 1., n, h1, occ, edge);
-  float ao = smoothstep(-.04, .22, occ - h1);
-  float cover = smoothstep(0., 2.5 * uBox.z / uSize.x, edge);
-  gl_FragColor = vec4(n.xy * .5 + .5, ao, cover);
-}
-`
-
-// Pass two, every frame: a graded sky, stars, a moon that becomes the morning sun, and the two clouds,
-// read back from their textures and lit. Grain and specks go on last.
+// One full-screen painting, every frame: a graded sky, stars, a moon that becomes the morning sun, and two
+// clouds. The clouds' shapes are not worked out here. They arrive as small images (see clouds.ts) holding a
+// surface normal, a contact shadow and a coverage value per texel; this shader lights them, lets them drift,
+// and adds grain and specks last. Keeping the hundred-odd spheres out of the shader matters twice over: it
+// is cheap to run, and it compiles instantly. Written out in GLSL they took Direct3D seconds to compile.
 export const fragment = `${header}
 uniform vec2 uRes;
 uniform float uPx;

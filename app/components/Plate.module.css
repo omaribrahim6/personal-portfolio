@@ -120,6 +120,22 @@
 }
 .ground > * { position: relative; }
 
+/* Under the long sections the land keeps its character: wind ripples across the dunes, planted rows in the field. */
+.ground[data-ground='dunes']::after, .ground[data-ground='field']::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 22rem), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 22rem), transparent);
+}
+.ground[data-ground='dunes']::after {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='30'%3E%3Cpath d='M0 15c45-11 75 11 120 0s75 11 120 0 75-11 120 0' fill='none' stroke='%23ff9d86' stroke-opacity='.055'/%3E%3C/svg%3E");
+}
+.ground[data-ground='field']::after {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='520' height='46'%3E%3Cpath d='M0 23c130-16 390 16 520 0' fill='none' stroke='%23c6caff' stroke-opacity='.06'/%3E%3C/svg%3E");
+}
+
 /* ------------------------------------------------------------------ terrain */
 
 .terrain {

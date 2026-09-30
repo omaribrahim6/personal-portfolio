@@ -3,7 +3,7 @@
   z-index: 1;
   isolation: isolate;
   min-height: 100svh;
-  padding: clamp(5.4rem, 12svh, 8rem) clamp(1.25rem, 3.4vw, 3rem) 0;
+  padding: clamp(5.4rem, 12svh, 8rem) var(--edge) 0;
   color: var(--color-cream);
 }
 
@@ -89,7 +89,7 @@
   animation: settle 1s ease both 1.5s;
 }
 .caption {
-  left: clamp(1.25rem, 3.4vw, 3rem);
+  left: var(--edge);
   display: flex;
   gap: 1.2em;
   opacity: .78;
@@ -105,7 +105,7 @@
   opacity: .6;
 }
 .status {
-  right: clamp(1.25rem, 3.4vw, 3rem);
+  right: var(--edge);
   display: inline-flex;
   align-items: center;
   gap: .8em;
@@ -140,12 +140,12 @@
   .wip { display: none; }
   .caption, .status { bottom: 1rem; }
   .caption { bottom: 2.7rem; }
-  .status { left: 1.25rem; right: auto; }
+  .status { left: var(--edge); right: auto; }
   .more {
     position: absolute;
     top: 100%;
-    left: 1.25rem;
-    right: 1.25rem;
+    left: var(--edge);
+    right: var(--edge);
     max-width: none;
     margin-top: 0;
     padding-top: 1.6rem;

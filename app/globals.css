@@ -20,7 +20,13 @@
 }
 
 @layer base {
+  :root {
+    /* The one margin everything hangs from: the header, the name, every title and every column. */
+    --edge: max(clamp(1.25rem, 3.4vw, 3rem), calc((100vw - 84rem) / 2));
+  }
+
   html {
+    overflow-x: clip;
     background: var(--color-night);
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
@@ -60,16 +66,13 @@
   /* Small wide capitals: the captions under the paintings. */
   .label {
     font-family: var(--font-label);
-    font-size: .625rem;
+    font-size: .65rem;
     line-height: 1.5;
     letter-spacing: .2em;
     text-transform: uppercase;
   }
 
-  .measure {
-    width: min(100% - 2.5rem, 74rem);
-    margin-inline: auto;
-  }
+  .measure { margin-inline: var(--edge); }
 
   /* Text links: a rule that fills in from the left, and an arrow that leans the way it is going. */
   .go {

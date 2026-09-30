@@ -1,3 +1,4 @@
+import { awards } from '../../content'
 import {
   HEDGE, OAK, blend, bump, clamp, dots, foliage, grain, hill, mix, noise1, palm, poppies, rgba, rng, smooth, tree, waves,
   type Ctx, type Fn, type Vec,
@@ -373,6 +374,35 @@ const summit: Scene = {
       top: '#22236e', bottom: '#0d0e30', depth: H * .7, rim: '#97a3f2', rimSide: 1, rimStrength: .55,
       light: '#4d58cc', dark: '#07081e', seed: 15, density: 1.5,
     })
+    // One mark on the crest for every win in the list below: a flag for each thing broken into,
+    // a cairn for each thing built, and a gold pennant for the one that was given.
+    awards.forEach((award, index) => {
+      const t = .07 + .46 * index / Math.max(1, awards.length - 1)
+      const x = W * t, y = big(x) + 1
+      const tall = (11 + (index % 3) * 2) * s
+      if (award.mode === 'built') {
+        ctx.fillStyle = '#0b0c2c'
+        for (const [dy, r] of [[0, 4.2], [3.6, 3.2], [6.6, 2.2]]) {
+          ctx.beginPath()
+          ctx.ellipse(x, y - dy * s, r * s, r * .55 * s, 0, 0, 6.2832)
+          ctx.fill()
+        }
+        return
+      }
+      ctx.strokeStyle = '#0b0c2c'
+      ctx.lineWidth = Math.max(1, 1.1 * s)
+      ctx.beginPath()
+      ctx.moveTo(x, y)
+      ctx.lineTo(x, y - tall)
+      ctx.stroke()
+      ctx.fillStyle = award.mode === 'named' ? '#f6b455' : '#ee5a44'
+      ctx.beginPath()
+      ctx.moveTo(x, y - tall)
+      ctx.lineTo(x + 8 * s, y - tall + 2.6 * s)
+      ctx.lineTo(x, y - tall + 5.2 * s)
+      ctx.fill()
+    })
+
     // A second fold, lower on the same hill.
     const fold: Fn = x => H * (bigHill(x / W) + .13 + .1 * (x / W))
     hill(ctx, W, H, fold, { top: '#12133f', bottom: '#0b0c2a', depth: H * .4, rim: '#5561d0', rimSide: 1, rimStrength: .3, light: '#2f389c', dark: '#05061a', seed: 16 })
