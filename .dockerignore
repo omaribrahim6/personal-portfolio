@@ -1,0 +1,9 @@
+.git
+.github
+node_modules
+.next
+.data
+
+# Secrets reach the container through docker-compose's environment, never through the image.
+.env
+.env.*

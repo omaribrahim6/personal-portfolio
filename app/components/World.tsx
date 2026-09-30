@@ -3,6 +3,7 @@
 import { MotionConfig } from 'framer-motion'
 import { useEffect, useState, type ReactNode } from 'react'
 import { chapters } from '../content'
+import MiniOmar from './mini/MiniOmar'
 import Nav from './Nav'
 import Sky from './sky/Sky'
 import { scenes, type SceneName } from './paint/scenes'
@@ -107,6 +108,7 @@ export default function World({ children }: { children: ReactNode }) {
       <Sky />
       <Nav active={active} tone={tone} progress={progress} />
       <div className={styles.page}>{children}</div>
+      <MiniOmar />
     </MotionConfig>
   )
 }

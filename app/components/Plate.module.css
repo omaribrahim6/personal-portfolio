@@ -201,6 +201,18 @@
 .wanderer[data-step='1'] .legA { transform: rotate(8deg); }
 .wanderer[data-step='1'] .legB { transform: rotate(-8deg); }
 
+/* On the beach the small silhouette gives way to the 3D Omar, standing where it stood, facing you. */
+.stand {
+  position: absolute;
+  left: 56%;
+  top: 77%;
+  width: calc(var(--tall) * .66);
+  height: var(--tall);
+  --tall: clamp(180px, 33svh, 350px);
+  transform: translate(-50%, -93%);
+}
+.terrain[data-mini] .wanderer { opacity: 0; transition: opacity .4s ease; }
+
 /* Where the light is, plate by plate. */
 .terrain[data-scene='ridge'] { --cast: 158deg; --rim: rgba(255, 140, 150, .8); }
 .terrain[data-scene='dunes'] { --cast: 22deg; --rim: rgba(255, 190, 160, .55); }

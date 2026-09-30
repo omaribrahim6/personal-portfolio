@@ -10,6 +10,9 @@ services:
       - LETSENCRYPT_HOST=${LETSENCRYPT_HOST}
       - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
       - VIRTUAL_PORT=3000
+      # Mini Omar's answers. Without a key the site still runs; he just says he is offline.
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - GEMINI_MODEL=${GEMINI_MODEL:-}
     networks:
       - webnet
 

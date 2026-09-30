@@ -12,6 +12,8 @@ export function Terrain({ scene, className = '' }: { scene: PlateScene; classNam
     <div className={`${styles.terrain} ${className}`} data-terrain={scene} data-scene={scene}>
       <Painting scene={scene as SceneName} className={styles.painting} />
       <Wanderer />
+      {/* Where the 3D Omar stands once the walk is over. Filled in by MiniOmar; empty everywhere else. */}
+      {scene === 'shore' && <span className={styles.stand} data-stand />}
     </div>
   )
 }
