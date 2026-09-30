@@ -44,6 +44,7 @@ export default function MiniOmar() {
   const [dawn, setDawn] = useState(false)
   const [bubble, setBubble] = useState(false)
   const [hover, setHover] = useState(false)
+  const [active, setActive] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [busy, setBusy] = useState(false)
@@ -102,6 +103,14 @@ export default function MiniOmar() {
       canvas.current?.remove()
     }
   }, [])
+
+  // The green dot by his name: whether there is a model behind him to answer.
+  useEffect(() => {
+    if (!present) return
+    let cancelled = false
+    fetch('/api/ask').then(response => response.json()).then((status: { active?: boolean }) => { if (!cancelled) setActive(Boolean(status.active)) }).catch(() => {})
+    return () => { cancelled = true }
+  }, [present])
 
   // Where he can stand on the shore, when the beach is in view, and when the corner is needed by the page.
   useEffect(() => {
@@ -251,9 +260,11 @@ export default function MiniOmar() {
     try {
       const response = await fetch('/api/ask', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: history }), signal: controller.signal })
       if (!response.ok || !response.body) {
+        if (response.status === 503) setActive(false)
         fail(response.status === 503 ? OFFLINE : response.status === 429 ? BUSY : LOST)
         return
       }
+      setActive(true)
       const reader = response.body.getReader()
       const decoder = new TextDecoder()
       let pending = ''
@@ -303,14 +314,14 @@ export default function MiniOmar() {
     <>
       <div className={styles.dock} data-open={open} data-hidden={hidden} data-dawn={dawn}>
         {bubble && !open && !hover && spot === 'dock' && (
-          <button type="button" className={styles.bubble} onClick={talk} tabIndex={-1}>I’m the small one. Ask me anything about Omar.</button>
+          <button type="button" className={styles.bubble} onClick={talk} tabIndex={-1}>I’m the small Omar. Ask me anything about my work.</button>
         )}
         {/* Outside the quarter circle, so nothing clips it. */}
-        <span className={styles.hint} data-on={hover && !open} aria-hidden="true">Ask mini Omar <kbd>Ctrl J</kbd></span>
+        <span className={styles.hint} data-on={hover && !open} aria-hidden="true">Ask Omar <kbd>Ctrl J</kbd></span>
         <button ref={launcher} type="button" className={styles.launcher} onClick={talk} tabIndex={hidden || open ? -1 : 0}
           onPointerEnter={event => { if (event.pointerType === 'mouse') setHover(true) }} onPointerLeave={() => setHover(false)}
           onFocus={event => { if (event.currentTarget.matches(':focus-visible')) setHover(true) }} onBlur={() => setHover(false)}
-          aria-label="Ask mini Omar, a small AI version of Omar" aria-expanded={open} aria-controls="mini-omar-chat">
+          aria-label="Ask Omar, a small AI version of him" aria-expanded={open} aria-controls="mini-omar-chat">
           <span className={styles.moon} aria-hidden="true" />
           <span ref={dockSeat} className={styles.seat}>{still(styles.canvas)}</span>
         </button>
@@ -318,7 +329,7 @@ export default function MiniOmar() {
 
       {stand && createPortal(
         <button ref={beach} type="button" className={styles.beach} data-here={spot === 'shore'} onClick={talk} tabIndex={spot === 'shore' ? 0 : -1}
-          aria-label="Ask mini Omar, a small AI version of Omar" aria-expanded={open} aria-controls="mini-omar-chat">
+          aria-label="Ask Omar, a small AI version of him" aria-expanded={open} aria-controls="mini-omar-chat">
           <span className={styles.footing} aria-hidden="true" />
           <span ref={shoreSeat} className={styles.seat} />
           <span className={`label ${styles.invite}`} aria-hidden="true">ask me <ArrowUpRight size={11} /></span>
@@ -326,12 +337,11 @@ export default function MiniOmar() {
         stand,
       )}
 
-      <div ref={panel} id="mini-omar-chat" className={styles.chat} data-open={open} role="dialog" aria-label="Ask mini Omar" aria-hidden={!open} inert={!open} tabIndex={-1}>
+      <div ref={panel} id="mini-omar-chat" className={styles.chat} data-open={open} role="dialog" aria-label="Ask Omar" aria-hidden={!open} inert={!open} tabIndex={-1}>
         <header className={styles.head}>
-          <span className={styles.face} aria-hidden="true" />
           <div className={styles.title}>
-            <b>Mini Omar</b>
-            <span><i className={styles.live} /><span>AI stand-in · Gemini<span className={styles.more}>, grounded in this site</span></span></span>
+            <b>Omar</b>
+            {active && <i className={styles.live} role="img" aria-label="The AI is online" title="The AI is online" />}
           </div>
           <button type="button" className={styles.icon} onClick={reset} aria-label="New conversation" title="New conversation"><RotateCcw size={16} /></button>
           <button type="button" className={styles.icon} onClick={close} aria-label="Close"><X size={16} /></button>
@@ -340,11 +350,11 @@ export default function MiniOmar() {
         <div ref={log} className={styles.scroll} role="log" aria-live="polite">
           {!messages.length && (
             <div className={styles.hello}>
-              <p className={styles.big}>Hey, I’m mini Omar.<br /><span>What do you want to know?</span></p>
+              <p className={styles.big}>Hey, I’m Omar.<br /><span>What do you want to know?</span></p>
               <div className={styles.list}>
                 {SUGGESTIONS.map(question => <button key={question} type="button" onClick={() => void send(question)}>{question}</button>)}
               </div>
-              <p className={styles.note}>I only know what is on this page, and I can be wrong. The real Omar is at <a href={`mailto:${email}`}>{email}</a>.</p>
+              <p className={styles.note}>I’m an AI version of Omar: I only know what is on this page, and I can be wrong. The real one is at <a href={`mailto:${email}`}>{email}</a>.</p>
             </div>
           )}
           {messages.map(message => message.from === 'you' ? (

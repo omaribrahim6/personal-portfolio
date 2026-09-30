@@ -1,6 +1,7 @@
 import { GoogleGenAI } from '@google/genai'
 import { instructions, PLACES } from './dossier'
 
+// GET  /api/ask → { active }
 // POST /api/ask { messages: [{ role, text }] } → text/event-stream
 //   { type: 'text', delta }   a piece of his answer
 //   { type: 'show', id, label }   a place on the page he is pointing at
@@ -43,6 +44,11 @@ function allowed(who: string) {
 }
 
 const clean = (text: unknown, max: number) => String(text ?? '').replace(/\s+/g, ' ').trim().slice(0, max)
+
+/** Whether there is a model to answer with. The chat shows a green dot by his name when there is. */
+export function GET() {
+  return Response.json({ active: Boolean(genai()) }, { headers: { 'Cache-Control': 'no-store' } })
+}
 
 export async function POST(request: Request) {
   let body: { messages?: Turn[] }

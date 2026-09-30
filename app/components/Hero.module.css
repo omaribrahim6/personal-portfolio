@@ -132,6 +132,12 @@
 }
 
 /* Phones: the painting gets the middle of the screen; the practical lines sit on the hill just below it. */
+/* The corner is mini Omar's, so the status sits left of him; below this width there is no room for it beside the caption. */
+@media (max-width: 960px) {
+  .caption { bottom: 3.3rem; }
+  .status { left: var(--edge); right: auto; }
+}
+
 @media (max-width: 720px) {
   .stage { padding-top: 5.2rem; }
   .copy h1 { font-size: clamp(4rem, 21.5vw, 7rem); }

@@ -75,11 +75,12 @@
 }
 
 /* What the corner is for, on hover. */
+/* It sits clear of him, to his left, and above anything of his that reaches that far. */
 .hint {
   position: absolute;
-  right: 96%;
+  right: 106%;
   bottom: 38%;
-  z-index: 1;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -234,27 +235,10 @@
   background: var(--panel);
 }
 
-/* His face, cut from the same still that stands in for him without WebGL. */
-.face {
-  flex: none;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: url('/models/omar-bust.webp') -13.5px -10px / 66px auto no-repeat, radial-gradient(circle at 70% 80%, #ffd2a6, #f9986f 55%, #ee6d5f);
-}
-
-.title { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+/* His name, and a green dot while there is a model behind him to answer. */
+.title { display: flex; flex: 1; align-items: center; gap: 9px; min-width: 0; padding-left: 2px; }
 .title b { font-size: 16px; font-weight: 600; letter-spacing: -.02em; line-height: 1.1; }
-.title > span {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 3px;
-  color: var(--ink-3);
-  font-size: 11.5px;
-  white-space: nowrap;
-}
-.live { flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--good); animation: live 2s infinite; }
+.live { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--good); animation: live 2s infinite; }
 
 .icon {
   display: inline-grid;
@@ -433,7 +417,6 @@
     font-size: 13px;
   }
   .head { padding: 10px 10px 10px 14px; }
-  .more { display: none; }
   .scroll { gap: 12px; padding: 14px 14px 22px; mask-image: linear-gradient(to bottom, #000 calc(100% - 30px), transparent); }
   .hello { gap: 12px; padding-top: 0; }
   .big { font-size: 19px; }

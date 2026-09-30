@@ -8,7 +8,7 @@ A small low-poly Omar who can answer questions about the portfolio. The idea com
 - **On the shore.** At the last plate, where the painted figure has been walking to all night, he is standing on the beach at full height instead, facing you, under "Let's talk". Clicking him there opens the same chat.
 - **In the chat** he listens while you type, looks away while he thinks, and moves his mouth and hands while the answer streams in. Answers can end with a link to the part of the page they are about.
 
-The chat is Mamdani's, carried over: the same floating card (440 by up to 740 pixels, 16 from the corner), the same parts (his face and name, new conversation and close, a greeting with suggested questions, him behind the message box, a stop button while he answers) and the same opening, a circle growing out of the corner while the parts rise into place. Only the colours are this site's. On a phone it is a smaller card, at most 480 pixels tall, with four suggestions instead of five.
+The chat is Mamdani's, carried over: the same floating card (440 by up to 740 pixels, 16 from the corner), the same parts (his name, with a green dot while the model behind him is reachable, new conversation and close, a greeting with suggested questions, him behind the message box, a stop button while he answers) and the same opening, a circle growing out of the corner while the parts rise into place. Only the colours are this site's. On a phone it is a smaller card, at most 480 pixels tall, with four suggestions instead of five.
 
 ## The model
 
@@ -47,7 +47,7 @@ He stays out of the way: on narrow screens he steps aside while the toolkit's re
 
 `app/api/ask/`
 
-- `route.ts` is a small streaming endpoint (server-sent events) in front of Gemini. The key stays on the server.
+- `route.ts` is a small streaming endpoint (server-sent events) in front of Gemini. The key stays on the server. A `GET` says whether there is a key at all, which is what lights the green dot.
 - `dossier.ts` builds what he knows from `app/content.ts`, the same module the page is rendered from, so he cannot drift from the site. He speaks as Omar in the first person, says so when something is not on the site instead of guessing, and declines anything that is not about the work.
 - Limits, because the endpoint is public: questions are capped at 400 characters and answers at about 320 tokens, only the last 8 turns are sent, and there is a rate limit of 8 a minute and 40 an hour per visitor with a ceiling of 1,500 a day for everyone together. The limits are kept in memory, which is right for one container and would need a shared store for more.
 
