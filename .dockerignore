@@ -1,8 +1,15 @@
 .git
 .github
+.gitignore
 node_modules
 .next
+dist
+coverage
 .data
+npm-debug.log
+yarn-error.log
+Dockerfile*
+docker-compose*.yml
 
 # Secrets reach the container through docker-compose's environment, never through the image.
 .env

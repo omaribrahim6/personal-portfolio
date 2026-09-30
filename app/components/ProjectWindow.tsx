@@ -4,11 +4,31 @@ import { useState } from 'react'
 import { ArrowUpRight, RotateCcw } from 'lucide-react'
 import type { Project } from '../content'
 import Painting from './Painting'
-import { roadAt } from './paint/scenes'
 import styles from './ProjectWindow.module.css'
 
 // Each project is seen through an arch, like the opening in the hedge. The painting behind is still;
 // what moves is drawn over it. These are pictures of the idea, not screenshots of the product.
+
+function Signal() {
+  // Where the neighbours are, up and down the street.
+  const neighbours: [number, number][] = [[118, 352], [288, 344], [64, 408], [322, 410], [240, 396]]
+  return (
+    <svg viewBox="0 0 400 500" className={styles.signal}>
+      <path className={styles.route} d="M14 494C78 474 56 412 150 392S240 346 204 318" pathLength="1" />
+      {neighbours.map(([x, y], index) => (
+        <g key={index} className={styles.neighbour} data-neighbour={index}>
+          <circle cx={x} cy={y} r="9" /><circle cx={x} cy={y} r="3" />
+        </g>
+      ))}
+      <circle className={styles.ping} cx="200" cy="306" r="26" />
+      <circle className={styles.halo} cx="200" cy="306" r="15" />
+      <circle className={styles.report} cx="200" cy="306" r="5.5" />
+      <text x="200" y="262" textAnchor="middle">one report</text>
+      <text x="222" y="452" textAnchor="middle">five neighbours: me too</text>
+      <text x="222" y="470" textAnchor="middle">and a crew on the way.</text>
+    </svg>
+  )
+}
 
 function Cascade() {
   return (
@@ -74,32 +94,7 @@ function Reflection() {
   )
 }
 
-function Road() {
-  const found = [.42, .66, .88].map(v => { const [x, y] = roadAt(v); return [x * 400, y * 500, 10 + v * 16] })
-  return (
-    <svg viewBox="0 0 400 500" className={styles.road}>
-      <defs>
-        <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#fff2dc" stopOpacity="0" /><stop offset="1" stopColor="#fff2dc" stopOpacity=".5" />
-        </linearGradient>
-      </defs>
-      <g className={styles.beam}>
-        <rect x="0" y="-70" width="400" height="70" fill="url(#beam)" />
-        <path d="M0 0H400" />
-      </g>
-      {found.map(([x, y, size], index) => (
-        <g key={index} className={styles.found} data-found={index} transform={`translate(${x.toFixed(1)} ${y.toFixed(1)})`}>
-          <path d={`M${-size} ${-size * .4}V${-size}H${-size * .4}M${size * .4} ${-size}H${size}V${-size * .4}M${size} ${size * .4}V${size}H${size * .4}M${-size * .4} ${size}H${-size}V${size * .4}`} />
-          <circle r="2.2" />
-        </g>
-      ))}
-      <text x="200" y="64" textAnchor="middle">from a drive</text>
-      <text x="200" y="82" textAnchor="middle">to a clearer picture.</text>
-    </svg>
-  )
-}
-
-const overlays = { cascade: Cascade, trail: Trail, reflection: Reflection, road: Road }
+const overlays = { signal: Signal, cascade: Cascade, trail: Trail, reflection: Reflection }
 
 export default function ProjectWindow({ project, index }: { project: Project; index: number }) {
   const [open, setOpen] = useState(false)

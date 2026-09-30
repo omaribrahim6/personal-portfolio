@@ -139,12 +139,22 @@ export type Project = {
   demoLabel?: string
   devpost?: string
   /** The painted window beside each project: what it is called and what pressing it does. */
-  window: { scene: 'cascade' | 'trail' | 'reflection' | 'road'; caption: string; action: [string, string] }
+  window: { scene: 'signal' | 'cascade' | 'trail' | 'reflection'; caption: string; action: [string, string] }
 }
 
 export const projects: Project[] = [
   {
     number: '00',
+    title: 'Mamdani',
+    award: 'Hack the Hill III — Best Use of Gemini API',
+    description: 'Point your phone at a pothole and talk to Mamdani, a 3D inspector who looks at the problem, asks what he needs to and files the report himself. Reports of the same problem collapse into one work order, neighbours back it up in a public feed, and the city sees it seconds later on a live dashboard: ranked, mapped and routed to a crew. Built with a team of four.',
+    tags: ['Next.js', 'React', 'Gemini', 'Vertex AI', 'PostgreSQL', 'Tiger Data', 'Tripo'],
+    github: 'https://github.com/omaribrahim6/mamdani',
+    devpost: 'https://devpost.com/software/hi-kwzyut',
+    window: { scene: 'signal', caption: 'heard by the whole street', action: ['File the report', 'Clear the street'] },
+  },
+  {
+    number: '01',
     title: 'Clascade',
     award: 'cuHacking 2026 — Best Use of Gemini',
     description: 'Teachers upload the slide deck they already have and Clascade turns it into a collaborative 3D lesson the whole class moves through together in the browser. The teacher controls every phase from their own screen so no student can rush ahead, every generated fact is grounded in cited sources, and every scene is age-checked before students ever see it.',
@@ -155,7 +165,7 @@ export const projects: Project[] = [
     window: { scene: 'cascade', caption: 'learning in layers', action: ['Unfold the lesson', 'Fold the lesson'] },
   },
   {
-    number: '01',
+    number: '02',
     title: 'Revenant',
     award: 'GenAI Genesis 2026 — Winner, Moorcheh.ai Track',
     description: 'Won Canada\'s largest AI hackathon against 1,000+ hackers. Every company slowly loses its memory — the reasoning behind engineering decisions gets buried in Slack threads and pull requests. Revenant captures that reasoning as it happens, so two years later a developer can ask "why did we pick Postgres?" and get the original discussion back. Built in 36 hours.',
@@ -164,23 +174,13 @@ export const projects: Project[] = [
     window: { scene: 'trail', caption: 'nothing lost in the thread', action: ['Trace the decision', 'Reset the trail'] },
   },
   {
-    number: '02',
+    number: '03',
     title: 'QueryForge',
     award: 'MindBridge AI Challenge',
     description: 'A natural-language-to-SQL agent that lets anyone query a database in plain English. Hit 98% accuracy across 172 test cases, including trick questions written specifically to break it. Runs entirely on CPU through Ollama with no external API, so data never leaves the machine and inference costs nothing.',
     tags: ['Python', 'DuckDB', 'Ollama', 'SQL', 'Local LLM'],
     github: 'https://github.com/omaribrahim6/QueryForge',
     window: { scene: 'reflection', caption: 'a question becomes a query', action: ['Turn words into a query', 'Back to the question'] },
-  },
-  {
-    number: '03',
-    title: 'RoadSense',
-    award: 'Hack the Future — 2nd Place',
-    description: 'Cities find potholes through manual inspection and citizen complaints — slow, expensive, reactive. RoadSense turns ordinary dashcam footage into a live map of road conditions using a fine-tuned YOLOv8 model, with frame extraction, severity scoring, GPS resolution, and duplicate filtering feeding a MapLibre dashboard engineers can filter by damage type and severity.',
-    tags: ['Python', 'YOLOv8', 'OpenCV', 'Supabase', 'Next.js', 'MapLibre'],
-    github: 'https://github.com/omaribrahim6/roadsense',
-    demo: 'https://roadsense-live.vercel.app/',
-    window: { scene: 'road', caption: 'seeing the road differently', action: ['Scan the road', 'Reset the scan'] },
   },
 ]
 
@@ -200,9 +200,14 @@ export const modes: Record<Mode, string> = { built: 'built it', broke: 'broke it
 
 export const awards: Award[] = [
   {
-    result: 'Best Use of Gemini', event: 'cuHacking 2026', date: 'Jul 2026', mode: 'built',
+    result: 'Winner', event: 'Hack the Hill III', date: 'Sep 2026', mode: 'built',
+    detail: 'Built Mamdani with a team of four — a 3D inspector residents talk to, who turns a photo of a pothole into a work order the city can act on.',
+    project: { label: 'see the build · Mamdani', href: '#project-0' },
+  },
+  {
+    result: 'Winner', event: 'cuHacking 2026', date: 'Jul 2026', mode: 'built',
     detail: 'Built Clascade with a team of four — turning teachers’ existing slide decks into collaborative 3D lessons.',
-    project: { label: 'see the build · Clascade', href: '#project-0' },
+    project: { label: 'see the build · Clascade', href: '#project-1' },
   },
   {
     result: 'Engineer of the Year', event: 'IEEE uOttawa Student Branch', date: 'Apr 2026', mode: 'named',
@@ -219,7 +224,7 @@ export const awards: Award[] = [
   {
     result: 'Winner — Moorcheh.ai Track', event: 'GenAI Genesis 2026', date: 'Mar 2026', mode: 'built',
     detail: 'Canada’s largest AI hackathon. Built Revenant in 36 hours against 1,000+ hackers at the University of Toronto.',
-    project: { label: 'see the build · Revenant', href: '#project-1' },
+    project: { label: 'see the build · Revenant', href: '#project-2' },
   },
   {
     result: '1st Place', event: 'IEEE uOttawa × Hack The Box CTF', date: 'Feb 2026', mode: 'broke',
@@ -228,7 +233,7 @@ export const awards: Award[] = [
   {
     result: '2nd Place', event: 'Hack the Future Hackathon', date: 'Feb 2026', mode: 'built',
     detail: 'Built RoadSense, an AI road-damage detection system, with a team of four.',
-    project: { label: 'see the build · RoadSense', href: '#project-3' },
+    project: { label: 'see the code · RoadSense', href: 'https://github.com/omaribrahim6/roadsense' },
   },
 ]
 
@@ -244,10 +249,11 @@ export type SkillGroup = { title: string; skills: Skill[] }
 
 // Every receipt points at something else on this page. Nothing here is claimed without a place to check it.
 const r = {
-  clascade: { label: 'Clascade', note: 'project · cuHacking 2026', href: '#project-0' },
-  revenant: { label: 'Revenant', note: 'project · GenAI Genesis', href: '#project-1' },
-  queryforge: { label: 'QueryForge', note: 'project · MindBridge challenge', href: '#project-2' },
-  roadsense: { label: 'RoadSense', note: 'project · Hack the Future', href: '#project-3' },
+  mamdani: { label: 'Mamdani', note: 'project · Hack the Hill III', href: '#project-0' },
+  clascade: { label: 'Clascade', note: 'project · cuHacking 2026', href: '#project-1' },
+  revenant: { label: 'Revenant', note: 'project · GenAI Genesis', href: '#project-2' },
+  queryforge: { label: 'QueryForge', note: 'project · MindBridge challenge', href: '#project-3' },
+  roadsense: { label: 'RoadSense', note: '2nd place · Hack the Future', href: '#awards' },
   journale: { label: 'Journale AI', note: 'contract · developer & security analyst', href: '#story-journale' },
   uomsa: { label: 'uomsa.ca', note: 'uOttawa MSA', href: '#story-uomsa' },
   ieee: { label: 'IEEE workshops', note: '4 sessions · 100+ students', href: '#story-ieee' },
@@ -267,7 +273,7 @@ export const skillGroups: SkillGroup[] = [
     title: 'Languages',
     skills: [
       { name: 'Python', receipts: [r.queryforge, r.roadsense, r.revenant] },
-      { name: 'TypeScript', receipts: [r.clascade, r.site] },
+      { name: 'TypeScript', receipts: [r.mamdani, r.clascade, r.site] },
       { name: 'JavaScript', receipts: [r.uomsa, r.eof, r.freelance] },
       { name: 'C++', receipts: [r.redshifted] },
       { name: 'Java' },
@@ -284,15 +290,15 @@ export const skillGroups: SkillGroup[] = [
       { name: 'Ollama', receipts: [r.queryforge] },
       { name: 'RAG', receipts: [r.clascade, r.revenant] },
       { name: 'Agentic AI', receipts: [r.queryforge, r.bsides] },
-      { name: 'LLM Integration', receipts: [r.journale, r.clascade, r.revenant] },
+      { name: 'LLM Integration', receipts: [r.mamdani, r.journale, r.clascade, r.revenant] },
       { name: 'Prompt Engineering', receipts: [r.queryforge] },
     ],
   },
   {
     title: 'Frameworks & Libraries',
     skills: [
-      { name: 'Next.js', receipts: [r.clascade, r.roadsense, r.revenant, r.uomsa, r.eof, r.freelance, r.site] },
-      { name: 'React', receipts: [r.uomsa, r.site] },
+      { name: 'Next.js', receipts: [r.mamdani, r.clascade, r.roadsense, r.revenant, r.uomsa, r.eof, r.freelance, r.site] },
+      { name: 'React', receipts: [r.mamdani, r.uomsa, r.site] },
       { name: 'Node.js' },
       { name: 'FastAPI', receipts: [r.revenant] },
       { name: 'Tailwind CSS', receipts: [r.eof, r.site] },

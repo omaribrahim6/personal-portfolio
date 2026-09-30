@@ -584,6 +584,25 @@ function cumulus(ctx: Ctx, x: number, y: number, R: number, seed: number) {
   foliage(ctx, clumps, CORAL, light, rand, .6)
 }
 
+const signal: Scene = {
+  paint(ctx, W, H) {
+    night(ctx, W, H, '#0f1136', '#5b3b8c', 141, 150)
+    moon(ctx, W * .77, H * .15, W * .024)
+    const dusk = ctx.createLinearGradient(0, H * .3, 0, H * .54)
+    dusk.addColorStop(0, 'rgba(240,89,106,0)')
+    dusk.addColorStop(1, 'rgba(240,89,106,.5)')
+    ctx.fillStyle = dusk
+    ctx.fillRect(0, H * .3, W, H * .24)
+    const n = noise1(142)
+    hill(ctx, W, H, x => H * (.5 + .04 * n(x / W * 4) + .05 * bump((x / W - .2) / .25)), { top: '#6a4dc0', bottom: '#2b2787', depth: H * .3, rim: '#ff8fa8', rimSide: 1, rimStrength: .6, light: '#a58cf0', dark: '#1d1a6a', seed: 143 })
+    // The street: a rise in the middle, where the first light is.
+    hill(ctx, W, H, x => H * (.66 + .03 * n(x / W * 3 + 6) - .06 * bump((x / W - .5) / .32)), { top: '#3f3bb8', bottom: '#15144f', depth: H * .42, rows: '#8f87f5', rowCount: 12, rowAlpha: .16, light: '#8c86f2', dark: '#0e0d3c', seed: 144, density: 1.1 })
+    tree(ctx, W * .12, H * .73, W * .085, OAK, [.7, -.6], 145)
+    tree(ctx, W * .9, H * .79, W * .1, OAK, [.7, -.6], 146)
+    grain(ctx, W, H, 147)
+  },
+}
+
 const cascade: Scene = {
   paint(ctx, W, H) {
     night(ctx, W, H, '#12143c', '#4a3486', 101)
@@ -648,37 +667,7 @@ const reflection: Scene = {
   },
 }
 
-/** The road in the last window. The overlay uses the same curve to place what the scan finds. */
-export const roadAt = (v: number): Vec => [.5 + .2 * Math.sin(v * 5.2 + .6) * (1 - v * .45), .46 + .54 * Math.pow(v, 1.25)]
-
-const road: Scene = {
-  paint(ctx, W, H) {
-    night(ctx, W, H, '#11123a', '#7a4690', 131, 110)
-    const glow = ctx.createLinearGradient(0, H * .28, 0, H * .5)
-    glow.addColorStop(0, 'rgba(240,89,106,0)')
-    glow.addColorStop(1, 'rgba(240,89,106,.75)')
-    ctx.fillStyle = glow
-    ctx.fillRect(0, H * .28, W, H * .22)
-    cumulus(ctx, W * .3, H * .4, W * .17, 132)
-    const n = noise1(133)
-    hill(ctx, W, H, x => H * (.46 + .04 * n(x / W * 5) - .05 * bump((x / W - .8) / .2)), { top: '#6a4dc0', bottom: '#2b2787', depth: H * .3, rim: '#ff8fa8', rimSide: -1, rimStrength: .7, light: '#a58cf0', dark: '#1d1a6a', seed: 134 })
-    hill(ctx, W, H, x => H * (.58 + .05 * n(x / W * 3 + 5) + .06 * bump((x / W - .5) / .3)), { top: '#463fc6', bottom: '#1b1968', depth: H * .5, rows: '#8f87f5', rowCount: 16, rowAlpha: .2, light: '#968fff', dark: '#100f44', seed: 135, density: 1.2 })
-    // The road, widening as it comes toward the camera.
-    ctx.beginPath()
-    for (let i = 0; i <= 60; i++) { const v = i / 60, [x, y] = roadAt(v); ctx.lineTo(x * W - (1 + v * v * W * .11), Math.max(y * H, H * .6)) }
-    for (let i = 60; i >= 0; i--) { const v = i / 60, [x, y] = roadAt(v); ctx.lineTo(x * W + (1 + v * v * W * .11), Math.max(y * H, H * .6)) }
-    const gold = ctx.createLinearGradient(0, H * .6, 0, H)
-    gold.addColorStop(0, '#ffd98a')
-    gold.addColorStop(1, '#ef8f3f')
-    ctx.fillStyle = gold
-    ctx.fill()
-    tree(ctx, W * .16, H * .78, W * .1, OAK, [.7, -.6], 136)
-    tree(ctx, W * .88, H * .7, W * .07, OAK, [.7, -.6], 137)
-    grain(ctx, W, H, 138)
-  },
-}
-
-export const scenes = { ridge, dunes, arch, summit, field, shore, cascade, trail, reflection, road }
+export const scenes = { ridge, dunes, arch, summit, field, shore, signal, cascade, trail, reflection }
 export type SceneName = keyof typeof scenes
 
 /** Ground colour under each plate. The painting ends in it and the page carries on in it. */

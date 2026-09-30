@@ -65,13 +65,17 @@ export default function Wins() {
                     <h3>{award.result}</h3>
                     <p className={styles.event}>{award.event}</p>
                     <p className={styles.detail}>{award.detail}</p>
-                    {award.project && <a className={`go ${styles.build}`} href={award.project.href}>{award.project.label}<ArrowUpRight size={13} /></a>}
+                    {award.project && (
+                      <a className={`go ${styles.build}`} href={award.project.href} {...(award.project.href.startsWith('#') ? {} : { target: '_blank', rel: 'noopener noreferrer' })}>
+                        {award.project.label}<ArrowUpRight size={13} />
+                      </a>
+                    )}
                   </div>
                 </motion.li>
               ))}
             </AnimatePresence>
           </ul>
-          <p className={`label ${styles.count}`}>{shown.length} of {awards.length} · Feb – Jul 2026</p>
+          <p className={`label ${styles.count}`}>{shown.length} of {awards.length} · Feb – Sep 2026</p>
         </div>
       </Ground>
     </section>

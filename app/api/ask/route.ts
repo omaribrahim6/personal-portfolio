@@ -80,7 +80,7 @@ export async function POST(request: Request) {
       // hold back anything that might be the start of one.
       let held = ''
       const release = (final = false) => {
-        held = held.replace(/<<\s*(?:show:)?\s*([a-z0-9-]+)\s*>>/gi, (_, id: string) => {
+        held = held.replace(/\s*<<\s*(?:show:)?\s*([a-z0-9-]+)\s*>>/gi, (_, id: string) => {
           if (PLACES[id] && !shown.has(id) && shown.size < 2) { shown.add(id); emit({ type: 'show', id, label: PLACES[id] }) }
           return ''
         })

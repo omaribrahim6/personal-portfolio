@@ -25,10 +25,10 @@ The portfolio is one night's walk, from dusk to dawn. There are six paintings ("
 
 ## What carries over from the previous site
 
-Everything the old page said is still here: the introduction, all eleven roles, four projects, seven wins, thirty-six tools and their receipts, and the contact details. The interactive ideas carry over in new forms:
+Everything the old page said is still here: the introduction, all eleven roles, the featured projects (four: Mamdani took RoadSense's place, which stays among the wins), the wins (eight now), thirty-six tools and their receipts, and the contact details. The interactive ideas carry over in new forms:
 
 - The month-by-month ledger is now **the range**: one dune per role, as wide as the months it lasted, the oldest furthest away. It follows the entry being read; selecting a dune jumps to its entry. Filters still narrow the list.
-- Each project still has something to play with, now seen through an arch like the opening in the hedge. Press it to unfold Clascade's lesson into a cascade, trace Revenant's decision through the stars, watch the pool turn QueryForge's question into a query, or scan RoadSense's road. They are pictures of the idea, not screenshots of the product.
+- Each project still has something to play with, now seen through an arch like the opening in the hedge. Press it to light up the street behind Mamdani's one report, unfold Clascade's lesson into a cascade, trace Revenant's decision through the stars or watch the pool turn QueryForge's question into a query. They are pictures of the idea, not screenshots of the product.
 - Wins are still split into built it, broke it and named, each with a mark that resolves on hover, focus or when a filter is on.
 - Every tool still has a receipt pointing at where on the page it was used. Tools with nothing public to point at say so.
 

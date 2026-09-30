@@ -51,6 +51,42 @@
 }
 .action { display: inline-flex; align-items: center; gap: .6em; color: var(--color-coral); white-space: nowrap; }
 
+/* ---------------------------------------------------- Mamdani: one light on the street, then the rest */
+
+.report { fill: var(--color-coral); stroke: #fff1dc; stroke-width: 1.2; }
+.halo { fill: rgba(246, 134, 106, .28); transform-box: fill-box; transform-origin: center; animation: glow 2.8s ease-in-out infinite; }
+.ping { fill: none; stroke: var(--color-coral); stroke-width: 1.2; opacity: 0; transform-box: fill-box; transform-origin: center; transform: scale(.3); }
+[data-open='true'] .ping { animation: ping 1.1s cubic-bezier(.2, .7, .2, 1) both; }
+
+.neighbour { opacity: 0; transition: opacity .3s ease; }
+.neighbour circle:first-child { fill: rgba(255, 241, 220, .16); }
+.neighbour circle:last-child { fill: #fff1dc; }
+[data-open='true'] .neighbour { opacity: 1; transition-duration: .5s; }
+[data-open='true'] .neighbour[data-neighbour='0'] { transition-delay: .45s; }
+[data-open='true'] .neighbour[data-neighbour='1'] { transition-delay: .6s; }
+[data-open='true'] .neighbour[data-neighbour='2'] { transition-delay: .75s; }
+[data-open='true'] .neighbour[data-neighbour='3'] { transition-delay: .9s; }
+[data-open='true'] .neighbour[data-neighbour='4'] { transition-delay: 1.05s; }
+
+.route {
+  fill: none;
+  stroke: var(--color-gold);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset .45s ease;
+}
+[data-open='true'] .route { stroke-dashoffset: 0; transition: stroke-dashoffset 1.2s cubic-bezier(.4, 0, .2, 1) 1.35s; }
+
+.signal text { opacity: 0; transition: opacity .4s ease; }
+[data-open='true'] .signal text { opacity: 1; }
+[data-open='true'] .signal text:nth-of-type(2) { transition-delay: .6s; }
+[data-open='true'] .signal text:nth-of-type(3) { transition-delay: 1.6s; }
+
+@keyframes glow { 50% { transform: scale(1.35); opacity: .55; } }
+@keyframes ping { 0% { opacity: .9; transform: scale(.3); } 100% { opacity: 0; transform: scale(2.6); } }
+
 /* ---------------------------------------------------- Clascade: a deck that becomes a cascade */
 
 .slab { transition: transform 1s cubic-bezier(.2, .8, .2, 1); }
@@ -158,26 +194,5 @@
 .query em { font-style: normal; color: #ffb7a0; }
 [data-open='true'] .mirror { opacity: 0; filter: blur(5px); }
 [data-open='true'] .query { opacity: 1; transform: none; transition-delay: .25s; }
-
-/* ---------------------------------------------------- RoadSense: a pass over the road */
-
-.beam { transform: translateY(232px); opacity: 0; }
-.beam path { stroke: #fff2dc; stroke-width: 1.4; }
-[data-open='true'] .beam { animation: sweep 1.9s cubic-bezier(.4, 0, .4, 1) both; }
-
-.found { opacity: 0; transition: opacity .3s ease; }
-.found path { fill: none; stroke: #fff2dc; stroke-width: 1.6; }
-.found circle { fill: var(--color-ember); stroke: #fff2dc; stroke-width: .8; }
-[data-open='true'] .found { opacity: 1; }
-[data-open='true'] .found[data-found='0'] { transition-delay: .55s; }
-[data-open='true'] .found[data-found='1'] { transition-delay: .95s; }
-[data-open='true'] .found[data-found='2'] { transition-delay: 1.35s; }
-
-@keyframes sweep {
-  0% { transform: translateY(232px); opacity: 0; }
-  12% { opacity: 1; }
-  88% { opacity: 1; }
-  100% { transform: translateY(505px); opacity: 0; }
-}
 
 .arch { container-type: inline-size; }

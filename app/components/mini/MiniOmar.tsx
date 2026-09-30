@@ -283,7 +283,8 @@ export default function MiniOmar() {
           else if (event.type === 'error') fail(event.message ?? 'Something went wrong.')
         }
       }
-      patch(current => ({ ...current, text: current.text.trim() || 'I have nothing for that one.', done: true }))
+      // A marker taken out of the middle of a sentence can leave a space before the full stop.
+      patch(current => ({ ...current, text: current.text.replace(/\s+([.,!?;:])/g, '$1').trim() || 'I have nothing for that one.', done: true }))
     } catch (error) {
       if (stalled) fail(LOST, true)
       else if ((error as Error).name !== 'AbortError') fail('I could not reach my brain. Are you online?')
