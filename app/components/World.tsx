@@ -3,6 +3,7 @@
 import { MotionConfig } from 'framer-motion'
 import { useEffect, useState, type ReactNode } from 'react'
 import { chapters } from '../content'
+import Cursor from './Cursor'
 import MiniOmar from './mini/MiniOmar'
 import Nav from './Nav'
 import Sky from './sky/Sky'
@@ -109,6 +110,7 @@ export default function World({ children }: { children: ReactNode }) {
       <Nav active={active} tone={tone} progress={progress} />
       <div className={styles.page}>{children}</div>
       <MiniOmar />
+      <Cursor />
     </MotionConfig>
   )
 }
