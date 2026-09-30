@@ -8,6 +8,7 @@
   z-index: 72;
   width: var(--size);
   height: var(--size);
+  transform-origin: 100% 100%;
   transition: transform .9s cubic-bezier(.3, 1.45, .45, 1), opacity .3s ease;
 }
 
@@ -15,6 +16,14 @@
 .dock[data-hidden='true'] {
   transform: translate(28%, 112%);
   transition: transform .45s cubic-bezier(.6, 0, .8, .4);
+  pointer-events: none;
+}
+
+/* The chat is open: the corner empties, and he is in the chat instead. */
+.dock[data-open='true'] {
+  opacity: 0;
+  transform: scale(.6);
+  transition: transform .45s cubic-bezier(.22, 1, .36, 1), opacity .3s ease;
   pointer-events: none;
 }
 
@@ -27,9 +36,9 @@
   border-top-left-radius: 100%;
   -webkit-tap-highlight-color: transparent;
   transform-origin: 100% 100%;
-  transition: transform .45s cubic-bezier(.2, .8, .2, 1);
+  transition: transform .45s cubic-bezier(.22, 1, .36, 1);
 }
-.launcher:hover { transform: scale(1.05); }
+.launcher:hover { transform: scale(1.04); }
 .launcher:focus-visible { outline-offset: -6px; }
 
 /* A low moon: coral at night, paler once the sky is. Rings like the ones around the real one. */
@@ -65,21 +74,52 @@
   animation: arrive .5s ease both;
 }
 
+/* What the corner is for, on hover. */
+.hint {
+  position: absolute;
+  right: 96%;
+  bottom: 38%;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-size: 12.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, .8);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(8px);
+  transition: opacity .2s, transform .3s cubic-bezier(.22, 1, .36, 1);
+}
+.hint[data-on='true'] { opacity: 1; transform: none; }
+.hint kbd {
+  padding: 2px 5px;
+  border-radius: 5px;
+  background: rgba(11, 12, 40, .12);
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 10.5px;
+}
+
 .bubble {
   position: absolute;
   right: 78%;
-  bottom: 58%;
+  bottom: 74%;
   width: max-content;
-  max-width: min(15rem, 60vw);
-  padding: .7rem .95rem;
-  border-radius: 1rem 1rem .2rem 1rem;
+  max-width: min(260px, 62vw);
+  padding: 12px 14px;
+  border-radius: 18px 18px 4px 18px;
   background: var(--color-cream);
   color: var(--color-ink);
-  font-size: .86rem;
-  line-height: 1.35;
-  box-shadow: 0 12px 30px rgba(6, 6, 28, .35);
-  animation: say .5s cubic-bezier(.2, .8, .2, 1) both;
-  transform-origin: 100% 100%;
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: left;
+  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, .8);
+  animation: bubble .55s cubic-bezier(.22, 1, .36, 1) both;
 }
 
 /* ------------------------------------------------------------------ the beach */
@@ -131,177 +171,285 @@
 
 /* ------------------------------------------------------------------ the chat */
 
-.panel {
-  --dock: clamp(118px, 13vw, 172px);
+/* Mamdani's chat panel: the same box, measurements and motion. Only the colours are this site's. */
+.chat {
+  --panel: #10113a;
+  --panel-2: #181a4c;
+  --line: rgba(242, 236, 219, .1);
+  --line-2: rgba(242, 236, 219, .2);
+  --ink: var(--color-cream);
+  --ink-2: rgba(242, 236, 219, .76);
+  --ink-3: rgba(242, 236, 219, .52);
+  --black: var(--color-cream);
+  --on-black: var(--color-ink);
+  --accent: var(--color-coral);
+  --good: #5fd39a;
+  --bad: #ffb7a0;
+  --ease: cubic-bezier(.22, 1, .36, 1);
+
   position: fixed;
-  right: 0;
-  bottom: 0;
+  right: 16px;
+  bottom: 16px;
   z-index: 70;
   display: flex;
   flex-direction: column;
-  width: min(27rem, 100vw);
-  height: min(39rem, 100svh - 4.5rem);
-  padding: 1.1rem 1.25rem 1rem;
-  border-top-left-radius: 2.4rem;
-  background: #0d0e2e;
-  color: var(--color-cream);
-  box-shadow: -20px -10px 70px rgba(4, 4, 22, .55);
-  /* It grows out of the corner he lives in. */
+  width: 440px;
+  max-width: calc(100vw - 32px);
+  height: min(740px, calc(100vh - 32px));
+  height: min(740px, calc(100dvh - 32px));
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: var(--panel);
+  color: var(--ink);
+  font-size: 13.5px;
+  line-height: 1.5;
+  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, .8);
+  /* It grows out of the corner he lives in, and goes back into it a little faster. */
   clip-path: circle(0% at 100% 100%);
   visibility: hidden;
-  transition: clip-path .55s cubic-bezier(.5, 0, .2, 1), visibility 0s linear .55s;
+  transition: clip-path .45s cubic-bezier(.5, 0, .75, 0), visibility 0s linear .45s;
 }
-.panel:focus { outline: 0; }
-.panel[data-open='true'] {
+.chat[data-open='true'] {
   clip-path: circle(150% at 100% 100%);
   visibility: visible;
-  transition: clip-path .7s cubic-bezier(.5, 0, .2, 1), visibility 0s;
+  transition: clip-path .7s cubic-bezier(.76, 0, .24, 1), visibility 0s;
 }
+.chat:focus { outline: 0; }
+
+/* Its three parts rise into place one after another while it opens. */
+.chat[data-open='true'] :is(.head, .hello, .composer) { animation: rise .5s cubic-bezier(.25, 1, .5, 1) both; }
+.chat[data-open='true'] .head { animation-delay: .25s; }
+.chat[data-open='true'] .hello { animation-delay: .3s; }
+.chat[data-open='true'] .composer { animation-delay: .35s; }
 
 .head {
+  position: relative;
+  z-index: 3;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding-bottom: .9rem;
-  border-bottom: 1px solid rgba(242, 236, 219, .13);
+  gap: 8px;
+  padding: 14px 14px 14px 16px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
 }
-.head p { display: flex; gap: 1.1em; }
-.head p span:first-child { color: var(--color-coral); }
-.head p span + span { opacity: .6; }
-.head button {
-  display: grid;
-  place-items: center;
-  width: 2.4rem;
-  height: 2.4rem;
-  margin-right: -.5rem;
-  border-radius: 50%;
-  color: inherit;
-  opacity: .75;
-  transition: opacity .2s ease, background .2s ease;
-}
-.head button:hover { opacity: 1; background: rgba(242, 236, 219, .1); }
 
-.log {
+/* His face, cut from the same still that stands in for him without WebGL. */
+.face {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: url('/models/omar-bust.webp') -13.5px -10px / 66px auto no-repeat, radial-gradient(circle at 70% 80%, #ffd2a6, #f9986f 55%, #ee6d5f);
+}
+
+.title { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.title b { font-size: 16px; font-weight: 600; letter-spacing: -.02em; line-height: 1.1; }
+.title > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 3px;
+  color: var(--ink-3);
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+.live { flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--good); animation: live 2s infinite; }
+
+.icon {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--ink-2);
+  transition: color .2s var(--ease), border-color .2s var(--ease), transform .2s var(--ease);
+}
+.icon:hover { border-color: var(--line-2); color: var(--ink); transform: translateY(-1px); }
+
+.scroll {
+  position: relative;
+  z-index: 2;
+  display: flex;
   flex: 1;
+  flex-direction: column;
+  gap: 14px;
   min-height: 0;
-  padding: 1.1rem 0;
+  padding: 18px 18px 36px;
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
-  scrollbar-color: rgba(242, 236, 219, .2) transparent;
+  scrollbar-color: var(--line-2) transparent;
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 44px), transparent);
 }
 
-.opening p {
-  max-width: 19rem;
-  font-family: var(--font-display);
-  font-size: 1.4rem;
-  font-weight: 300;
-  font-variation-settings: 'SOFT' 100, 'WONK' 1;
-  line-height: 1.2;
-  letter-spacing: -.015em;
-}
-.opening ul { display: grid; gap: .1rem; margin-top: 1.2rem; }
-.opening button {
-  padding: .45rem 0;
-  color: rgba(242, 236, 219, .78);
-  font-size: .95rem;
+.hello { display: flex; flex-direction: column; gap: 16px; padding-top: 6px; }
+.big { font-size: 24px; font-weight: 500; letter-spacing: -.02em; line-height: 1.2; }
+.big span { color: var(--ink-3); }
+
+.list { display: flex; flex-direction: column; gap: 8px; }
+.list button {
+  padding: 11px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel-2);
+  font-size: 13px;
   text-align: left;
-  background: linear-gradient(var(--color-coral), var(--color-coral)) 0 100% / 0 1px no-repeat;
-  transition: color .2s ease, background-size .35s ease;
+  transition: border-color .2s var(--ease), background .2s var(--ease), transform .2s var(--ease);
 }
-.opening button::before { content: '→'; margin-right: .6em; color: var(--color-coral); }
-.opening button:hover, .opening button:focus-visible { color: #fff; background-size: 100% 1px; }
+.list button:hover, .list button:focus-visible { border-color: var(--line-2); background: var(--panel); transform: translateX(3px); }
 
-.message { margin-top: 1rem; animation: say .35s ease both; }
-.message:first-child { margin-top: 0; }
-.message p { overflow-wrap: anywhere; }
+.note { color: var(--ink-3); font-size: 11.5px; line-height: 1.45; }
+.note a { border-bottom: 1px solid currentColor; }
 
-/* What you asked: small and to the right. What he said: in the serif, like the rest of his words. */
-.message[data-from='you'] { display: flex; justify-content: flex-end; }
-.message[data-from='you'] p {
+.msg { max-width: 100%; animation: msg .45s var(--ease) both; }
+.msg p { overflow-wrap: anywhere; }
+.msg[data-from='you'] {
+  align-self: flex-end;
   max-width: 85%;
-  padding: .5rem .8rem;
-  border-radius: 1rem 1rem .2rem 1rem;
-  background: rgba(142, 156, 238, .16);
-  font-size: .93rem;
-  line-height: 1.4;
+  padding: 10px 14px;
+  border-radius: 18px 18px 4px 18px;
+  background: var(--black);
+  color: var(--on-black);
+  overflow-wrap: anywhere;
 }
-.message[data-from='him'] > p:first-child {
-  max-width: 94%;
-  font-family: var(--font-display);
-  font-size: 1.12rem;
-  font-variation-settings: 'SOFT' 100;
-  line-height: 1.38;
+.msg[data-from='him'] { display: flex; align-self: stretch; flex-direction: column; gap: 10px; }
+.msg[data-failed='true'] > p { color: var(--bad); }
+
+.typing { display: flex; gap: 4px; padding: 6px 0; }
+.typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--ink-3); animation: typing 1s infinite; }
+.typing i:nth-child(2) { animation-delay: .15s; }
+.typing i:nth-child(3) { animation-delay: .3s; }
+
+/* Where on the page his answer is about. */
+.cta {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 6px;
+  max-width: 100%;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: var(--black);
+  color: var(--on-black);
+  font-size: 12px;
+  transition: transform .2s var(--ease);
 }
-.message[data-failed='true'] > p:first-child { color: #ffb7a0; }
+.cta:hover { transform: translateX(3px); }
+.cta svg { flex: none; }
+.cta span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-.places { display: flex; flex-wrap: wrap; gap: .1rem 1.2rem; margin-top: .5rem; font-size: .88rem; color: var(--color-gold); }
+/* He stands behind the message box. */
+.stage {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  height: 132px;
+  margin-top: -20px;
+  overflow: hidden;
+  background: radial-gradient(60% 90% at 50% 100%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%);
+  pointer-events: none;
+}
+.behind {
+  position: absolute;
+  left: 50%;
+  top: -22px;
+  display: block;
+  width: 190px;
+  height: 200px;
+  transform: translateX(-50%);
+}
 
-.thinking { display: flex; gap: .3rem; padding: .5rem 0; }
-.thinking i { width: .4rem; height: .4rem; border-radius: 50%; background: var(--color-coral); animation: think 1.1s ease-in-out infinite; }
-.thinking i:nth-child(2) { animation-delay: .15s; }
-.thinking i:nth-child(3) { animation-delay: .3s; }
-
-/* The question box stops short of the corner, which is his. */
-.ask {
+.composer {
+  position: relative;
+  z-index: 3;
   display: flex;
   align-items: flex-end;
-  gap: .5rem;
-  margin-right: calc(var(--dock) - 1.6rem);
-  padding: .35rem .35rem .35rem .9rem;
-  border: 1px solid rgba(242, 236, 219, .22);
-  border-radius: 1.3rem;
-  transition: border-color .2s ease;
+  gap: 8px;
+  margin: -26px 14px 14px;
+  padding: 8px 8px 8px 16px;
+  border: 1px solid var(--line-2);
+  border-radius: 20px;
+  background: var(--panel);
+  box-shadow: 0 -10px 30px -12px rgba(0, 0, 0, .45);
+  transition: border-color .2s var(--ease);
 }
-.ask:focus-within { border-color: var(--color-coral); }
-.ask textarea {
+.composer:focus-within { border-color: color-mix(in srgb, var(--accent) 70%, transparent); }
+.composer textarea {
   flex: 1;
   min-width: 0;
-  max-height: 6rem;
-  padding: .45rem 0;
+  max-height: 120px;
+  padding: 9px 0;
   border: 0;
   outline: 0;
   resize: none;
-  background: none;
+  background: transparent;
   color: inherit;
   font: inherit;
-  font-size: .98rem;
-  line-height: 1.4;
+  font-size: 14px;
+  line-height: 1.45;
   field-sizing: content;
 }
-.ask textarea::placeholder { color: rgba(242, 236, 219, .45); }
-.ask button {
+.composer textarea::placeholder { color: var(--ink-3); }
+
+.send {
   display: grid;
   place-items: center;
   flex: none;
-  width: 2.2rem;
-  height: 2.2rem;
-  border-radius: 50%;
-  background: var(--color-coral);
-  color: var(--color-ink);
-  transition: opacity .2s ease, transform .2s ease;
+  width: 38px;
+  height: 38px;
+  border-radius: 13px;
+  background: var(--accent);
+  color: var(--on-black);
+  transition: transform .2s var(--ease), opacity .2s;
 }
-.ask button:disabled { opacity: .35; }
-.ask button:not(:disabled):hover { transform: translateY(-2px); }
-
-.small {
-  max-width: calc(100% - var(--dock) + 1rem);
-  margin-top: .7rem;
-  font-size: .72rem;
-  line-height: 1.4;
-  opacity: .55;
-}
-.small a { border-bottom: 1px solid currentColor; }
+.send:disabled { opacity: .35; }
+.send:not(:disabled):hover { transform: scale(1.06); }
+.send[data-stop] { background: var(--black); color: var(--on-black); }
 
 @keyframes arrive { from { opacity: 0; } }
-@keyframes say { from { opacity: 0; transform: translateY(.5rem) scale(.97); } }
-@keyframes think { 0%, 100% { opacity: .3; transform: none; } 40% { opacity: 1; transform: translateY(-.2rem); } }
+@keyframes bubble { from { opacity: 0; transform: translate(12px, 12px) scale(.9); } }
+@keyframes rise { from { opacity: 0; transform: translateY(16px); } }
+@keyframes msg { from { opacity: 0; transform: translateY(8px); } }
+@keyframes typing { 50% { opacity: .4; transform: translateY(-4px); } }
+@keyframes live {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--good) 60%, transparent); }
+  70% { box-shadow: 0 0 0 6px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
 
-@media (max-width: 560px) {
-  .panel { width: 100vw; height: min(34rem, 100svh - 3.5rem); border-top-left-radius: 1.6rem; border-top-right-radius: 1.6rem; }
-  .bubble { right: 70%; bottom: 70%; }
-  /* His hand comes up to wave: leave it room. */
-  .ask { margin-right: calc(var(--dock) - .4rem); }
-  .small { max-width: calc(100% - var(--dock)); }
+/* On a phone it is a smaller card, not most of the screen. */
+@media (max-width: 640px) {
+  .chat {
+    right: 10px;
+    bottom: 10px;
+    width: calc(100vw - 20px);
+    max-width: none;
+    height: min(480px, calc(100vh - 96px));
+    height: min(480px, calc(100dvh - 96px));
+    border-radius: 24px;
+    font-size: 13px;
+  }
+  .head { padding: 10px 10px 10px 14px; }
+  .more { display: none; }
+  .scroll { gap: 12px; padding: 14px 14px 22px; mask-image: linear-gradient(to bottom, #000 calc(100% - 30px), transparent); }
+  .hello { gap: 12px; padding-top: 0; }
+  .big { font-size: 19px; }
+  .list { gap: 6px; }
+  .list button { padding: 8px 12px; border-radius: 12px; font-size: 12.5px; }
+  /* Four questions fit a card this size; the fifth is for wider screens. */
+  .list button:nth-child(n + 5) { display: none; }
+  .stage { height: 96px; margin-top: -16px; }
+  .behind { top: -16px; width: 140px; height: 148px; }
+  .composer { margin: -24px 10px 10px; padding: 6px 6px 6px 14px; border-radius: 18px; }
+  /* 16px, or iOS zooms the whole page in when the box is tapped. */
+  .composer textarea { padding: 7px 0; font-size: 16px; }
+  .send { width: 36px; height: 36px; border-radius: 12px; }
+  .bubble { right: 70%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat[data-open='true'] :is(.head, .hello, .composer) { animation-delay: 0s; }
 }

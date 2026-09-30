@@ -7,7 +7,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 // on demand, so the rest of the site never pays for it.
 
 export type Behavior = 'watch' | 'listen' | 'think' | 'talk'
-export type Framing = 'bust' | 'full'
+export type Framing = 'bust' | 'waist' | 'full'
 export type Light = 'night' | 'dawn'
 
 const MODEL = '/models/omar-rigged.glb'
@@ -25,6 +25,8 @@ const FACE = {
 const FRAMES: Record<Framing, { at: [number, number, number]; look: [number, number, number]; fov: number; turn: number }> = {
   // Head and shoulders, turned a little toward the page he is watching from the corner.
   bust: { at: [0, .8, 1.78], look: [0, .71, 0], fov: 24, turn: -.3 },
+  // Square on, from the chest up (on him that is most of the way to the waist): behind the message box of the chat.
+  waist: { at: [0, .71, 2.26], look: [0, .655, 0], fov: 24, turn: 0 },
   // The whole of him, facing you.
   full: { at: [0, .54, 2.95], look: [0, .5, 0], fov: 22, turn: .1 },
 }

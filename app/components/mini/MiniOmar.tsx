@@ -2,24 +2,33 @@
 
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
 import { createPortal } from 'react-dom'
-import { ArrowUp, ArrowUpRight, X } from 'lucide-react'
+import { ArrowUp, ArrowUpRight, RotateCcw, Square, X } from 'lucide-react'
 import { email } from '../../content'
 import { useMotionPreference } from '../useMotionPreference'
 import { world } from '../scroll'
-import type { Behavior, MiniStage } from './stage'
+import type { Behavior, Framing, MiniStage } from './stage'
 import styles from './mini.module.css'
 
 // The small Omar. He leans out of a low moon in the corner of every chapter and watches the pointer;
 // at the shore, where the walk ends, he is standing on the beach instead, and for once facing you.
-// Click him anywhere and he comes over to talk. His answers come from /api/ask.
-// Where WebGL or the model cannot be had, a picture of him sits in the corner instead and the chat still works.
+// Click him and the corner empties: a chat grows out of it, and he is standing behind the message box.
+// The chat is the one from Mamdani (its size, its layout and the way it opens), in this site's colours.
+// His answers come from /api/ask. Where WebGL or the model cannot be had, a picture of him stands in.
 
 type Place = { id: string; label: string }
 type Message = { id: number; from: 'you' | 'him'; text: string; places: Place[]; failed?: boolean; done: boolean }
+type Spot = 'dock' | 'shore' | 'chat'
 
-const SUGGESTIONS = ['What are you best at?', 'Tell me about Revenant', 'What security work have you done?', 'Are you open to internships?']
-const OFFLINE = `My brain is not plugged in here. The real Omar answers at ${email}.`
+const SUGGESTIONS = [
+  'What are you best at?',
+  'Tell me about Revenant',
+  'What security work have you done?',
+  'Are you open to internships?',
+  'How did you build this site?',
+]
+const FRAMINGS: Record<Spot, Framing> = { dock: 'bust', shore: 'full', chat: 'waist' }
 const POSTER = '/models/omar-bust.webp'
+const OFFLINE = `My brain is not plugged in here. The real Omar answers at ${email}.`
 const LOST = 'I lost my train of thought. Try again?'
 const BUSY = `I have talked a lot today. Give me a minute, or write to the real Omar at ${email}.`
 
@@ -34,6 +43,7 @@ export default function MiniOmar() {
   const [crowded, setCrowded] = useState(false)
   const [dawn, setDawn] = useState(false)
   const [bubble, setBubble] = useState(false)
+  const [hover, setHover] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [busy, setBusy] = useState(false)
@@ -44,14 +54,16 @@ export default function MiniOmar() {
   const canvas = useRef<HTMLCanvasElement | null>(null)
   const dockSeat = useRef<HTMLSpanElement>(null)
   const shoreSeat = useRef<HTMLSpanElement>(null)
+  const chatSeat = useRef<HTMLSpanElement>(null)
   const launcher = useRef<HTMLButtonElement>(null)
-  const panel = useRef<HTMLElement>(null)
+  const beach = useRef<HTMLButtonElement>(null)
+  const panel = useRef<HTMLDivElement>(null)
   const field = useRef<HTMLTextAreaElement>(null)
   const log = useRef<HTMLDivElement>(null)
   const request = useRef<AbortController | null>(null)
 
-  // On the beach while the chat is closed; in the corner otherwise.
-  const onShore = ready && atShore && !open
+  // Behind the message box while the chat is open; otherwise on the beach if it is in view, or in the corner.
+  const spot: Spot = open ? 'chat' : ready && atShore ? 'shore' : 'dock'
   const present = ready || flat
   const behavior: Behavior = streaming ? 'talk' : busy ? 'think' : open && input ? 'listen' : 'watch'
 
@@ -122,19 +134,19 @@ export default function MiniOmar() {
   // Move the one canvas to wherever he is, and reframe the camera for it.
   useEffect(() => {
     const el = canvas.current, made = stage.current
-    const seat = onShore ? shoreSeat.current : dockSeat.current
+    const seat = { dock: dockSeat, shore: shoreSeat, chat: chatSeat }[spot].current
     if (!ready || !el || !made || !seat) return
     seat.appendChild(el)
-    made.frame(onShore ? 'full' : 'bust')
+    made.frame(FRAMINGS[spot])
     made.resize()
     const observer = new ResizeObserver(() => made.resize())
     observer.observe(seat)
     document.querySelector<HTMLElement>('[data-terrain="shore"]')?.toggleAttribute('data-mini', true)
     return () => observer.disconnect()
-  }, [ready, onShore, stand])
+  }, [ready, spot, stand])
 
   useEffect(() => { stage.current?.act(behavior) }, [behavior, ready])
-  useEffect(() => { stage.current?.light(dawn || onShore ? 'dawn' : 'night') }, [dawn, onShore, ready])
+  useEffect(() => { stage.current?.light(spot === 'shore' || (spot === 'dock' && dawn) ? 'dawn' : 'night') }, [dawn, spot, ready])
 
   // He arrives with a wave, and once per visit says what he is for.
   useEffect(() => {
@@ -175,29 +187,47 @@ export default function MiniOmar() {
     }
   }, [ready, reduced])
 
-  // Opening: focus the question box, or on a touch screen the panel itself, so the keyboard does not
-  // cover his suggestions. Escape closes and gives focus back. Ctrl or Cmd + J toggles.
+  // Opening, as in Mamdani: the corner empties, the panel grows out of it, he greets you from behind the
+  // message box and the box takes focus (on a touch screen the panel does, so the keyboard stays down).
   useEffect(() => {
-    function onKey(event: KeyboardEvent) {
-      if (event.key === 'Escape' && open) { setOpen(false); launcher.current?.focus() }
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'j') { event.preventDefault(); setOpen(value => !value) }
-    }
-    window.addEventListener('keydown', onKey)
-    if (open) window.setTimeout(() => (window.matchMedia('(hover: hover) and (pointer: fine)').matches ? field : panel).current?.focus(), 320)
-    return () => window.removeEventListener('keydown', onKey)
+    if (!open) return
+    const focus = window.setTimeout(() => (window.matchMedia('(hover: hover) and (pointer: fine)').matches ? field : panel).current?.focus({ preventScroll: true }), 350)
+    const greet = window.setTimeout(() => stage.current?.wave(), 450)
+    return () => { window.clearTimeout(focus); window.clearTimeout(greet) }
   }, [open])
 
+  // Closing hands focus back to wherever he went: the beach or the corner.
+  const close = useCallback(() => {
+    setOpen(false)
+    ;(atShore && ready ? beach : launcher).current?.focus({ preventScroll: true })
+  }, [atShore, ready])
+
+  // Escape closes. Ctrl or Cmd + J toggles.
   useEffect(() => {
-    log.current?.scrollTo({ top: log.current.scrollHeight, behavior: reduced ? 'auto' : 'smooth' })
+    function onKey(event: KeyboardEvent) {
+      if (event.key === 'Escape' && open) close()
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'j') {
+        event.preventDefault()
+        if (open) close()
+        else setOpen(true)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open, close])
+
+  // Follow the conversation down; with nothing said yet, stay at the top, on the greeting.
+  useEffect(() => {
+    log.current?.scrollTo({ top: messages.length ? log.current.scrollHeight : 0, behavior: reduced || !messages.length ? 'auto' : 'smooth' })
   }, [messages, reduced])
 
   useEffect(() => () => request.current?.abort(), [])
 
-  const talk = useCallback(() => {
+  function talk() {
     setBubble(false)
+    setHover(false)
     setOpen(true)
-    if (!messages.length) stage.current?.wave()
-  }, [messages.length])
+  }
 
   async function send(text: string) {
     const question = text.trim().slice(0, 400)
@@ -246,6 +276,8 @@ export default function MiniOmar() {
     } catch (error) {
       if (stalled) fail(LOST, true)
       else if ((error as Error).name !== 'AbortError') fail('I could not reach my brain. Are you online?')
+      // Stopped by the visitor: keep whatever he had said so far.
+      else patch(current => ({ ...current, text: current.text.trim() || 'Stopped.', done: true }))
     } finally {
       window.clearTimeout(quiet)
       setBusy(false)
@@ -258,27 +290,35 @@ export default function MiniOmar() {
     void send(input)
   }
 
-  const hidden = !present || (!open && (onShore || crowded))
+  const stop = () => request.current?.abort()
+  const reset = () => { stop(); setMessages([]); field.current?.focus() }
+
+  const hidden = !present || (!open && (spot === 'shore' || crowded))
+  const still = (seat: string) => (
+    // eslint-disable-next-line @next/next/no-img-element -- a small static stand-in, shown only when the canvas cannot be
+    flat && <img className={seat} src={POSTER} alt="" />
+  )
 
   return (
     <>
       <div className={styles.dock} data-open={open} data-hidden={hidden} data-dawn={dawn}>
-        {bubble && !open && !onShore && (
-          <p className={styles.bubble} role="status">I’m the small one. Ask me anything about Omar.</p>
+        {bubble && !open && !hover && spot === 'dock' && (
+          <button type="button" className={styles.bubble} onClick={talk} tabIndex={-1}>I’m the small one. Ask me anything about Omar.</button>
         )}
-        <button ref={launcher} type="button" className={styles.launcher} onClick={() => open ? setOpen(false) : talk()} tabIndex={hidden ? -1 : 0}
-          aria-label={open ? 'Close the chat with mini Omar' : 'Talk to mini Omar, a small AI version of Omar'} aria-expanded={open} aria-controls="mini-omar-chat">
+        {/* Outside the quarter circle, so nothing clips it. */}
+        <span className={styles.hint} data-on={hover && !open} aria-hidden="true">Ask mini Omar <kbd>Ctrl J</kbd></span>
+        <button ref={launcher} type="button" className={styles.launcher} onClick={talk} tabIndex={hidden || open ? -1 : 0}
+          onPointerEnter={event => { if (event.pointerType === 'mouse') setHover(true) }} onPointerLeave={() => setHover(false)}
+          onFocus={event => { if (event.currentTarget.matches(':focus-visible')) setHover(true) }} onBlur={() => setHover(false)}
+          aria-label="Ask mini Omar, a small AI version of Omar" aria-expanded={open} aria-controls="mini-omar-chat">
           <span className={styles.moon} aria-hidden="true" />
-          <span ref={dockSeat} className={styles.seat}>
-            {/* eslint-disable-next-line @next/next/no-img-element -- a small static stand-in, shown only when the canvas cannot be */}
-            {flat && <img className={styles.canvas} src={POSTER} alt="" />}
-          </span>
+          <span ref={dockSeat} className={styles.seat}>{still(styles.canvas)}</span>
         </button>
       </div>
 
       {stand && createPortal(
-        <button type="button" className={styles.beach} data-here={onShore} onClick={talk} tabIndex={onShore ? 0 : -1}
-          aria-label="Talk to mini Omar, a small AI version of Omar">
+        <button ref={beach} type="button" className={styles.beach} data-here={spot === 'shore'} onClick={talk} tabIndex={spot === 'shore' ? 0 : -1}
+          aria-label="Ask mini Omar, a small AI version of Omar" aria-expanded={open} aria-controls="mini-omar-chat">
           <span className={styles.footing} aria-hidden="true" />
           <span ref={shoreSeat} className={styles.seat} />
           <span className={`label ${styles.invite}`} aria-hidden="true">ask me <ArrowUpRight size={11} /></span>
@@ -286,43 +326,53 @@ export default function MiniOmar() {
         stand,
       )}
 
-      <section ref={panel} id="mini-omar-chat" className={styles.panel} data-open={open} role="dialog" aria-label="Chat with mini Omar" aria-hidden={!open} inert={!open} tabIndex={-1}>
+      <div ref={panel} id="mini-omar-chat" className={styles.chat} data-open={open} role="dialog" aria-label="Ask mini Omar" aria-hidden={!open} inert={!open} tabIndex={-1}>
         <header className={styles.head}>
-          <p className="label"><span>Mini Omar</span><span>an AI stand-in</span></p>
-          <button type="button" onClick={() => { setOpen(false); launcher.current?.focus() }} aria-label="Close the chat"><X size={18} /></button>
+          <span className={styles.face} aria-hidden="true" />
+          <div className={styles.title}>
+            <b>Mini Omar</b>
+            <span><i className={styles.live} /><span>AI stand-in · Gemini<span className={styles.more}>, grounded in this site</span></span></span>
+          </div>
+          <button type="button" className={styles.icon} onClick={reset} aria-label="New conversation" title="New conversation"><RotateCcw size={16} /></button>
+          <button type="button" className={styles.icon} onClick={close} aria-label="Close"><X size={16} /></button>
         </header>
 
-        <div ref={log} className={styles.log} role="log" aria-live="polite">
+        <div ref={log} className={styles.scroll} role="log" aria-live="polite">
           {!messages.length && (
-            <div className={styles.opening}>
-              <p>Ask me about the work, the wins or the tools. I only know what’s on this page.</p>
-              <ul>
-                {SUGGESTIONS.map(question => <li key={question}><button type="button" onClick={() => void send(question)}>{question}</button></li>)}
-              </ul>
+            <div className={styles.hello}>
+              <p className={styles.big}>Hey, I’m mini Omar.<br /><span>What do you want to know?</span></p>
+              <div className={styles.list}>
+                {SUGGESTIONS.map(question => <button key={question} type="button" onClick={() => void send(question)}>{question}</button>)}
+              </div>
+              <p className={styles.note}>I only know what is on this page, and I can be wrong. The real Omar is at <a href={`mailto:${email}`}>{email}</a>.</p>
             </div>
           )}
-          {messages.map(message => (
-            <div key={message.id} className={styles.message} data-from={message.from} data-failed={message.failed}>
-              {message.text ? <p>{message.text}</p> : <p className={styles.thinking} aria-label="Thinking"><i /><i /><i /></p>}
-              {message.places.length > 0 && (
-                <p className={styles.places}>
-                  {message.places.map(place => (
-                    <a key={place.id} className="go" href={`#${place.id}`} onClick={() => setOpen(false)}>{place.label}<ArrowUpRight size={13} /></a>
-                  ))}
-                </p>
-              )}
+          {messages.map(message => message.from === 'you' ? (
+            <div key={message.id} className={styles.msg} data-from="you">{message.text}</div>
+          ) : (
+            <div key={message.id} className={styles.msg} data-from="him" data-failed={message.failed}>
+              {message.text ? <p>{message.text}</p> : !message.done && <p className={styles.typing} aria-label="Thinking"><i /><i /><i /></p>}
+              {message.places.map(place => (
+                <a key={place.id} className={styles.cta} href={`#${place.id}`} onClick={() => setOpen(false)}><ArrowUpRight size={14} /><span>On the page: {place.label}</span></a>
+              ))}
             </div>
           ))}
         </div>
 
-        <form className={styles.ask} onSubmit={submit}>
-          <textarea ref={field} value={input} rows={1} maxLength={400} placeholder="Ask mini Omar…" aria-label="Your question"
+        {/* He stands behind the message box. */}
+        <div className={styles.stage} aria-hidden="true">
+          <span ref={chatSeat} className={styles.behind}>{still(styles.canvas)}</span>
+        </div>
+
+        <form className={styles.composer} onSubmit={submit}>
+          <textarea ref={field} value={input} rows={1} maxLength={400} placeholder="Ask about any project, role or win…" aria-label="Your question"
             onChange={event => setInput(event.target.value)}
             onKeyDown={event => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); void send(input) } }} />
-          <button type="submit" disabled={busy || !input.trim()} aria-label="Send"><ArrowUp size={17} /></button>
+          {busy
+            ? <button type="button" className={styles.send} data-stop onClick={stop} aria-label="Stop"><Square size={14} fill="currentColor" /></button>
+            : <button type="submit" className={styles.send} disabled={!input.trim()} aria-label="Send"><ArrowUp size={18} /></button>}
         </form>
-        <p className={styles.small}>An AI version of Omar. It can be wrong; the real one is at <a href={`mailto:${email}`}>{email}</a>.</p>
-      </section>
+      </div>
     </>
   )
 }

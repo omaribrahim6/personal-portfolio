@@ -4,9 +4,11 @@ Branch: `portfolio-dreamscape-mini-omar` (on top of `portfolio-dreamscape-claude
 
 A small low-poly Omar who can answer questions about the portfolio. The idea comes from Mamdani, the hackathon project with a small 3D guide in the corner of its dashboard.
 
-- **In the corner, on every plate.** He leans out of a low coral moon at the bottom right. His head follows the pointer; left alone he looks around, blinks and breathes. Click him (or press Ctrl/Cmd + J) and the chat grows out of his corner.
+- **In the corner, on every plate.** He leans out of a low coral moon at the bottom right. His head follows the pointer; left alone he looks around, blinks and breathes. Click him (or press Ctrl/Cmd + J) and the corner empties: the chat grows out of it, and he is standing behind the message box.
 - **On the shore.** At the last plate, where the painted figure has been walking to all night, he is standing on the beach at full height instead, facing you, under "Let's talk". Clicking him there opens the same chat.
 - **In the chat** he listens while you type, looks away while he thinks, and moves his mouth and hands while the answer streams in. Answers can end with a link to the part of the page they are about.
+
+The chat is Mamdani's, carried over: the same floating card (440 by up to 740 pixels, 16 from the corner), the same parts (his face and name, new conversation and close, a greeting with suggested questions, him behind the message box, a stop button while he answers) and the same opening, a circle growing out of the corner while the parts rise into place. Only the colours are this site's. On a phone it is a smaller card, at most 480 pixels tall, with four suggestions instead of five.
 
 ## The model
 
@@ -36,7 +38,7 @@ node scripts/bake-omar.mjs
 `app/components/mini/`
 
 - `stage.ts` is the only module that imports three.js, and it is loaded on demand a few seconds after the page, so nothing else waits for it. Tripo gives a skeleton and no face, so the face is made here: a jaw morph target sculpted from the mesh, a dark mouth that opens behind it, and eyelids painted over the texture in the shader. The rest is procedural: look, breathing, a shift of weight, a wave, and hands that move when he talks.
-- `MiniOmar.tsx` is the corner, the beach and the chat. There is one canvas; it is moved between the corner and the beach rather than drawn twice.
+- `MiniOmar.tsx` is the corner, the beach and the chat. There is one canvas; it is moved between the corner, the beach and the chat, and reframed for each, rather than drawn three times.
 - `/lab` (development only) is a bench for the model: behaviours, framings, lighting and a few poses that stress the skin.
 
 He stays out of the way: on narrow screens he steps aside while the toolkit's receipt is pinned to the bottom edge, and the chat never takes focus away unless it was opened.
@@ -62,6 +64,6 @@ Locally these go in `.env.local`. In production `docker-compose.yml` passes `GEM
 ## Motion and access
 
 - With `prefers-reduced-motion` he holds still: no wave, no wandering, no mouth movement. He still faces forward and the chat works the same.
-- Without WebGL, or if the model fails to load, a picture of him sits in the corner and the chat still works. On the shore the painted figure stays where it was.
-- The corner and the beach are both real buttons with names. The chat is a labelled dialog; Escape closes it and returns focus to him; answers are announced as they arrive.
+- Without WebGL, or if the model fails to load, a picture of him sits in the corner and behind the message box, and the chat still works. On the shore the painted figure stays where it was.
+- The corner and the beach are both real buttons with names. The chat is a labelled dialog; Escape closes it and returns focus to him; answers are announced as they arrive. On a touch screen opening it does not raise the keyboard.
 - There is no voice. It is text only.

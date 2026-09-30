@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { MiniStage, type Behavior, type Framing, type Light } from '../components/mini/stage'
 
 const BEHAVIORS: Behavior[] = ['watch', 'listen', 'think', 'talk']
-const FRAMINGS: Framing[] = ['bust', 'full']
+const FRAMINGS: Framing[] = ['bust', 'waist', 'full']
 const LIGHTS: Light[] = ['night', 'dawn']
 // Poses that stress the skin: what the cloth does when the arms go where they rarely will.
 const POSES: Record<string, Parameters<MiniStage['hold']>[0]> = {
