@@ -21,7 +21,7 @@ const TILT = [-5, 4, -2.5, 3]
 const dwell = (interest: Interest) => interest.outfits ? interest.outfits.length * OUTFIT_TIME : ISLAND_TIME
 const POSTERS: Record<string, string> = {
   hike: '/interests/posters/hike.webp', bike: '/interests/posters/bike.webp', paddle: '/interests/posters/paddle.webp',
-  competing: '/interests/posters/podium.webp', games: '/interests/posters/games.webp', soccer: '/interests/posters/soccer.webp',
+  competing: '/interests/posters/podium.webp', games: '/interests/posters/games.webp', security: '/interests/posters/security.webp', soccer: '/interests/posters/soccer.webp',
 }
 
 export default function Interests() {
@@ -171,7 +171,7 @@ export default function Interests() {
 
   return (
     <section id="interests" aria-labelledby="interests-title">
-      <Plate index={5} scene="islands" after="field" tone="light" numeral="VI" place="the islands" kicker="four islands" title="Off the clock" titleId="interests-title">
+      <Plate index={5} scene="islands" after="field" tone="light" numeral="VI" place="the islands" kicker="five islands" title="Off the clock" titleId="interests-title">
         What I do when I am not shipping something. Each island is one of them.
       </Plate>
 

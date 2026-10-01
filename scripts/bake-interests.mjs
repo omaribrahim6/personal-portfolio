@@ -29,6 +29,8 @@ const MODELS = {
   paddle: 1.15,
   podium: 1,
   soccer: 1.17,
+  games: 1,
+  security: 1.02,
 }
 
 const SIZE = { SCALAR: 1, VEC2: 2, VEC3: 3, VEC4: 4 }

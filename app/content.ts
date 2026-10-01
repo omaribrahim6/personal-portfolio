@@ -259,7 +259,7 @@ export type Photo = {
   with?: string
 }
 export type Interest = {
-  id: 'outdoors' | 'competing' | 'games' | 'soccer'
+  id: 'outdoors' | 'competing' | 'games' | 'security' | 'soccer'
   title: string
   kicker: string
   /** Set large, above the words. */
@@ -310,8 +310,6 @@ export const interests: Interest[] = [
       { src: '/interests/competing/astralis.webp', ratio: 3 / 2, caption: 'uOttawa CTF · 1st', alt: 'Team Astralis, six of us, in front of the projected team page: 1st place, 1700 points.' },
       { src: '/interests/competing/uocybersec-scoreboard.webp', ratio: 4 / 3, caption: 'the final scoreboard', alt: 'The uOttawa Cybersecurity Club CTF scoreboard on my laptop, Astralis first with 1700.' },
       { src: '/interests/competing/whiteboard.webp', ratio: 4 / 3, caption: 'planning Mamdani', alt: 'Me at a whiteboard sketching the Mamdani pipeline: input, Gemini, a Postgres database and the city dashboard.' },
-      { src: '/interests/competing/northstorm.webp', ratio: 4 / 3, caption: 'BSides meetup CTF', alt: 'The BSides Ottawa meetup CTF scoreboard on my laptop, one line climbing far above the rest.' },
-      { src: '/interests/competing/log4shell-range.webp', ratio: 3 / 4, caption: 'Log4Shell, on a cyber range', alt: 'A workstation on a red-lit cyber range, with a diagram of the Log4Shell attack on the wall screen.' },
       { src: '/interests/competing/hack-the-future.webp', ratio: 4 / 3, caption: 'Hack the Future · 2nd', alt: 'Everyone at the Hack the Future hackathon, run by the uOttawa and Carleton MSAs, in front of the title slide.' },
       { src: '/interests/competing/builder-sundays.webp', ratio: 3 / 4, caption: 'QueryForge, mid-build', alt: 'My laptop and iPad on a table at Shopify Builder Sundays, with code on one screen and the QueryForge architecture on the other.' },
       { src: '/interests/competing/clascade-build.webp', ratio: 3 / 4, caption: 'build day', alt: 'My laptop open at a table with friends working across from me.' },
@@ -320,13 +318,24 @@ export const interests: Interest[] = [
   },
   {
     id: 'games',
-    title: 'Games & security',
-    kicker: 'building games, breaking systems',
-    body: 'I build games on Roblox. Downhill is out now: a longboard, a mountain pass, and gravity. The other half is security: penetration testing for cuHacking, BearHacks and Journale AI, and a CTF whenever there is one.',
+    title: 'Making games',
+    kicker: 'on Roblox',
+    body: 'I build games on Roblox. Downhill is out now: a longboard, a mountain pass, and gravity.',
     links: [{ label: 'Play Downhill on Roblox', href: 'https://www.roblox.com/games/81999621480692/Downhill' }],
     photos: [
       { src: '/interests/games/downhill-art.webp', ratio: 767 / 432, caption: 'Downhill', alt: 'Key art for Downhill: a rider in a white helmet carving a mountain road at sunset, sparks flying from his glove.' },
       { src: '/interests/games/downhill-title.webp', ratio: 768 / 319, caption: 'the title screen', alt: 'The Downhill title screen in game: a rider on a longboard at the top of an empty mountain road, with the menu beside him.' },
+    ],
+  },
+  {
+    id: 'security',
+    title: 'Security',
+    kicker: 'breaking in, with permission',
+    body: 'I like finding the way in before someone else does. I have run penetration tests for cuHacking, BearHacks and Journale AI, where I found six critical flaws and fixed a Stripe bug that was handing out free subscriptions. I play CTFs whenever there is one, and I have taught Linux and cybersecurity workshops to over 100 students.',
+    links: [{ label: 'See the security work', href: '#story-journale' }],
+    photos: [
+      { src: '/interests/competing/northstorm.webp', ratio: 4 / 3, caption: 'BSides meetup CTF', alt: 'The BSides Ottawa meetup CTF scoreboard on my laptop, one line climbing far above the rest.' },
+      { src: '/interests/competing/log4shell-range.webp', ratio: 3 / 4, caption: 'Log4Shell lab', alt: 'A workstation on a red-lit cyber range, with a diagram of the Log4Shell attack on the wall screen.' },
     ],
   },
   {

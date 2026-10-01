@@ -4,17 +4,16 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 // The islands: one floating island for each interest, and a camera that flies from one to the next.
 // Omar stands on each of them, as a Tripo model baked by scripts/bake-interests.mjs (facing +Z, feet on
 // y = 0, his face the same size in every one). On the first island he changes from one outfit into the
-// next with a spin, fast enough that you never see the swap. On the games island he is not a model at all
-// but the drawing itself, cut out and stood up like a card that always turns to face you. Like the small Omar, this module is the only
+// next with a spin, fast enough that you never see the swap. Like the small Omar, this module is the only
 // place that imports three, and it is loaded on demand.
 
-export type IslandId = 'outdoors' | 'competing' | 'games' | 'soccer'
+export type IslandId = 'outdoors' | 'competing' | 'games' | 'security' | 'soccer'
 export type Outfit = 'hike' | 'bike' | 'paddle'
-type ModelName = Outfit | 'podium' | 'soccer'
+type ModelName = Outfit | 'podium' | 'games' | 'security' | 'soccer'
 
-const ORDER: IslandId[] = ['outdoors', 'competing', 'games', 'soccer']
+const ORDER: IslandId[] = ['outdoors', 'competing', 'games', 'security', 'soccer']
 const OUTFITS: Outfit[] = ['hike', 'bike', 'paddle']
-const MODEL_OF: Record<Exclude<IslandId, 'outdoors' | 'games'>, ModelName> = { competing: 'podium', soccer: 'soccer' }
+const MODEL_OF: Record<Exclude<IslandId, 'outdoors'>, ModelName> = { competing: 'podium', games: 'games', security: 'security', soccer: 'soccer' }
 const url = (name: ModelName) => `/models/interests/${name}.glb`
 
 // The page under the canvas. Fog fades into it, so far islands sink into the ground colour, not into black.
@@ -22,10 +21,11 @@ const GROUND = '#14153f'
 // Rock: from the band of earth under the meadow down to the tip, lit coral and falling into violet.
 const ROCK_TOP = new THREE.Color('#d9607a'), ROCK_LOW = new THREE.Color('#3a2150'), EARTH = new THREE.Color('#4a2a5c')
 
-// The drawing that stands on the games island, and its shape.
-const CARD = '/interests/posters/games.webp'
-const CARD_RATIO = 637 / 900
-const CARD_HEIGHT = 1.02
+// The gap in the vault door on the security island, in the island's own space (he stands at the origin,
+// facing +Z). Gold light comes out of it: the gold inside glows, a lamp sits in the gap, shafts of light
+// fan out across the meadow, and motes drift up out of it.
+const GAP = { at: new THREE.Vector3(.24, .5, -.12), min: new THREE.Vector3(.1, .04, -.45), max: new THREE.Vector3(.46, 1.02, .06) }
+const GOLD = '#ffbf5a'
 
 const SPIN = 1.15 // seconds for a change of clothes
 const TURNS = 4 // full turns in it
@@ -172,6 +172,28 @@ function pitchTexture() {
   return texture
 }
 
+/** A shaft of light: bright where it leaves the gap, gone by the far end, soft along both edges. */
+function shaftTexture() {
+  const canvas = document.createElement('canvas')
+  canvas.width = 128
+  canvas.height = 32
+  const ctx = canvas.getContext('2d')!
+  const along = ctx.createLinearGradient(0, 0, 128, 0)
+  along.addColorStop(0, 'rgba(255,255,255,1)')
+  along.addColorStop(.35, 'rgba(255,255,255,.55)')
+  along.addColorStop(1, 'rgba(255,255,255,0)')
+  ctx.fillStyle = along
+  ctx.fillRect(0, 0, 128, 32)
+  ctx.globalCompositeOperation = 'destination-in'
+  const across = ctx.createLinearGradient(0, 0, 0, 32)
+  across.addColorStop(0, 'rgba(0,0,0,0)')
+  across.addColorStop(.5, 'rgba(0,0,0,1)')
+  across.addColorStop(1, 'rgba(0,0,0,0)')
+  ctx.fillStyle = across
+  ctx.fillRect(0, 0, 128, 32)
+  return new THREE.CanvasTexture(canvas)
+}
+
 type Isle = {
   id: IslandId
   group: THREE.Group
@@ -211,8 +233,7 @@ export class IslandStage {
   private waterOn = 0
   private sparkles: THREE.Points
   private flash: THREE.Sprite
-  private card: THREE.Mesh | null = null
-  private hop = -1
+  private gold = { value: 1 }
 
   constructor(private canvas: HTMLCanvasElement, private reduced = false) {
     this.renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true })
@@ -253,7 +274,7 @@ export class IslandStage {
     this.observer.observe(canvas)
     this.ready = this.show('hike').then(() => {
       // The rest arrive in the order you are likely to need them.
-      void ['bike', 'paddle', 'podium', 'soccer'].reduce<Promise<unknown>>((wait, name) => wait.then(() => this.load(name as ModelName)), Promise.resolve())
+      void ['bike', 'paddle', 'podium', 'games', 'security', 'soccer'].reduce<Promise<unknown>>((wait, name) => wait.then(() => this.load(name as ModelName)), Promise.resolve())
     })
     this.start()
   }
@@ -312,8 +333,8 @@ export class IslandStage {
       star.rotation.y = t * 1.5 + i
     })
 
-    // Games and security: a baseplate with studs, the drawing of him on his bricks, and behind him a little
-    // house that builds itself brick by brick.
+    // Games and security: a baseplate with studs, him on his bricks, and behind him a little house that
+    // builds itself brick by brick.
     const games = place('games', [10.1, -.15, -.6], 1.25, 1.2, 31, meadow(32))
     const plate = new THREE.Mesh(new THREE.BoxGeometry(1.5, .06, 1.5), flat('#5fa35a'))
     plate.position.y = .06
@@ -353,16 +374,14 @@ export class IslandStage {
       }
     }
 
-    const art = new THREE.TextureLoader().load(CARD)
-    art.colorSpace = THREE.SRGBColorSpace
-    art.anisotropy = 4
-    const card = new THREE.Mesh(new THREE.PlaneGeometry(CARD_HEIGHT * CARD_RATIO, CARD_HEIGHT), new THREE.MeshBasicMaterial({ map: art, transparent: true, alphaTest: .35 }))
-    card.position.set(0, CARD_HEIGHT / 2 + .03, .12)
-    games.mount.add(card)
-    this.card = card
+    games.mount.position.z = .1
 
     // Soccer: the meadow mown in stripes, with the centre circle and halfway line, and a goal behind him.
-    const soccer = place('soccer', [15.2, .45, -2.2], 1.3, 1.2, 41, meadow(42))
+    // Security: a vault door standing on the meadow, cracked open, and the light coming out of it.
+    const security = place('security', [15.2, .45, -2.2], 1.25, 1.25, 51, meadow(52))
+    this.vault(security)
+
+    const soccer = place('soccer', [20.4, .1, -1.1], 1.3, 1.2, 41, meadow(42))
     const pitch = new THREE.Mesh(new THREE.CircleGeometry(1.16, 40), new THREE.MeshStandardMaterial({ map: pitchTexture(), roughness: .95, transparent: true }))
     pitch.rotation.x = -Math.PI / 2
     pitch.position.y = .056
@@ -389,17 +408,89 @@ export class IslandStage {
 
     // Far islands and loose cloud, for depth. They are scenery: nothing stands on them.
     const rand = rng(51)
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < 11; i++) {
       const far = island(.5 + rand() * .7, .6 + rand() * .6, 60 + i, meadow(70 + i))
       far.position.set(-4 + i * 2.6 + rand(), -1.2 + rand() * 3.2, -8 - rand() * 8)
       far.rotation.y = rand() * 6
       this.scene.add(far)
     }
-    for (let i = 0; i < 14; i++) {
+    for (let i = 0; i < 18; i++) {
       const cloud = puff(80 + i, .22 + rand() * .3)
       cloud.position.set(-3 + i * 1.45 + rand(), -1.7 - rand() * 1.4, -1 - rand() * 6)
       this.scene.add(cloud)
     }
+  }
+
+  /** The light out of the vault: a lamp in the gap, shafts across the grass, a pool on the ground and motes. */
+  private vault(isle: Isle) {
+    const glow = glowTexture()
+    const lamp = new THREE.PointLight(GOLD, 3.2, 3.2, 1.6)
+    lamp.position.copy(GAP.at).add(new THREE.Vector3(.04, 0, .1))
+    isle.group.add(lamp)
+
+    // Shafts: long soft quads hinged at the gap, fanned out toward the camera and down onto the meadow.
+    const shaft = shaftTexture()
+    const shafts: THREE.Mesh[] = []
+    ;[[-.35, .1, 1.5, .5], [-.62, .02, 1.25, .38], [-.9, -.06, 1.05, .3]].forEach(([turn, tilt, length, height], k) => {
+      const geometry = new THREE.PlaneGeometry(length, height)
+      geometry.translate(length / 2, 0, 0)
+      const mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ map: shaft, color: GOLD, transparent: true, opacity: .42 - k * .06, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, fog: false }))
+      mesh.position.copy(GAP.at).add(new THREE.Vector3(.02, (k - 1) * .12, .02))
+      mesh.rotation.set(0, turn, -.22 + tilt)
+      isle.group.add(mesh)
+      shafts.push(mesh)
+    })
+
+    // Where it lands: a warm pool on the grass in front of the gap.
+    const pool = new THREE.Mesh(new THREE.PlaneGeometry(1.5, .9), new THREE.MeshBasicMaterial({ map: glow, color: '#ffa63d', transparent: true, opacity: .85, blending: THREE.AdditiveBlending, depthWrite: false }))
+    pool.rotation.x = -Math.PI / 2
+    pool.position.set(GAP.at.x + .45, .065, GAP.at.z + .32)
+    isle.group.add(pool)
+
+    // Motes of gold drifting up and out of the gap, and fading.
+    const count = 42
+    const seeds = Array.from({ length: count }, (_, i) => ({ phase: i / count, rise: .5 + (i * 7 % 11) / 22, drift: .2 + (i * 5 % 9) / 18, side: (i * 3 % 7) / 7 - .5 }))
+    const motes = new THREE.Points(new THREE.BufferGeometry(), new THREE.PointsMaterial({ map: glow, color: '#ffd27a', size: .055, transparent: true, opacity: .9, blending: THREE.AdditiveBlending, depthWrite: false }))
+    const position = new THREE.Float32BufferAttribute(new Float32Array(count * 3), 3)
+    motes.geometry.setAttribute('position', position)
+    isle.group.add(motes)
+
+    isle.tick = t => {
+      const breathe = .85 + .15 * Math.sin(t * 1.6) + .05 * Math.sin(t * 7.3)
+      this.gold.value = 1.15 * breathe
+      lamp.intensity = 3.2 * breathe
+      shafts.forEach((mesh, k) => { (mesh.material as THREE.MeshBasicMaterial).opacity = (.42 - k * .06) * (.8 + .2 * Math.sin(t * 1.1 + k * 1.7)) })
+      ;(pool.material as THREE.MeshBasicMaterial).opacity = .8 * breathe
+      seeds.forEach((s, i) => {
+        const age = (t * .22 + s.phase) % 1
+        position.setXYZ(i, GAP.at.x + .04 + age * s.drift, GAP.at.y - .38 + age * s.rise * 1.1 + Math.sin(t * 2 + i) * .02, GAP.at.z + .08 + s.side * .25 + age * .3)
+      })
+      position.needsUpdate = true
+      ;(motes.material as THREE.PointsMaterial).opacity = .9 * breathe
+    }
+  }
+
+  /** The gold inside the vault, picked out of the model's own texture by colour and made to shine. */
+  private gild(mesh: THREE.Mesh) {
+    const material = mesh.material as THREE.MeshStandardMaterial
+    const scale = mesh.scale.x
+    const min = GAP.min.clone().sub(mesh.position).divideScalar(scale)
+    const max = GAP.max.clone().sub(mesh.position).divideScalar(scale)
+    material.onBeforeCompile = shader => {
+      shader.uniforms.uGold = this.gold
+      shader.uniforms.uMin = { value: min }
+      shader.uniforms.uMax = { value: max }
+      shader.vertexShader = shader.vertexShader
+        .replace('#include <common>', '#include <common>\nvarying vec3 vLocal;')
+        .replace('#include <begin_vertex>', '#include <begin_vertex>\nvLocal = position;')
+      shader.fragmentShader = shader.fragmentShader
+        .replace('#include <common>', '#include <common>\nvarying vec3 vLocal;\nuniform float uGold;\nuniform vec3 uMin;\nuniform vec3 uMax;')
+        .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
+          vec3 inside = step(uMin, vLocal) * step(vLocal, uMax);
+          float gold = smoothstep(.45, .7, diffuseColor.r) * smoothstep(.25, .45, diffuseColor.g) * smoothstep(.3, .5, diffuseColor.r - diffuseColor.b);
+          totalEmissiveRadiance += diffuseColor.rgb * gold * inside.x * inside.y * inside.z * uGold;`)
+    }
+    material.needsUpdate = true
   }
 
   private load(name: ModelName) {
@@ -407,6 +498,7 @@ export class IslandStage {
       if (this.disposed) return null
       const meshes: THREE.Mesh[] = []
       gltf.scene.traverse(node => { if ((node as THREE.Mesh).isMesh) meshes.push(node as THREE.Mesh) })
+      if (name === 'security') meshes.forEach(mesh => this.gild(mesh))
       // A few faint copies trailing behind, shown only while he spins: the blur.
       const ghosts = new THREE.Group()
       for (let k = 0; k < 5; k++) {
@@ -434,7 +526,7 @@ export class IslandStage {
   private async show(name: ModelName) {
     const model = await this.load(name)
     if (!model || this.disposed) return
-    const isle = this.isles[OUTFITS.includes(name as Outfit) ? 0 : ORDER.indexOf(name === 'podium' ? 'competing' : 'soccer')]
+    const isle = this.isles[OUTFITS.includes(name as Outfit) ? 0 : ORDER.indexOf(name === 'podium' ? 'competing' : name as IslandId)]
     if (OUTFITS.includes(name as Outfit)) {
       for (const other of OUTFITS) if (other !== name && this.models[other]) { this.models[other]!.root.removeFromParent(); this.models[other]!.ghosts.removeFromParent() }
       this.shown = name
@@ -447,7 +539,7 @@ export class IslandStage {
     if (index === this.current && !this.flight) return
     this.current = index
     const isle = this.isles[index]
-    const model = isle.id === 'competing' || isle.id === 'soccer' ? MODEL_OF[isle.id] : null
+    const model = isle.id === 'outdoors' ? null : MODEL_OF[isle.id]
     if (model) void this.show(model)
     if (this.reduced) {
       this.flight = null
@@ -474,8 +566,7 @@ export class IslandStage {
   poke() {
     if (this.reduced || this.spin) return
     const isle = this.isles[this.current]
-    if (isle.id === 'games') { this.hop = 0; return }
-    if (isle.id !== 'competing' && isle.id !== 'soccer') return
+    if (isle.id === 'outdoors') return
     this.spin = { to: MODEL_OF[isle.id], t: 0, swapped: true, turns: 1, length: .8 }
   }
 
@@ -543,18 +634,6 @@ export class IslandStage {
     this.updateSpin(dt)
     this.updateWater(t, dt)
 
-    // The card always turns to face the camera, and hops when it is clicked.
-    if (this.card) {
-      const at = this.card.getWorldPosition(new THREE.Vector3())
-      this.card.lookAt(this.camera.position.x, at.y, this.camera.position.z)
-      let lift = 0
-      if (this.hop >= 0) {
-        this.hop += dt
-        lift = Math.sin(Math.PI * Math.min(1, this.hop / .45)) * .16
-        if (this.hop >= .45) this.hop = -1
-      }
-      this.card.position.y = CARD_HEIGHT / 2 + .03 + lift
-    }
   }
 
   private updateSpin(dt: number) {
