@@ -219,6 +219,7 @@
 .terrain[data-scene='arch'] { --cast: 112deg; --rim: rgba(220, 222, 255, .5); }
 .terrain[data-scene='summit'] { --cast: 168deg; --rim: rgba(190, 198, 255, .5); }
 .terrain[data-scene='field'] { --cast: 14deg; --rim: rgba(210, 214, 255, .5); }
+.terrain[data-scene='islands'] { --cast: 162deg; --rim: rgba(255, 200, 170, .65); }
 .terrain[data-scene='shore'] { --cast: 140deg; --rim: rgba(255, 230, 200, .7); }
 
 /* A landscape tall enough to stand behind the title. */

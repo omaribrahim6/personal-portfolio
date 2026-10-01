@@ -15,7 +15,8 @@ export const chapters = [
   { id: 'projects', numeral: 'III', place: 'the arch', label: 'Selected work' },
   { id: 'awards', numeral: 'IV', place: 'the hill', label: 'Wins' },
   { id: 'skills', numeral: 'V', place: 'the field', label: 'The toolkit' },
-  { id: 'contact', numeral: 'VI', place: 'the shore', label: 'Say hello' },
+  { id: 'interests', numeral: 'VI', place: 'the islands', label: 'Off the clock' },
+  { id: 'contact', numeral: 'VII', place: 'the shore', label: 'Say hello' },
 ] as const
 
 /* ---------------------------------------------------------------- the story */
@@ -239,6 +240,105 @@ export const awards: Award[] = [
 
 export const awardFilters: [Mode | 'all', string][] = [
   ['all', 'everything'], ['built', 'built it'], ['broke', 'broke it'], ['named', 'named'],
+]
+
+/** Every hackathon and CTF on the list, and how many of them ended in a win or a placing (all of them). */
+export const competitions = awards.filter(award => award.mode !== 'named')
+
+/* ------------------------------------------------------------- the interests */
+
+export type Photo = {
+  /** The print. The same name with .full.webp is the one opened large. Made by scripts/photos.mjs. */
+  src: string
+  alt: string
+  /** A few words written on the print. */
+  caption?: string
+  /** Width over height. */
+  ratio: number
+  /** Which outfit it belongs with, where there are several. */
+  with?: string
+}
+export type Interest = {
+  id: 'outdoors' | 'competing' | 'games' | 'soccer'
+  title: string
+  kicker: string
+  /** Set large, above the words. */
+  figure?: string
+  body: string
+  /** Where one island holds several things, he changes into each in turn. */
+  outfits?: { id: 'hike' | 'bike' | 'paddle'; label: string }[]
+  links?: { label: string; href: string }[]
+  photos: Photo[]
+}
+
+// Photos live in public/interests/<island>/, put there by scripts/photos.mjs. A handful per island at most.
+export const interests: Interest[] = [
+  {
+    id: 'outdoors',
+    title: 'The outdoors',
+    kicker: 'on foot, on two wheels, on the water',
+    body: 'When the laptop closes I go outside. I hike, I ride trails on a mountain bike, and I get out on the water on a paddleboard or in a kayak.',
+    outfits: [{ id: 'hike', label: 'Hiking' }, { id: 'bike', label: 'Biking' }, { id: 'paddle', label: 'Paddleboarding' }],
+    photos: [
+      { src: '/interests/outdoors/summit.webp', ratio: 3 / 4, with: 'hike', caption: 'at the lookout', alt: 'Me smiling on a granite ledge with forested mountains rolling away behind me.' },
+      { src: '/interests/outdoors/mountain.webp', ratio: 3 / 4, with: 'hike', caption: 'with a walking stick', alt: 'Me standing on a dirt clearing holding a wooden walking stick, a big forested mountain behind me.' },
+      { src: '/interests/outdoors/via-ferrata.webp', ratio: 4 / 3, with: 'hike', caption: 'via ferrata', alt: 'Me in a climbing helmet and harness, clipped to the cable on a rock ledge, arms out over a valley of autumn forest.' },
+      { src: '/interests/outdoors/summit-ridge.webp', ratio: 4 / 3, with: 'hike', caption: 'on top', alt: 'Me standing on a bare summit in a black and white jacket, ridges fading into haze behind me.' },
+      { src: '/interests/outdoors/summit-rest.webp', ratio: 3 / 4, with: 'hike', caption: 'catching my breath', alt: 'Me sitting on a boulder near the top, looking out over the valley below.' },
+      { src: '/interests/outdoors/trailhead.webp', ratio: 3 / 4, with: 'hike', caption: 'heading in', alt: 'Two friends walking ahead of me down a rocky trail toward a mountain, under a big sky.' },
+      { src: '/interests/outdoors/valley.webp', ratio: 3 / 4, with: 'hike', caption: 'the view from up there', alt: 'Layers of blue mountain ridges fading into haze beyond a steep valley.' },
+      { src: '/interests/outdoors/trail.webp', ratio: 3 / 4, with: 'bike', caption: 'down the trail', alt: 'My handlebars, riding fast down a dirt trail through a tunnel of green trees.' },
+      { src: '/interests/outdoors/bike-lake.webp', ratio: 3 / 4, with: 'bike', caption: 'a stop by the water', alt: 'My mountain bike leaning on a bench at the edge of a wide lake.' },
+      { src: '/interests/outdoors/trail-2.webp', ratio: 3 / 4, with: 'bike', caption: 'same trail, later', alt: 'My handlebars on a forest trail, long shadows across the dirt.' },
+      { src: '/interests/outdoors/paddleboard.webp', ratio: 3 / 4, with: 'paddle', caption: 'out at sunset', alt: 'The nose of my paddleboard on the water at sunset, my shoes strapped to the deck.' },
+      { src: '/interests/outdoors/paddle-blue.webp', ratio: 3 / 4, with: 'paddle', caption: 'choppy day', alt: 'A blue paddleboard on choppy water, heading for a tree-lined shore.' },
+      { src: '/interests/outdoors/kayak.webp', ratio: 3 / 4, with: 'paddle', caption: 'in the kayak', alt: 'From my kayak, a friend paddling ahead toward the sun breaking under the clouds.' },
+      { src: '/interests/outdoors/board-shore.webp', ratio: 3 / 4, with: 'paddle', caption: 'before heading out', alt: 'My paddleboard on a rocky shore, a wide calm river beyond it.' },
+      { src: '/interests/outdoors/paddle-orange.webp', ratio: 3 / 4, with: 'paddle', alt: 'Looking down the nose of an orange and red board, a wooden paddle across it.' },
+    ],
+  },
+  {
+    id: 'competing',
+    title: 'Competing',
+    kicker: 'hackathons and CTFs',
+    figure: `${competitions.length} for ${competitions.length}`,
+    body: `${competitions.length} hackathons and CTFs, and I came away with something from every one of them: a first place, a track win, or the most flags on the board. Give me a clock, a problem and a room full of people trying to get there first.`,
+    links: [{ label: 'See the wins', href: '#awards' }],
+    photos: [
+      { src: '/interests/competing/hack-the-hill.webp', ratio: 4 / 3, caption: 'Hack the Hill · Mamdani', alt: 'My team of four at our table with Mamdani running on every laptop, holding team number 45.' },
+      { src: '/interests/competing/genai-genesis.webp', ratio: 4 / 3, caption: 'GenAI Genesis · track win', alt: 'My team of four holding our prize keyboards in front of the GenAI Genesis 2026 banner.' },
+      { src: '/interests/competing/astralis.webp', ratio: 3 / 2, caption: 'uOttawa CTF · 1st', alt: 'Team Astralis, six of us, in front of the projected team page: 1st place, 1700 points.' },
+      { src: '/interests/competing/uocybersec-scoreboard.webp', ratio: 4 / 3, caption: 'the final scoreboard', alt: 'The uOttawa Cybersecurity Club CTF scoreboard on my laptop, Astralis first with 1700.' },
+      { src: '/interests/competing/whiteboard.webp', ratio: 4 / 3, caption: 'planning Mamdani', alt: 'Me at a whiteboard sketching the Mamdani pipeline: input, Gemini, a Postgres database and the city dashboard.' },
+      { src: '/interests/competing/northstorm.webp', ratio: 4 / 3, caption: 'BSides meetup CTF', alt: 'The BSides Ottawa meetup CTF scoreboard on my laptop, one line climbing far above the rest.' },
+      { src: '/interests/competing/log4shell-range.webp', ratio: 3 / 4, caption: 'Log4Shell, on a cyber range', alt: 'A workstation on a red-lit cyber range, with a diagram of the Log4Shell attack on the wall screen.' },
+      { src: '/interests/competing/hack-the-future.webp', ratio: 4 / 3, caption: 'Hack the Future · 2nd', alt: 'Everyone at the Hack the Future hackathon, run by the uOttawa and Carleton MSAs, in front of the title slide.' },
+      { src: '/interests/competing/builder-sundays.webp', ratio: 3 / 4, caption: 'QueryForge, mid-build', alt: 'My laptop and iPad on a table at Shopify Builder Sundays, with code on one screen and the QueryForge architecture on the other.' },
+      { src: '/interests/competing/clascade-build.webp', ratio: 3 / 4, caption: 'build day', alt: 'My laptop open at a table with friends working across from me.' },
+      { src: '/interests/competing/redshifted-mentor.webp', ratio: 3 / 4, caption: 'mentor at Redshifted', alt: 'My mentor badge from the Redshifted Catalyst hackathon on a blue lanyard.' },
+    ],
+  },
+  {
+    id: 'games',
+    title: 'Games & security',
+    kicker: 'building games, breaking systems',
+    body: 'I build games on Roblox. Downhill is out now: a longboard, a mountain pass, and gravity. The other half is security: penetration testing for cuHacking, BearHacks and Journale AI, and a CTF whenever there is one.',
+    links: [{ label: 'Play Downhill on Roblox', href: 'https://www.roblox.com/games/81999621480692/Downhill' }],
+    photos: [
+      { src: '/interests/games/downhill-art.webp', ratio: 767 / 432, caption: 'Downhill', alt: 'Key art for Downhill: a rider in a white helmet carving a mountain road at sunset, sparks flying from his glove.' },
+      { src: '/interests/games/downhill-title.webp', ratio: 768 / 319, caption: 'the title screen', alt: 'The Downhill title screen in game: a rider on a longboard at the top of an empty mountain road, with the menu beside him.' },
+    ],
+  },
+  {
+    id: 'soccer',
+    title: 'Soccer',
+    kicker: 'Liverpool, always',
+    body: 'I play weekly with my friends. My favourite team is Liverpool.',
+    photos: [
+      { src: '/interests/soccer/super-league.webp', ratio: 9 / 16, caption: 'on the ball', alt: 'Me in a dark shirt about to strike the ball in a game on turf, a goal behind me.' },
+      { src: '/interests/soccer/match.webp', ratio: 3 / 4, caption: 'from the stands', alt: 'A professional match at a stadium at golden hour, the keeper picking up the ball in front of goal.' },
+    ],
+  },
 ]
 
 /* --------------------------------------------------------------- the toolkit */

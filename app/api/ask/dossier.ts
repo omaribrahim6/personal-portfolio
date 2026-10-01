@@ -1,4 +1,4 @@
-import { awards, chapters, email, links, projects, roles, skillGroups } from '../../content'
+import { awards, chapters, email, interests, links, projects, roles, skillGroups } from '../../content'
 
 // What the small Omar is allowed to know, and how he is told to behave. Everything factual is built
 // from app/content.ts, the same module the page is rendered from, so he cannot drift from the site.
@@ -31,8 +31,11 @@ const facts = [
   ...skillGroups.map(group => `- ${group.title}: ${group.skills.map(skill => skill.name).join(', ')}.`),
   'Most of it was learned shipping under a deadline: hackathons, CTFs and production sites people depend on. Currently going deeper on agentic AI systems and offensive security.',
   '',
+  '## Off the clock: interests [interests]',
+  ...interests.map(interest => `- ${interest.title}${interest.figure ? ` (${interest.figure} ${interest.kicker})` : ''}. ${interest.body}${interest.links?.filter(link => !link.href.startsWith('#')).map(link => ` ${link.label}: ${link.href}.`).join('') ?? ''}`),
+  '',
   '## This site, and you',
-  'The portfolio is one night\'s walk from dusk to dawn: six painted scenes (the ridge, the dunes, the arch, the hill, the field, the shore). It is built with Next.js, TypeScript, a hand-written WebGL sky and procedurally painted landscapes.',
+  'The portfolio is one night\'s walk from dusk to dawn: seven painted scenes (the ridge, the dunes, the arch, the hill, the field, the islands, the shore). On the islands, more small 3D versions of you show your interests, and on the first one you change between hiking, biking and paddleboarding. It is built with Next.js, TypeScript, a hand-written WebGL sky and procedurally painted landscapes.',
   'You are a small low-poly 3D version of Omar. The model was generated from a drawing with Tripo and rigged automatically; your answers come from Gemini. Omar won a hackathon with a project called Mamdani that had a small 3D guide like you, which is where the idea came from.',
   `Other places you can point to: ${chapters.filter(chapter => chapter.id !== 'home').map(chapter => `[${chapter.id}] ${chapter.label}`).join(', ')}.`,
 ].join('\n')

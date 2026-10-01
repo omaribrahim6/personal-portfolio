@@ -54,7 +54,14 @@ export const keys: Key[] = [
     a: [[1.9, .2, .4], [2.2, .26, .2]], aAlpha: 0,
     b: [[.9, .24, .27], [.92, .4, .17]], bAlpha: 1, bLit: '#8e9ced', bShade: '#414dbb', bDeep: '#252d86', bTop: '#bcc4f5',
   },
-  { // VI · the shore, dawn
+  { // VI · the islands, high above a sea of cloud, the sun getting up
+    top: '#c3c6d6', mid: '#ddd6cd', low: '#efdccb',
+    glow: '#f6dcc0', glowAt: [.68, .32], stars: 0,
+    orb: [[.72, .84, .018], [.72, .88, .016]], orbCol: '#fff6e6', orbAmount: .7, halo: .2,
+    a: [[1.9, .2, .4], [2.2, .26, .2]], aAlpha: 0,
+    b: [[1.12, .3, .22], [1.1, .46, .14]], bAlpha: .55, bLit: '#a9b2f2', bShade: '#5560c4', bDeep: '#2f3796', bTop: '#d3d8f8',
+  },
+  { // VII · the shore, dawn
     top: '#d9cfc8', mid: '#efcdb0', low: '#f6b996',
     glow: '#ffd9b0', glowAt: [.34, .55], stars: 0,
     orb: [[.7, .6, .055], [.66, .62, .05]], orbCol: '#fff4dc', orbAmount: 1, halo: .5,

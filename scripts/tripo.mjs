@@ -3,7 +3,8 @@
 //
 //   node scripts/tripo.mjs balance
 //   node scripts/tripo.mjs generate <image.png|jpg|webp> <name>   image → textured 3D model (waits, downloads)
-//   node scripts/tripo.mjs rig <task_id> <name>                   rig check, then auto-rig
+//   node scripts/tripo.mjs multiview <front> <back> <name>        two views of a turnaround sheet → model
+//   node scripts/tripo.mjs rig <task_id> <name>                 rig check, then auto-rig
 //   node scripts/tripo.mjs task <task_id>                         show a task
 //
 // Key: TRIPO_API_KEY in .env.local. Downloads land in .data/tripo/ (not committed).
@@ -82,6 +83,20 @@ if (command === 'balance') {
   })
   console.log(`task ${task_id}`)
   await finish(await wait(task_id), b)
+} else if (command === 'multiview') {
+  // A turnaround sheet cut in two: the back view saves the model from guessing what is behind him.
+  const [front, back, name] = [a, b, process.argv[5]]
+  const { task_id } = await post('/generation/multiview-to-model', {
+    inputs: [{ front: await upload(front) }, { back: await upload(back) }],
+    model: 'v3.1-20260211',
+    texture: true,
+    pbr: false,
+    texture_quality: 'standard',
+    texture_alignment: 'original_image',
+    face_limit: 30000,
+  })
+  console.log(`task ${task_id}`)
+  await finish(await wait(task_id), name)
 } else if (command === 'rig') {
   const check = await post('/animations/rig-check', { input: a })
   console.log('rig check', JSON.stringify((await wait(check.task_id)).output))

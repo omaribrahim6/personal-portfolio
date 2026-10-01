@@ -5,7 +5,7 @@ import { ArrowUpRight } from 'lucide-react'
 import { chapters, links } from '../content'
 import styles from './Nav.module.css'
 
-const short: Record<string, string> = { about: 'Story', projects: 'Work', awards: 'Wins', skills: 'Toolkit', contact: 'Contact' }
+const short: Record<string, string> = { about: 'Story', projects: 'Work', awards: 'Wins', skills: 'Toolkit', interests: 'Off hours', contact: 'Contact' }
 
 // How far down the page you are, drawn as how full the moon is.
 function Phase({ progress }: { progress: number }) {

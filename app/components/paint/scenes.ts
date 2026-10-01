@@ -1,7 +1,7 @@
 import { awards } from '../../content'
 import {
   HEDGE, OAK, blend, bump, clamp, dots, foliage, grain, hill, mix, noise1, palm, poppies, rgba, rng, smooth, tree, waves,
-  type Ctx, type Fn, type Vec,
+  type Ctx, type Fn, type Foliage, type Vec,
 } from './core'
 
 export type Scene = {
@@ -472,7 +472,182 @@ const field: Scene = {
   },
 }
 
-/* --------------------------------------------------------------- VI · the shore */
+/* --------------------------------------------------------------- VI · the islands */
+
+const CLOUD: Foliage = { dark: '#a39bd4', mid: '#cfc8ea', lit: '#fdf0e4', dab: '#fffaf4', deep: '#837bbd' }
+const ROCK = ['#3a2150', '#6d3a78', '#a8466f', '#d9607a', '#f38469'] // shadow to sunlit, the same rock as the dunes
+
+/** A floating island, cut in facets like the 3D ones below it: a meadow on top, a cone of rock hanging under it. */
+function floating(ctx: Ctx, cx: number, cy: number, w: number, depth: number, seed: number, light: Vec, falls = false) {
+  const rand = rng(seed)
+  const lip = w * .2
+  const N = 9
+  const rim: Vec[] = [], mid: Vec[] = []
+  for (let i = 0; i <= N; i++) {
+    const a = Math.PI * i / N
+    rim.push([cx - w * Math.cos(a), cy + lip * Math.sin(a)])
+    mid.push([cx - w * Math.cos(a) * (.5 + rand() * .12), cy + depth * (.42 + rand() * .12) + lip * Math.sin(a) * .6])
+  }
+  const tip: Vec = [cx + (rand() - .5) * w * .35, cy + depth]
+  // Each facet is shaded by which way it leans: toward the light on the side the sun is.
+  const facet = (points: Vec[]) => {
+    const x = points.reduce((s, p) => s + p[0], 0) / points.length
+    const l = clamp(.42 + (x - cx) / w * .5 * Math.sign(light[0]) + (rand() - .5) * .3)
+    ctx.fillStyle = ROCK[Math.min(ROCK.length - 1, Math.floor(l * ROCK.length))]
+    ctx.beginPath()
+    points.forEach(([px, py]) => ctx.lineTo(px, py))
+    ctx.closePath()
+    ctx.fill()
+    ctx.stroke()
+  }
+  ctx.lineJoin = 'round'
+  ctx.lineWidth = .6
+  for (let i = 0; i < N; i++) {
+    ctx.strokeStyle = 'rgba(40,14,50,.25)'
+    facet([rim[i], rim[i + 1], mid[i + 1]])
+    facet([rim[i], mid[i + 1], mid[i]])
+    facet([mid[i], mid[i + 1], tip])
+  }
+  // The meadow, and the dark band of earth under its front edge.
+  ctx.fillStyle = '#4a2a5c'
+  ctx.beginPath()
+  ctx.ellipse(cx, cy + lip * .18, w, lip, 0, 0, Math.PI)
+  ctx.fill()
+  const grass = ctx.createLinearGradient(cx - w, cy - lip, cx + w, cy + lip)
+  grass.addColorStop(light[0] > 0 ? 1 : 0, '#a3adf6')
+  grass.addColorStop(.5, '#5f6ad8')
+  grass.addColorStop(light[0] > 0 ? 0 : 1, '#2f379e')
+  ctx.fillStyle = grass
+  ctx.beginPath()
+  ctx.ellipse(cx, cy, w, lip, 0, 0, 6.2832)
+  ctx.fill()
+  const specks: number[] = []
+  for (let i = 0; i < w * lip / 6; i++) {
+    const a = rand() * 6.2832, d = Math.sqrt(rand())
+    specks.push(cx + Math.cos(a) * d * w * .95, cy + Math.sin(a) * d * lip * .9, .4 + rand() * .7)
+  }
+  dots(ctx, '#d6dbff', specks, .4)
+  const trees = Math.max(1, Math.round(w / 40))
+  for (let i = 0; i < trees; i++) {
+    const x = cx + (rand() - .5) * w * 1.3
+    tree(ctx, x, cy + (rand() - .3) * lip * .6, w * (.12 + rand() * .1), HEDGE, light, seed * 10 + i)
+  }
+  if (falls) {
+    // Water running off the edge and falling until it turns to mist.
+    const x = cx + w * .45, top = cy + lip * .8, fall = depth * 2.6
+    const water = ctx.createLinearGradient(0, top, 0, top + fall)
+    water.addColorStop(0, 'rgba(236,240,255,.95)')
+    water.addColorStop(.6, 'rgba(236,240,255,.45)')
+    water.addColorStop(1, 'rgba(236,240,255,0)')
+    ctx.fillStyle = water
+    ctx.beginPath()
+    ctx.moveTo(x - w * .05, top)
+    ctx.bezierCurveTo(x - w * .02, top + fall * .3, x - w * .07, top + fall * .7, x - w * .1, top + fall)
+    ctx.lineTo(x + w * .1, top + fall)
+    ctx.bezierCurveTo(x + w * .05, top + fall * .7, x + w * .06, top + fall * .3, x + w * .05, top)
+    ctx.fill()
+  }
+}
+
+/** Paint something on its own sheet and lay it down hazed toward the sky, so it sits further away. */
+function far(ctx: Ctx, W: number, H: number, haze: number, color: string, paint: (layer: Ctx) => void) {
+  const sheet = document.createElement('canvas')
+  const ratio = ctx.getTransform().a
+  sheet.width = Math.ceil(W * ratio)
+  sheet.height = Math.ceil(H * ratio)
+  const layer = sheet.getContext('2d')
+  if (!layer) return
+  layer.setTransform(ratio, 0, 0, ratio, 0, 0)
+  paint(layer)
+  layer.globalCompositeOperation = 'source-atop'
+  layer.fillStyle = rgba(color, haze)
+  layer.fillRect(0, 0, W, H)
+  ctx.drawImage(sheet, 0, 0, W, H)
+}
+
+const isleNoise = noise1(91)
+const isleFront = (t: number) => .82 - .05 * bump((t - .34) / .22) + .025 * isleNoise(t * 5) + .05 * smooth(.7, 1.05, t)
+
+const islands: Scene = {
+  walk: [.28, .38],
+  ground: t => isleFront(t) + .012,
+  tone: at => at < .8 ? 'light' : 'dark',
+  paint(ctx, W, H) {
+    const s = H / 400
+    const k = narrow(W, H)
+    const light: Vec = [.7, -.65]
+    const haze = '#e7dcd2'
+
+    // The furthest islands first, nearly the colour of the sky.
+    far(ctx, W, H, .62, haze, layer => {
+      floating(layer, W * mix(.42, .3, k), H * .17, 34 * s, 46 * s, 92, light)
+      floating(layer, W * mix(.06, -.02, k), H * .34, 48 * s, 60 * s, 93, light)
+    })
+    far(ctx, W, H, .34, haze, layer => {
+      floating(layer, W * mix(.9, 1, k), H * .4, 58 * s, 70 * s, 94, light)
+      floating(layer, W * mix(.18, .1, k), H * .4, 40 * s, 50 * s, 95, light)
+    })
+    floating(ctx, W * mix(.66, .7, k), H * .22, 92 * s, 120 * s, 96, light, true)
+
+    // The sea of cloud, row on row: small, crowded and hazed far off, bigger and lower close to.
+    const rand = rng(97)
+    for (let row = 0; row < 5; row++) {
+      const clumps: { x: number; y: number; r: number; lit: number }[] = []
+      const r = (14 + row * 10) * s
+      const y = H * (.56 + row * .055)
+      for (let x = -r; x < W + r; x += r * (.5 + rand() * .4)) {
+        const py = y + (rand() - .5) * r * .6 - Math.max(0, Math.sin(x / W * 9 + row * 2)) * r * .5
+        clumps.push({ x, y: py, r: r * (.7 + rand() * .6), lit: clamp(.85 - row * .12 + (x / W - .5) * .4) })
+      }
+      clumps.sort((a, b) => a.y - b.y)
+      // Lit from above: a bright crown on every puff against the shaded underside of the one behind it.
+      const dabs: number[] = []
+      for (const c of clumps) {
+        const body = ctx.createLinearGradient(0, c.y - c.r, 0, c.y + c.r * .7)
+        body.addColorStop(0, blend(CLOUD.mid, CLOUD.lit, c.lit))
+        body.addColorStop(.42, CLOUD.mid)
+        body.addColorStop(1, CLOUD.dark)
+        ctx.fillStyle = body
+        ctx.beginPath()
+        ctx.arc(c.x, c.y, c.r, 0, 6.2832)
+        ctx.fill()
+        for (let i = 0; i < c.r * c.lit * .5; i++) {
+          const a = -Math.PI * (.15 + rand() * .7), d = c.r * (.55 + rand() * .4)
+          dabs.push(c.x + Math.cos(a) * d, c.y + Math.sin(a) * d, .4 + rand() * .7)
+        }
+      }
+      dots(ctx, CLOUD.dab, dabs, .5)
+      const under = ctx.createLinearGradient(0, y, 0, H)
+      under.addColorStop(0, CLOUD.dark)
+      under.addColorStop(1, CLOUD.deep)
+      ctx.fillStyle = under
+      ctx.fillRect(0, y + r * .5, W, H)
+      ctx.fillStyle = rgba(haze, Math.max(0, .34 - row * .08))
+      ctx.fillRect(0, y - r * 2, W, H)
+    }
+
+    // The island underfoot, close enough to walk on.
+    const front: Fn = x => H * isleFront(x / W)
+    hill(ctx, W, H, front, {
+      top: '#3a40a8', bottom: '#14153f', depth: H * .2, rim: '#ffc0a6', rimSide: 1, rimStrength: .8,
+      rows: '#a3adf6', rowCount: 8, rowAlpha: .22, light: '#a3adf6', dark: '#0b0c30', seed: 98, density: 1.4,
+    })
+    tree(ctx, W * .06, front(W * .06) + 8 * s, 34 * s, HEDGE, light, 99)
+    tree(ctx, W * mix(.88, .94, k), front(W * mix(.88, .94, k)) + 6 * s, 26 * s, HEDGE, light, 100)
+    poppies(ctx, Math.round(W / 5), r => {
+      const x = r() * W, d = Math.pow(r(), .8)
+      return [x, mix(front(x) + H * .04, H * .97, d), (1.6 + d * 3.6) * s]
+    }, 101)
+    const fade = ctx.createLinearGradient(0, H * .92, 0, H)
+    fade.addColorStop(0, 'rgba(20,21,63,0)')
+    fade.addColorStop(1, 'rgba(20,21,63,1)')
+    ctx.fillStyle = fade
+    ctx.fillRect(0, H * .92, W, H * .08 + 2)
+    grain(ctx, W, H, 102)
+  },
+}
+
+/* --------------------------------------------------------------- VII · the shore */
 
 const beach = (t: number) => .62 + .08 * smooth(.2, 1, t) + .012 * Math.sin(t * 8)
 
@@ -667,7 +842,7 @@ const reflection: Scene = {
   },
 }
 
-export const scenes = { ridge, dunes, arch, summit, field, shore, signal, cascade, trail, reflection }
+export const scenes = { ridge, dunes, arch, summit, field, islands, shore, signal, cascade, trail, reflection }
 export type SceneName = keyof typeof scenes
 
 /** Ground colour under each plate. The painting ends in it and the page carries on in it. */
@@ -677,6 +852,7 @@ export const GROUND = {
   arch: '#0f1040',
   summit: '#0d0e2c',
   field: '#171850',
+  islands: '#14153f',
   shore: '#d6d4f2',
 } as const
 

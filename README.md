@@ -1,6 +1,6 @@
 # Portfolio
 
-Omar Ibrahim's portfolio, built with Next.js and TypeScript. The page is one night's walk from dusk to dawn: six painted landscapes under a single sky, with the portfolio written on the ground between them. See [docs/dreamscape.md](docs/dreamscape.md) for the concept and how it is built.
+Omar Ibrahim's portfolio, built with Next.js and TypeScript. The page is one night's walk from dusk to dawn: seven painted landscapes under a single sky, with the portfolio written on the ground between them. See [docs/dreamscape.md](docs/dreamscape.md) for the concept and how it is built.
 
 A small 3D Omar lives in the corner and answers questions about the work: see [docs/mini-omar.md](docs/mini-omar.md).
 

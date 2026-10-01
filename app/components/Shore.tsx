@@ -34,7 +34,7 @@ export default function Shore() {
 
   return (
     <section id="contact" aria-labelledby="contact-title">
-      <Plate index={5} scene="shore" after="field" tone="light" numeral="VI" place="the shore" kicker="one more thing to build?" title="Let’s talk" titleId="contact-title" href={links.email} />
+      <Plate index={6} scene="shore" after="islands" tone="light" numeral="VII" place="the shore" kicker="one more thing to build?" title="Let’s talk" titleId="contact-title" href={links.email} />
 
       <Ground scene="shore" tone="light" className={styles.ground}>
         <div className={`measure ${styles.body}`}>
