@@ -1,9 +1,9 @@
 'use client'
 
-import { motion } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 import { projects, type Project } from '../content'
 import Plate, { Ground } from './Plate'
+import Rail from './Rail'
 import ProjectWindow from './ProjectWindow'
 import styles from './Works.module.css'
 
@@ -15,8 +15,7 @@ function Work({ project, index }: { project: Project; index: number }) {
   ]
 
   return (
-    <motion.article className={styles.work} initial={{ opacity: 0, y: 32 }} whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-80px' }} transition={{ duration: .7, ease: [.2, .7, .2, 1] }} aria-labelledby={`project-${index}`}>
+    <li className={styles.work} aria-labelledby={`project-${index}`}>
       <ProjectWindow project={project} index={index} />
       <div className={styles.copy}>
         <p className={`label ${styles.number}`}><span>Nº {project.number}</span><span>{project.award}</span></p>
@@ -29,7 +28,7 @@ function Work({ project, index }: { project: Project; index: number }) {
           {links.map(link => <a key={link.href} className="go" href={link.href} target="_blank" rel="noopener noreferrer">{link.label}<ArrowUpRight size={15} /></a>)}
         </div>
       </div>
-    </motion.article>
+    </li>
   )
 }
 
@@ -41,7 +40,9 @@ export default function Works() {
       </Plate>
       <Ground scene="arch" className={styles.ground}>
         <div className={`measure ${styles.list}`}>
-          {projects.map((project, index) => <Work key={project.title} project={project} index={index} />)}
+          <Rail label="Selected work, one project per card">
+            {projects.map((project, index) => <Work key={project.title} project={project} index={index} />)}
+          </Rail>
         </div>
       </Ground>
     </section>

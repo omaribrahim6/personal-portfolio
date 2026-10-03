@@ -39,3 +39,8 @@
 
 /* The real cursor goes only while the moon is standing in for it. Text boxes keep theirs. */
 :global(html[data-moon='on']) :where(*:not(textarea):not(input):not(select)) { cursor: none !important; }
+
+/* A photo viewer is a modal dialog, which sits above the moon. While one is open the real cursor comes back. */
+:global(html[data-moon='on']:has(dialog[open])) .moon { opacity: 0; }
+:global(html[data-moon='on']:has(dialog[open])) :where(*:not(textarea):not(input):not(select)) { cursor: auto !important; }
+:global(html[data-moon='on']:has(dialog[open])) dialog :where(button) { cursor: pointer !important; }

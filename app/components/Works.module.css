@@ -1,9 +1,6 @@
 .ground { --accent: var(--color-coral); }
 
 .list {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: clamp(5rem, 13vw, 11rem);
   padding-top: clamp(1rem, 3vw, 2.5rem);
 }
 
@@ -12,6 +9,9 @@
   grid-template-columns: minmax(0, 1fr);
   gap: clamp(2.2rem, 5vw, 3rem);
   align-items: center;
+  align-content: start;
+  width: 100%;
+  list-style: none;
 }
 
 .work > button { max-width: 22rem; justify-self: center; }
@@ -64,7 +64,4 @@
 @media (min-width: 860px) {
   .work { grid-template-columns: minmax(0, 23rem) minmax(0, 1fr); gap: clamp(3.5rem, 8vw, 8rem); }
   .work > button { max-width: none; }
-  /* Windows alternate sides, the way you would pass them on a walk. */
-  .work:nth-child(even) { grid-template-columns: minmax(0, 1fr) minmax(0, 23rem); }
-  .work:nth-child(even) > button { order: 2; }
 }

@@ -82,7 +82,7 @@
   animation: ground 1.6s cubic-bezier(.16, .8, .2, 1) both;
 }
 
-.caption, .status {
+.caption {
   position: absolute;
   z-index: 2;
   bottom: 1.5rem;
@@ -104,21 +104,6 @@
   background: currentColor;
   opacity: .6;
 }
-.status {
-  right: max(var(--edge), 13.5rem);
-  display: inline-flex;
-  align-items: center;
-  gap: .8em;
-}
-/* A small moon that breathes. */
-.status i {
-  width: .6rem;
-  height: .6rem;
-  border-radius: 50%;
-  background: var(--color-coral);
-  box-shadow: 0 0 0 0 rgba(246, 134, 106, .6);
-  animation: breathe 2.8s ease-out infinite;
-}
 
 .ground { padding: 0; height: 7svh; }
 .ground::before { display: none; }
@@ -126,16 +111,10 @@
 @keyframes lift { from { transform: translateY(105%); } }
 @keyframes settle { from { opacity: 0; transform: translateY(.7rem); } }
 @keyframes ground { from { opacity: 0; transform: translateY(7%); } }
-@keyframes breathe {
-  70% { box-shadow: 0 0 0 .6rem rgba(246, 134, 106, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(246, 134, 106, 0); }
-}
 
 /* Phones: the painting gets the middle of the screen; the practical lines sit on the hill just below it. */
-/* The corner is mini Omar's, so the status sits left of him; below this width there is no room for it beside the caption. */
 @media (max-width: 960px) {
   .caption { bottom: 3.3rem; }
-  .status { left: var(--edge); right: auto; }
 }
 
 @media (max-width: 720px) {
@@ -143,10 +122,7 @@
   .copy h1 { font-size: clamp(4rem, 21.5vw, 7rem); }
   .lede { font-size: 1.12rem; max-width: 22rem; }
   .stage > .terrain { height: clamp(220px, 34svh, 360px); }
-  .wip { display: none; }
-  .caption, .status { bottom: 1rem; }
   .caption { bottom: 2.7rem; }
-  .status { left: var(--edge); right: auto; }
   .more {
     position: absolute;
     top: 100%;
@@ -159,6 +135,3 @@
   .ground { height: auto; min-height: 14.5rem; }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .status i { animation: none; }
-}

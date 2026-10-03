@@ -1,9 +1,10 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { roleFilters, roles, type Category, type Role } from '../content'
 import Plate, { Ground } from './Plate'
+import Rail from './Rail'
 import { rng } from './paint/core'
 import styles from './Story.module.css'
 
@@ -39,7 +40,6 @@ export default function Story() {
   const [filter, setFilter] = useState<Category | 'all'>('all')
   const [active, setActive] = useState<string | null>(null)
   const [hover, setHover] = useState<string | null>(null)
-  const list = useRef<HTMLDivElement>(null)
   const pendingJump = useRef<string | null>(null)
   const now = useSyncExternalStore(never, thisMonth, unknown)
 
@@ -71,47 +71,34 @@ export default function Story() {
   const shown = entries.filter(role => filter === 'all' || role.category === filter)
   const lit = hover ?? active
 
-  // The range follows whichever entry is at the reading line.
-  useEffect(() => {
-    let frame = 0
-    function update() {
-      frame = 0
-      const line = window.innerHeight * .42
-      const items = list.current?.querySelectorAll<HTMLElement>('[data-entry]') ?? []
-      let current: string | null = null
-      for (const item of items) if (item.getBoundingClientRect().top <= line) current = item.dataset.entry ?? null
-      setActive(current ?? items[0]?.dataset.entry ?? null)
-    }
-    function schedule() { if (!frame) frame = requestAnimationFrame(update) }
-    window.addEventListener('scroll', schedule, { passive: true })
-    window.addEventListener('resize', schedule)
-    schedule()
-    return () => {
-      cancelAnimationFrame(frame)
-      window.removeEventListener('scroll', schedule)
-      window.removeEventListener('resize', schedule)
-    }
-  }, [filter])
+  // The range follows whichever card the rail is showing.
+  const follow = useCallback((index: number) => setActive(shown[index]?.id ?? null), [shown])
+
+  function reveal(id: string) {
+    document.getElementById(`story-${id}`)?.scrollIntoView({ block: 'nearest', inline: 'start' })
+  }
 
   useEffect(() => {
     if (!pendingJump.current) return
     const id = pendingJump.current
     pendingJump.current = null
-    document.getElementById(`story-${id}`)?.scrollIntoView({ block: 'center' })
+    reveal(id)
   }, [filter])
 
   // Receipts in the toolkit link straight to entries. If a filter is hiding the target, drop the filter first.
   useEffect(() => {
-    function reveal() {
+    function onHash() {
       const id = window.location.hash.replace('#story-', '')
       const role = window.location.hash.startsWith('#story-') ? roles.find(role => role.id === id) : undefined
       if (role && filter !== 'all' && role.category !== filter) {
         pendingJump.current = id
         setFilter('all')
+      } else if (role) {
+        reveal(role.id)
       }
     }
-    window.addEventListener('hashchange', reveal)
-    return () => window.removeEventListener('hashchange', reveal)
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
   }, [filter])
 
   function jump(role: Role) {
@@ -120,7 +107,7 @@ export default function Story() {
       setFilter('all')
       return
     }
-    document.getElementById(`story-${role.id}`)?.scrollIntoView({ block: 'center' })
+    reveal(role.id)
   }
 
   return (
@@ -190,14 +177,14 @@ export default function Story() {
                 <span data-category="volunteer"><i />volunteer</span>
                 <span data-category="education"><i />education</span>
               </div>
-              <p className={styles.foot}>→ still going · cumsa.ca isn’t dated, so it lives in the list · the range follows the list, and a dune will take you to its entry</p>
+              <p className={styles.foot}>→ still going · cumsa.ca isn’t dated, so it lives in the list · the range follows the cards, and a dune will take you to its entry</p>
             </div>
 
-            <div className={styles.entries} ref={list}>
+            <Rail label="The story so far, one card per role" reset={filter} onActive={follow}>
               {shown.map(role => (
-                <motion.article key={role.id} id={`story-${role.id}`} data-entry={role.id} data-active={lit === role.id} data-category={role.category}
+                <motion.li key={role.id} id={`story-${role.id}`} data-entry={role.id} data-active={lit === role.id} data-category={role.category}
                   className={styles.entry} initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-40px' }} transition={{ duration: .5 }}
+                  viewport={{ once: true }} transition={{ duration: .5 }}
                   onPointerEnter={() => setHover(role.id)} onPointerLeave={() => setHover(null)}>
                   <p className={`label ${styles.meta}`}><span>{role.category}</span><span>{role.period ?? 'undated'}</span></p>
                   <h3>{role.title}</h3>
@@ -209,9 +196,9 @@ export default function Story() {
                       </li>
                     ))}
                   </ul>
-                </motion.article>
+                </motion.li>
               ))}
-            </div>
+            </Rail>
           </div>
         </div>
       </Ground>

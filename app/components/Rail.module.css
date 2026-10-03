@@ -1,0 +1,59 @@
+.rail { min-width: 0; }
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+}
+.count { opacity: .7; font-variant-numeric: tabular-nums; }
+.count i { font-style: normal; opacity: .5; margin: 0 .3em; }
+
+.arrows { display: flex; gap: .6rem; }
+.arrows button {
+  display: grid;
+  place-items: center;
+  width: 2.7rem;
+  height: 2.7rem;
+  border: 1px solid rgba(242, 236, 219, .28);
+  border-radius: 50%;
+  color: inherit;
+  transition: border-color .25s ease, color .25s ease, background-color .25s ease, opacity .25s ease;
+}
+.arrows button:hover:not(:disabled) { border-color: var(--accent, var(--color-coral)); color: var(--accent, var(--color-coral)); }
+.arrows button:disabled { opacity: .28; }
+
+/* The shelf runs off the right edge of the screen so the next card always peeks in. */
+.track {
+  --peek: var(--edge);
+  position: relative;
+  display: flex;
+  gap: clamp(1rem, 2.4vw, 1.8rem);
+  margin-right: calc(var(--peek) * -1);
+  padding: 0 var(--peek) .4rem 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  list-style: none;
+}
+.track::-webkit-scrollbar { display: none; }
+.track > * { flex: none; scroll-snap-align: start; }
+.track:focus-visible { outline-offset: 6px; }
+
+.progress {
+  height: 1px;
+  margin-top: 1.4rem;
+  background: rgba(242, 236, 219, .14);
+}
+.progress i {
+  display: block;
+  height: 100%;
+  background: var(--accent, var(--color-coral));
+  transition: width .4s cubic-bezier(.2, .7, .2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track { scroll-behavior: auto; }
+}

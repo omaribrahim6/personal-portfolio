@@ -1,10 +1,11 @@
 'use client'
 
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { ArrowUpRight } from 'lucide-react'
 import { awardFilters, awards, modes, type Mode } from '../content'
 import Plate, { Ground } from './Plate'
+import Rail from './Rail'
 import styles from './Wins.module.css'
 
 // One mark per kind of win, left on the hill. A flag gets raised for something broken into,
@@ -54,11 +55,10 @@ export default function Wins() {
             ))}
           </div>
 
-          <ul className={styles.list}>
-            <AnimatePresence initial={false} mode="popLayout">
+          <Rail label="Wins, one card per award" reset={filter}>
               {shown.map(award => (
-                <motion.li key={`${award.event}-${award.result}`} layout className={styles.row} data-mode={award.mode} data-lit={filter !== 'all'}
-                  initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: .4 }}>
+                <motion.li key={`${award.event}-${award.result}`} className={styles.row} data-mode={award.mode} data-lit={filter !== 'all'}
+                  initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .4 }}>
                   <p className={`label ${styles.when}`}><span>{award.date}</span><span>{modes[award.mode]}</span></p>
                   <Mark mode={award.mode} />
                   <div className={styles.what}>
@@ -73,8 +73,7 @@ export default function Wins() {
                   </div>
                 </motion.li>
               ))}
-            </AnimatePresence>
-          </ul>
+          </Rail>
           <p className={`label ${styles.count}`}>{shown.length} of {awards.length} · Feb – Sep 2026</p>
         </div>
       </Ground>

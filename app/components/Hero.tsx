@@ -14,7 +14,7 @@ export default function Hero() {
             <span aria-hidden="true"><span>Ibrahim</span></span>
           </h1>
           <p className={styles.lede}>
-            A <strong>developer</strong> and <strong>security auditor</strong> — I build things, then try to break them before someone else does.
+            A <strong>developer</strong> and <strong>security auditor</strong>.
           </p>
           <div className={styles.more}>
             <p>Software Engineering @ Carleton University. Currently looking for internships in software development and security.</p>
@@ -30,9 +30,8 @@ export default function Hero() {
         <Terrain scene="ridge" className={styles.terrain} />
 
         <p className={`label ${styles.caption}`}>
-          <span>Plate I</span><span>the ridge</span><span className={styles.wip}>a work in progress</span>
+          <span>Plate I</span><span>the ridge</span>
         </p>
-        <p className={`label ${styles.status}`}><i aria-hidden="true" />open to internships</p>
       </div>
       <Ground scene="ridge" className={styles.ground} />
     </section>
