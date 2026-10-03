@@ -20,8 +20,9 @@ let client: GoogleGenAI | null | undefined
 function genai() {
   if (client !== undefined) return client
   const key = process.env.GEMINI_API_KEY
-  // Keys from Vertex AI express mode and from the Gemini API look different and go to different endpoints.
-  client = key ? new GoogleGenAI(key.startsWith('AIza') ? { apiKey: key } : { vertexai: true, apiKey: key }) : null
+  // A key from AI Studio goes to the Gemini API, whose free tier is what the site runs on. Both kinds of key can
+  // start with "AQ." now, so a Vertex AI express key has to be asked for by name with GEMINI_VERTEX=true.
+  client = key ? new GoogleGenAI(process.env.GEMINI_VERTEX === 'true' ? { vertexai: true, apiKey: key } : { apiKey: key }) : null
   return client
 }
 
