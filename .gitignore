@@ -42,3 +42,4 @@ next-env.d.ts
 
 # generated assets and intermediate downloads
 /.data/
+.gemini_key.new

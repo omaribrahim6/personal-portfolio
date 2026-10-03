@@ -1,6 +1,8 @@
 name: CI/CD to Astralis (Docker)
 
 on:
+  # Run by hand from the Actions tab, e.g. after changing a secret.
+  workflow_dispatch:
   push:
     branches: ["main"]
     paths:
@@ -49,13 +51,27 @@ jobs:
         env:
           SERVER_USER: ${{ secrets.SERVER_USER }}   
           SERVER_HOST: ${{ secrets.SERVER_HOST }}   # IP or domain
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
+          # Mini Omar's key lives as a GitHub secret. Send it over stdin so it never shows in a command line or log;
+          # the server script below moves it into .env.
+          if [ -n "${GEMINI_API_KEY:-}" ]; then
+            printf '%s' "$GEMINI_API_KEY" | ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_HOST" 'umask 077; cat > /var/www/portfolio/.gemini_key.new'
+          fi
+
           ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_HOST" << 'EOF'
             set -euo pipefail
             cd /var/www/portfolio
 
             git fetch --all
             git reset --hard origin/main
+
+            if [ -s .gemini_key.new ]; then
+              touch .env
+              ( umask 077; { grep -v '^GEMINI_API_KEY=' .env || true; printf 'GEMINI_API_KEY=%s\n' "$(cat .gemini_key.new)"; } > .env.next )
+              cat .env.next > .env
+              rm -f .env.next .gemini_key.new
+            fi
 
             docker compose pull || true
             docker compose up -d --build

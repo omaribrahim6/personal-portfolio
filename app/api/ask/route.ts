@@ -105,7 +105,9 @@ export async function POST(request: Request) {
       } catch (error) {
         if (left.signal.aborted || request.signal.aborted) return
         console.error('ask failed', error)
-        emit({ type: 'error', message: 'I lost my train of thought. Try again?' })
+        // The free tier says no once the day's allowance is used up.
+        const limited = (error as { status?: number })?.status === 429
+        emit({ type: 'error', message: limited ? 'I have talked a lot today and need a rest. Try me again tomorrow?' : 'I lost my train of thought. Try again?' })
       }
       if (left.signal.aborted) return
       emit({ type: 'done' })
