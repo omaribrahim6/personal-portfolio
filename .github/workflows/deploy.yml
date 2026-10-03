@@ -77,4 +77,10 @@ jobs:
             docker compose up -d --build
 
             docker image prune -f
+
+            # Which kind of key Mini Omar has (the first four characters only), and how a test question went.
+            docker exec portfolio_web sh -c 'k="${GEMINI_API_KEY:-}"; echo "mini omar key: ${k%"${k#????}"}... (model ${GEMINI_MODEL:-default})"' || true
+            sleep 5
+            docker exec portfolio_web node -e "fetch('http://localhost:3000/api/ask',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({messages:[{role:'user',text:'hi'}]})}).then(r=>r.text()).then(t=>console.log('mini omar says:',t.slice(0,300)))" || true
+            docker logs --since 1m portfolio_web 2>&1 | grep -A6 'ask failed' | head -20 || true
           EOF
