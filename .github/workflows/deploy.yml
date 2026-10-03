@@ -56,6 +56,7 @@ jobs:
           # Mini Omar's key lives as a GitHub secret. Send it over stdin so it never shows in a command line or log;
           # the server script below moves it into .env.
           if [ -n "${GEMINI_API_KEY:-}" ]; then
+            echo "secret key fingerprint: $(printf '%s' "$GEMINI_API_KEY" | sha256sum | cut -c1-8)"
             printf '%s' "$GEMINI_API_KEY" | ssh -o StrictHostKeyChecking=no "$SERVER_USER@$SERVER_HOST" 'umask 077; cat > /var/www/portfolio/.gemini_key.new'
           fi
 
@@ -79,8 +80,8 @@ jobs:
             docker image prune -f
 
             # Which kind of key Mini Omar has (the first four characters only), and how a test question went.
-            docker exec portfolio_web sh -c 'k="${GEMINI_API_KEY:-}"; echo "mini omar key: ${k%"${k#????}"}... (model ${GEMINI_MODEL:-default})"' || true
-            sleep 5
-            docker exec portfolio_web node -e "fetch('http://localhost:3000/api/ask',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({messages:[{role:'user',text:'hi'}]})}).then(r=>r.text()).then(t=>console.log('mini omar says:',t.slice(0,300)))" || true
+            docker exec portfolio_web sh -c 'k="${GEMINI_API_KEY:-}"; echo "mini omar key: ${k%"${k#????}"}... fingerprint $(printf "%s" "$k" | sha256sum | cut -c1-8) (model ${GEMINI_MODEL:-default})"' || true
+            sleep 8
+            docker exec portfolio_web node -e "fetch('http://'+require('os').hostname()+':3000/api/ask',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({messages:[{role:'user',text:'hi'}]})}).then(r=>r.text()).then(t=>console.log('mini omar says:',t.slice(0,300)))" || true
             docker logs --since 1m portfolio_web 2>&1 | grep -A6 'ask failed' | head -20 || true
           EOF
