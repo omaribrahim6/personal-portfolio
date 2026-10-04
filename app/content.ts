@@ -72,7 +72,7 @@ export const roles: Role[] = [
   {
     id: 'cuhacking', category: 'experience', title: 'Penetration Tester', organization: 'cuHacking', label: 'cuHacking',
     period: 'Mar 2026 — Apr 2026', start: '2026-03', end: '2026-04',
-    details: ["Security testing across Canada's largest student-run hackathon platform (on-call)"],
+    details: ["Security testing for Ottawa's biggest hackathon (on-call)"],
   },
   {
     id: 'bearhacks', category: 'experience', title: 'Penetration Tester', organization: 'BearHacks', label: 'BearHacks',
