@@ -1,0 +1,167 @@
+/* The first plate's night: the same three colours the sky shader paints over the ridge, with its moon and stars. */
+.card {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+  overflow: hidden;
+  color: var(--color-cream);
+  background: linear-gradient(to bottom, #11123a 0%, #36297a 48%, #8a4a8e 78%, #c4566e 100%);
+}
+
+.sky {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(1px 1px at 12% 18%, #fff8 50%, transparent),
+    radial-gradient(1px 1px at 27% 8%, #fff9 50%, transparent),
+    radial-gradient(1.4px 1.4px at 41% 26%, #fffa 50%, transparent),
+    radial-gradient(1px 1px at 58% 12%, #fff7 50%, transparent),
+    radial-gradient(1px 1px at 69% 31%, #fff8 50%, transparent),
+    radial-gradient(1.4px 1.4px at 78% 21%, #fff9 50%, transparent),
+    radial-gradient(1px 1px at 92% 37%, #fff6 50%, transparent),
+    radial-gradient(1px 1px at 8% 41%, #fff6 50%, transparent),
+    radial-gradient(1px 1px at 34% 44%, #fff5 50%, transparent),
+    radial-gradient(1px 1px at 51% 39%, #fff6 50%, transparent),
+    radial-gradient(1.2px 1.2px at 85% 6%, #fffa 50%, transparent),
+    radial-gradient(1px 1px at 4% 7%, #fff8 50%, transparent),
+    radial-gradient(60% 40% at 30% 72%, rgba(240, 89, 106, .35), transparent 70%);
+}
+
+.moon {
+  position: absolute;
+  top: 9%;
+  right: 12%;
+  width: clamp(1.3rem, 3.4vw, 2rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 36%, #fff6e4, #f3d3a6 70%);
+  box-shadow: 0 0 2.4rem 1rem rgba(243, 211, 166, .16);
+}
+
+.copy {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 34rem;
+  padding: clamp(2.2rem, 7svh, 6rem) var(--edge) 0;
+}
+
+.hello {
+  margin-bottom: .3rem;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-style: italic;
+  font-weight: 300;
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+  opacity: .85;
+  animation: settle 1s ease both .1s;
+}
+
+.copy h1 {
+  margin-left: -.04em;
+  font-family: var(--font-display);
+  font-size: clamp(3.4rem, min(19vw, 11svh), 6.4rem);
+  font-weight: 300;
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+  line-height: .86;
+  letter-spacing: -.045em;
+}
+.copy h1 > span { display: block; padding-bottom: .12em; margin-bottom: -.12em; overflow: hidden; }
+.copy h1 > span > span { display: block; animation: lift 1.1s cubic-bezier(.16, .8, .2, 1) both .2s; }
+.copy h1 > span + span > span { animation-delay: .32s; }
+
+.lede {
+  margin-top: 1rem;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 300;
+  font-variation-settings: 'SOFT' 100;
+  animation: settle 1s ease both .6s;
+}
+.lede strong { font-weight: 400; font-style: italic; color: #ffb7a0; }
+
+/* Three fat doors, easy to hit with a thumb in a crowded room. */
+.options {
+  display: grid;
+  gap: .8rem;
+  margin-top: clamp(1.4rem, 4svh, 2.8rem);
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 4.6rem;
+  padding: 1rem 1.2rem;
+  border: 1px solid rgba(242, 236, 219, .2);
+  border-radius: 1.1rem;
+  background: rgba(17, 18, 58, .55);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 14px 34px -20px rgba(0, 0, 0, .7);
+  transition: border-color .25s ease, background-color .25s ease, transform .25s cubic-bezier(.2, .8, .2, 1);
+  animation: settle .9s ease both;
+}
+.option:nth-child(1) { animation-delay: .75s; }
+.option:nth-child(2) { animation-delay: .85s; }
+.option:nth-child(3) { animation-delay: .95s; }
+.option:hover, .option:focus-visible { border-color: var(--color-coral); background: rgba(35, 32, 128, .6); }
+.option:active { transform: scale(.98); }
+
+.icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 50%;
+  background: rgba(246, 134, 106, .16);
+  color: #ffb7a0;
+}
+
+.text { display: grid; gap: .15rem; flex: 1; min-width: 0; }
+.text b {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 400;
+  font-variation-settings: 'SOFT' 100;
+  line-height: 1.1;
+  letter-spacing: -.01em;
+}
+.text small { font-size: .86rem; opacity: .72; }
+
+.arrow { flex: none; opacity: .6; transition: transform .3s cubic-bezier(.2, .7, .2, 1), opacity .25s ease; }
+.option:hover .arrow, .option:focus-visible .arrow { opacity: 1; transform: translate(2px, -2px); }
+
+/* The ridge fills whatever is left below the doors. */
+.land {
+  position: relative;
+  flex: 1 0 clamp(7rem, 22svh, 15rem);
+  margin-top: 1.5rem;
+}
+.painting { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+.caption {
+  position: absolute;
+  left: var(--edge);
+  bottom: 1.2rem;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4em 1.2em;
+  opacity: .78;
+}
+
+@keyframes lift { from { transform: translateY(105%); } }
+@keyframes settle { from { opacity: 0; transform: translateY(.7rem); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .hello, .lede, .option, .copy h1 > span > span { animation: none; }
+}
+
+@media (min-width: 900px) {
+  .copy { max-width: 40rem; margin-inline: auto; padding-inline: 0; }
+}
