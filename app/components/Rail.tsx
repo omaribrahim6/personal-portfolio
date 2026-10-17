@@ -15,7 +15,7 @@ export default function Rail({ label, reset, onActive, children }: {
   const track = useRef<HTMLUListElement>(null)
   const [state, setState] = useState({ index: 0, count: 0, start: true, end: true })
   const onActiveRef = useRef(onActive)
-  onActiveRef.current = onActive
+  useEffect(() => { onActiveRef.current = onActive })
 
   const measure = useCallback(() => {
     const el = track.current
@@ -76,8 +76,12 @@ export default function Rail({ label, reset, onActive, children }: {
       <ul ref={track} className={styles.track} aria-label={label} tabIndex={0} onKeyDown={onKey}>
         {children}
       </ul>
-      <div className={styles.progress} aria-hidden="true">
-        <i style={{ width: `${state.count ? (state.index + 1) / state.count * 100 : 0}%` }} />
+      {/* How far along the shelf you are, as a battery charging: one cell for every card. */}
+      <div className={styles.battery} aria-hidden="true">
+        <span className={styles.cells}>
+          {Array.from({ length: state.count }, (_, i) => <i key={i} data-on={i <= state.index} />)}
+        </span>
+        <b>{state.count ? Math.round((state.index + 1) / state.count * 100) : 0}%</b>
       </div>
     </div>
   )

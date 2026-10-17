@@ -6,8 +6,9 @@ import type { Project } from '../content'
 import Painting from './Painting'
 import styles from './ProjectWindow.module.css'
 
-// Each project is seen through an arch, like the opening in the hedge. The painting behind is still;
-// what moves is drawn over it. These are pictures of the idea, not screenshots of the product.
+// Each project is seen through a window of the glasshouse: an arch of glazing in a brass frame. Pressing it
+// swings the two casements open, and the picture behind comes to life. The painting is still; what moves is
+// drawn over it. These are pictures of the idea, not screenshots of the product.
 
 function Signal() {
   // Where the neighbours are, up and down the street.
@@ -35,7 +36,7 @@ function Cascade() {
     <svg viewBox="0 0 400 500" className={styles.cascade}>
       <defs>
         <linearGradient id="slab-top" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#ffb199" /><stop offset="1" stopColor="#e5606a" />
+          <stop offset="0" stopColor="#fbe7a6" /><stop offset="1" stopColor="#f2a35c" />
         </linearGradient>
       </defs>
       <path className={styles.fall} d="M160 196V262" pathLength="1" />
@@ -46,8 +47,8 @@ function Cascade() {
         return (
           <g key={index} className={styles.slab} data-slab={index}>
             <path d="M0 0 108 -24 176 0 68 24Z" fill="url(#slab-top)" />
-            <path d="M0 0 68 24v15L0 15Z" fill="#a8466f" />
-            <path d="M68 24 176 0v15L68 39Z" fill="#3a2150" />
+            <path d="M0 0 68 24v15L0 15Z" fill="#c9673f" />
+            <path d="M68 24 176 0v15L68 39Z" fill="#2e5b3c" />
             <g className={styles.pupils}>
               <path d="M70 -2v-9M84 1v-9M98 -4v-9" />
               <circle cx="70" cy="-13" r="2" /><circle cx="84" cy="-10" r="2" /><circle cx="98" cy="-15" r="2" />
@@ -107,6 +108,10 @@ export default function ProjectWindow({ project, index }: { project: Project; in
       <span className={styles.arch}>
         <Painting scene={scene} className={styles.painting} />
         <span className={styles.overlay} aria-hidden="true"><Overlay /></span>
+        {/* The casements: glazed, barred, hinged at the sides. */}
+        <span className={styles.casement} data-side="left" aria-hidden="true" />
+        <span className={styles.casement} data-side="right" aria-hidden="true" />
+        <span className={styles.frame} aria-hidden="true" />
       </span>
       <span className={`label ${styles.caption}`} aria-hidden="true">
         <span>0{index + 1} / {caption}</span>

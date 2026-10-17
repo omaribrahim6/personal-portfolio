@@ -11,8 +11,8 @@ precision mediump float;
 #endif
 `
 
-// One full-screen painting, every frame: a graded sky, stars, a moon that becomes the morning sun, and two
-// clouds. The clouds' shapes are not worked out here. They arrive as small images (see clouds.ts) holding a
+// One full-screen painting, every frame: a graded sky, the sun with its halo and a slow turn of rays, the
+// first stars at dusk, and two clouds. The clouds' shapes are not worked out here. They arrive as small images (see clouds.ts) holding a
 // surface normal, a contact shadow and a coverage value per texel; this shader lights them, lets them drift,
 // and adds grain and specks last. Keeping the hundred-odd spheres out of the shader matters twice over: it
 // is cheap to run, and it compiles instantly. Written out in GLSL they took Direct3D seconds to compile.
@@ -62,7 +62,7 @@ vec3 shade(vec4 shape, vec2 q, vec3 lit, vec3 shadow, vec3 deep, vec3 top, vec3 
   vec3 n = vec3(shape.rg * 2. - 1., 0.);
   n.z = sqrt(max(1. - dot(n.xy, n.xy), 0.));
   // Small-scale cauliflower: nudge the normal with noise so no surface is perfectly smooth.
-  vec3 m = normalize(n + vec3(vnoise(q * 15.) - .5, vnoise(q * 15. + 31.) - .5, 0.) * .4);
+  vec3 m = normalize(n + vec3(vnoise(q * 15.) - .5, vnoise(q * 15. + 31.) - .5, 0.) * .26);
   float facing = dot(m, light);
   float k = smoothstep(-.3, .68, facing);
   vec3 c = mix(shadow, lit, k);
@@ -72,10 +72,10 @@ vec3 shade(vec4 shape, vec2 q, vec3 lit, vec3 shadow, vec3 deep, vec3 top, vec3 
   // Each lobe darkens toward its own edge, and into the gaps where a nearer lobe overhangs it.
   float limb = pow(1. - n.z, 2.2);
   vec3 dark = mix(shadow * .62, deep, k * .75 + .1);
-  c = mix(c, dark, clamp(limb * .42 + shape.b * .62, 0., .85));
+  c = mix(c, dark, clamp(limb * .2 + shape.b * .32, 0., .55));
   // Pigment: a soft mottle, then bright specks where the light lands.
-  c *= .93 + .14 * vnoise(q * 34.);
-  c += speck * (.07 + .3 * k);
+  c *= .96 + .08 * vnoise(q * 34.);
+  c += speck * (.015 + .05 * k);
   return c;
 }
 
@@ -121,10 +121,14 @@ void main() {
   vec2 o = p - vec2((uOrb.x - .5) * aspect, uOrb.y);
   float od = length(o);
   col += uOrbCol * exp(-od / (uOrb.z * 3.2)) * uHalo * uOrb.w;
+  // Rays: soft spokes turning very slowly, fading out well before the edge of the halo.
+  float spoke = atan(o.y, o.x);
+  float rays = pow(.5 + .5 * sin(spoke * 11. + uTime * .04), 10.) * .6 + pow(.5 + .5 * sin(spoke * 5. - uTime * .03 + 1.7), 12.) * .4;
+  col += uOrbCol * rays * exp(-od / (uOrb.z * 9.)) * smoothstep(uOrb.z * .9, uOrb.z * 2.4, od) * uHalo * .17 * uOrb.w;
   float disc = smoothstep(uOrb.z, uOrb.z - 1.5 / uRes.y, od) * uOrb.w;
-  col = mix(col, uOrbCol * (.9 + .16 * vnoise(o / uOrb.z * 2.4 + 3.)), disc);
+  col = mix(col, uOrbCol * (.96 + .08 * vnoise(o / uOrb.z * 2.4 + 3.)), disc);
 
-  float speck = step(.986, g);
+  float speck = step(.992, g);
 
   if (uB.w > .01) {
     vec2 q = (p - vec2((uB.x - .5) * aspect, uB.y)) / uB.z;
@@ -138,7 +142,7 @@ void main() {
     if (shape.a > .004) col = mix(col, shade(shape, q, uALit, uAShade, uADeep, uATop, uLightA, speck), shape.a * smoothstep(-.06, .26, q.y) * uA.w);
   }
 
-  col += (g - .5) * .05;
+  col += (g - .5) * .035;
   gl_FragColor = vec4(col, 1.);
 }
 `

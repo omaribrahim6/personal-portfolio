@@ -1,7 +1,8 @@
 import { hex } from '../paint/core'
 
-// What the sky looks like over each plate. The shader is given a blend of two neighbours while you scroll
-// between them, so the night never cuts: the thunderhead sails off, the moon climbs, the sky pales.
+// What the sky looks like over each plate: one day, from sunrise over the terraces to the golden hour on the
+// shore. The shader is given a blend of two neighbours while you scroll between them, so the day never cuts:
+// the cumulus sails off, the sun climbs over the top and comes down again, the light warms.
 // Positions: x is a fraction of the width, y a fraction of the height measured from the bottom.
 // Each position has a landscape value and a portrait one.
 
@@ -12,61 +13,71 @@ type Key = {
   stars: number
   orb: Pair<[number, number, number]>; orbCol: string; orbAmount: number; halo: number
   a: Pair<[number, number, number]>; aAlpha: number
+  aLit: string; aShade: string; aDeep: string; aTop: string
   b: Pair<[number, number, number]>; bAlpha: number
   bLit: string; bShade: string; bDeep: string; bTop: string
 }
 
-const blueBank = { bLit: '#8494ea', bShade: '#3b47b6', bDeep: '#20287e', bTop: '#b3bcf3' }
+// White cumulus on a blue day: warm where the sun is on it, the blue of the sky in its shadows.
+const noonCloud = { lit: '#fffbf0', shade: '#b4c6ea', deep: '#7a93cf', top: '#ffffff' }
+const day = (c: typeof noonCloud, prefix: 'a' | 'b') => ({ [`${prefix}Lit`]: c.lit, [`${prefix}Shade`]: c.shade, [`${prefix}Deep`]: c.deep, [`${prefix}Top`]: c.top }) as Record<string, string>
+const A = (c: typeof noonCloud) => day(c, 'a') as Pick<Key, 'aLit' | 'aShade' | 'aDeep' | 'aTop'>
+const B = (c: typeof noonCloud) => day(c, 'b') as Pick<Key, 'bLit' | 'bShade' | 'bDeep' | 'bTop'>
+
+const sunrise = { lit: '#ffdcb6', shade: '#c4b2d8', deep: '#8f80bf', top: '#fff0e6' }
+const morning = { lit: '#fff6e4', shade: '#adbde6', deep: '#7186c4', top: '#ffffff' }
+const afternoon = { lit: '#fff1d4', shade: '#b8bfe3', deep: '#8189c6', top: '#fffaf0' }
+const golden = { lit: '#ffc988', shade: '#c88fa6', deep: '#7c5c94', top: '#ffe2c0' }
 
 export const keys: Key[] = [
-  { // I · the ridge, night
-    top: '#11123a', mid: '#36297a', low: '#8a4a8e',
-    glow: '#f0596a', glowAt: [.3, .72], stars: 1,
-    orb: [[.305, .84, .012], [.86, .905, .01]], orbCol: '#f3d3a6', orbAmount: 1, halo: .16,
-    a: [[.715, .29, .385], [.6, .262, .19]], aAlpha: 1,
-    b: [[-.6, .2, .4], [-.8, .3, .2]], bAlpha: 0, ...blueBank,
+  { // I · the terraces, sunrise: a tall cumulus catching the first light, the sun just clear of the hills
+    top: '#4a5db4', mid: '#c49cc2', low: '#ffcf98',
+    glow: '#ffb06a', glowAt: [.24, .85], stars: .12,
+    orb: [[.52, .4, .03], [.7, .52, .032]], orbCol: '#fff3cf', orbAmount: 1, halo: .62,
+    a: [[.79, .3, .37], [.66, .3, .2]], aAlpha: 1, ...A(sunrise),
+    b: [[-.6, .2, .4], [-.8, .3, .2]], bAlpha: 0, ...B(morning),
   },
-  { // II · the dunes, deep night
-    top: '#141d4d', mid: '#35357a', low: '#6d4a8c',
-    glow: '#c9566c', glowAt: [.22, .3], stars: .9,
-    orb: [[.66, .84, .02], [.72, .9, .017]], orbCol: '#efdcc0', orbAmount: 1, halo: .2,
-    a: [[1.55, .2, .4], [1.9, .26, .2]], aAlpha: 1,
-    b: [[-.6, .2, .4], [-.8, .3, .2]], bAlpha: 0, ...blueBank,
+  { // II · the gardens, morning
+    top: '#3a68cb', mid: '#89b6e8', low: '#eef0d6',
+    glow: '#fff1c6', glowAt: [.2, .45], stars: 0,
+    orb: [[.66, .66, .022], [.72, .7, .02]], orbCol: '#fff8e4', orbAmount: 1, halo: .42,
+    a: [[1.42, .26, .4], [1.7, .3, .22]], aAlpha: 1, ...A(morning),
+    b: [[-.6, .2, .4], [-.8, .3, .2]], bAlpha: 0, ...B(morning),
   },
-  { // III · the arch, first light
-    top: '#7c84c4', mid: '#b5b4d6', low: '#dcd9d0',
-    glow: '#e6e0cc', glowAt: [.2, .2], stars: 0,
-    orb: [[.82, .84, .016], [.8, .88, .014]], orbCol: '#f4f1e6', orbAmount: .55, halo: .08,
-    a: [[1.9, .2, .4], [2.2, .26, .2]], aAlpha: 0,
-    b: [[1.5, .1, .31], [1.9, .3, .2]], bAlpha: 0, ...blueBank,
+  { // III · the glasshouse, late morning: the sky deepening, a cloud building low on the right
+    top: '#2858c4', mid: '#69a2e6', low: '#d5e9f0',
+    glow: '#f4f2da', glowAt: [.2, .3], stars: 0,
+    orb: [[.6, .86, .02], [.7, .9, .018]], orbCol: '#fffaee', orbAmount: 1, halo: .36,
+    a: [[1.9, .2, .4], [2.2, .26, .2]], aAlpha: 0, ...A(noonCloud),
+    b: [[1.06, .06, .3], [1.2, .2, .2]], bAlpha: .85, ...B(morning),
   },
-  { // IV · the hill, pale morning with a blue bank behind it
-    top: '#c6c5bf', mid: '#d8d5c6', low: '#e4dfcc',
-    glow: '#e9e3cf', glowAt: [.25, .2], stars: 0,
-    orb: [[.47, .9, .014], [.78, .93, .012]], orbCol: '#f8f5ea', orbAmount: .5, halo: .06,
-    a: [[1.9, .2, .4], [2.2, .26, .2]], aAlpha: 0,
-    b: [[.8, .13, .31], [.8, .3, .2]], bAlpha: 1, ...blueBank,
+  { // IV · the wind farm, noon: deep ultramarine overhead, the bank of white behind the hill
+    top: '#1c4ab4', mid: '#5893df', low: '#cfe4f0',
+    glow: '#ffffff', glowAt: [.16, .26], stars: 0,
+    orb: [[.56, .66, .021], [.78, .7, .018]], orbCol: '#fffdf4', orbAmount: 1, halo: .34,
+    a: [[1.9, .2, .4], [2.2, .26, .2]], aAlpha: 0, ...A(noonCloud),
+    b: [[.8, .13, .31], [.8, .3, .2]], bAlpha: 1, ...B(noonCloud),
   },
-  { // V · the field
-    top: '#bfc2c6', mid: '#d5d4c9', low: '#e6dfcd',
-    glow: '#ecdcc6', glowAt: [.25, .3], stars: 0,
-    orb: [[.44, .9, .014], [.74, .93, .012]], orbCol: '#f8f5ea', orbAmount: .4, halo: .06,
-    a: [[1.9, .2, .4], [2.2, .26, .2]], aAlpha: 0,
-    b: [[.9, .24, .27], [.92, .4, .17]], bAlpha: 1, bLit: '#8e9ced', bShade: '#414dbb', bDeep: '#252d86', bTop: '#bcc4f5',
+  { // V · the sunflower field, early afternoon: the haze warming
+    top: '#2858bd', mid: '#76a8e4', low: '#f2e6c2',
+    glow: '#ffe6a6', glowAt: [.26, .38], stars: 0,
+    orb: [[.72, .84, .02], [.74, .9, .018]], orbCol: '#fff6dc', orbAmount: 1, halo: .38,
+    a: [[1.9, .2, .4], [2.2, .26, .2]], aAlpha: 0, ...A(noonCloud),
+    b: [[.9, .24, .27], [.92, .4, .17]], bAlpha: 1, ...B(afternoon),
   },
-  { // VI · the islands, high above a sea of cloud, the sun getting up
-    top: '#c3c6d6', mid: '#ddd6cd', low: '#efdccb',
-    glow: '#f6dcc0', glowAt: [.68, .32], stars: 0,
-    orb: [[.72, .84, .018], [.72, .88, .016]], orbCol: '#fff6e6', orbAmount: .7, halo: .2,
-    a: [[1.9, .2, .4], [2.2, .26, .2]], aAlpha: 0,
-    b: [[1.12, .3, .22], [1.1, .46, .14]], bAlpha: .55, bLit: '#a9b2f2', bShade: '#5560c4', bDeep: '#2f3796', bTop: '#d3d8f8',
+  { // VI · the sky islands, late afternoon: high over a sea of cloud, the sun lowering
+    top: '#4772c8', mid: '#a9c4e8', low: '#fde2bd',
+    glow: '#ffd596', glowAt: [.32, .52], stars: 0,
+    orb: [[.8, .62, .026], [.76, .66, .024]], orbCol: '#fff2d2', orbAmount: 1, halo: .42,
+    a: [[1.9, .2, .4], [2.2, .26, .2]], aAlpha: 0, ...A(noonCloud),
+    b: [[1.12, .3, .22], [1.1, .46, .14]], bAlpha: .6, ...B(afternoon),
   },
-  { // VII · the shore, dawn
-    top: '#d9cfc8', mid: '#efcdb0', low: '#f6b996',
-    glow: '#ffd9b0', glowAt: [.34, .55], stars: 0,
-    orb: [[.7, .6, .055], [.66, .62, .05]], orbCol: '#fff4dc', orbAmount: 1, halo: .5,
-    a: [[1.9, .2, .4], [2.2, .26, .2]], aAlpha: 0,
-    b: [[1.02, .46, .2], [1.0, .58, .12]], bAlpha: 1, bLit: '#f0a49a', bShade: '#8f83cb', bDeep: '#5a55a6', bTop: '#f5d2c4',
+  { // VII · the shore, the golden hour: the first stars at the very top
+    top: '#55599f', mid: '#e3988a', low: '#ffc877',
+    glow: '#ffae58', glowAt: [.5, .72], stars: .22,
+    orb: [[.68, .5, .05], [.64, .6, .046]], orbCol: '#fff0c4', orbAmount: 1, halo: .56,
+    a: [[1.9, .2, .4], [2.2, .26, .2]], aAlpha: 0, ...A(golden),
+    b: [[1.02, .46, .2], [1.0, .58, .12]], bAlpha: 1, ...B(golden),
   },
 ]
 
@@ -77,8 +88,11 @@ const lerp3 = <T extends number[]>(a: T, b: T, t: number) => a.map((v, i) => ler
 export type SkyState = {
   top: number[]; mid: number[]; low: number[]; glow: number[]; glowAt: number[]
   stars: number; orb: number[]; orbCol: number[]; halo: number
-  a: number[]; b: number[]; bLit: number[]; bShade: number[]; bDeep: number[]; bTop: number[]
+  a: number[]; aLit: number[]; aShade: number[]; aDeep: number[]; aTop: number[]
+  b: number[]; bLit: number[]; bShade: number[]; bDeep: number[]; bTop: number[]
 }
+
+type Colour = 'top' | 'mid' | 'low' | 'glow' | 'orbCol' | 'aLit' | 'aShade' | 'aDeep' | 'aTop' | 'bLit' | 'bShade' | 'bDeep' | 'bTop'
 
 /** The sky at a fractional chapter, for a viewport of the given aspect ratio. */
 export function skyAt(chapter: number, aspect: number): SkyState {
@@ -89,7 +103,7 @@ export function skyAt(chapter: number, aspect: number): SkyState {
   const from = keys[i], to = keys[i + 1]
   const portrait = Math.min(1, Math.max(0, (1.25 - aspect) / .45))
   const place = (k: Key, name: 'orb' | 'a' | 'b') => lerp3(k[name][0], k[name][1], portrait)
-  const color = (name: 'top' | 'mid' | 'low' | 'glow' | 'orbCol' | 'bLit' | 'bShade' | 'bDeep' | 'bTop') => lerp3(rgb(from[name]), rgb(to[name]), t)
+  const color = (name: Colour) => lerp3(rgb(from[name]), rgb(to[name]), t)
   return {
     top: color('top'), mid: color('mid'), low: color('low'), glow: color('glow'),
     glowAt: lerp3(from.glowAt, to.glowAt, t),
@@ -97,6 +111,7 @@ export function skyAt(chapter: number, aspect: number): SkyState {
     orb: [...lerp3(place(from, 'orb'), place(to, 'orb'), t), lerp(from.orbAmount, to.orbAmount, t)],
     orbCol: color('orbCol'), halo: lerp(from.halo, to.halo, t),
     a: [...lerp3(place(from, 'a'), place(to, 'a'), t), lerp(from.aAlpha, to.aAlpha, t)],
+    aLit: color('aLit'), aShade: color('aShade'), aDeep: color('aDeep'), aTop: color('aTop'),
     b: [...lerp3(place(from, 'b'), place(to, 'b'), t), lerp(from.bAlpha, to.bAlpha, t)],
     bLit: color('bLit'), bShade: color('bShade'), bDeep: color('bDeep'), bTop: color('bTop'),
   }

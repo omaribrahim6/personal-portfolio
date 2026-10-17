@@ -6,11 +6,12 @@ import { ArrowUp, ArrowUpRight, RotateCcw, Square, X } from 'lucide-react'
 import { email } from '../../content'
 import { useMotionPreference } from '../useMotionPreference'
 import { world } from '../scroll'
-import type { Behavior, Framing, MiniStage } from './stage'
+import type { Behavior, Framing, Light, MiniStage } from './stage'
+import { PodBack, PodFront } from './Pod'
 import styles from './mini.module.css'
 
-// The small Omar. He leans out of a low moon in the corner of every chapter and watches the pointer;
-// at the shore, where the walk ends, he is standing on the beach instead, and for once facing you.
+// The small Omar. He leans out of the porthole of a little pod in the corner of every chapter and watches the
+// pointer; at the shore, where the day ends, he is standing on the beach instead, and for once facing you.
 // Click him and the corner empties: a chat grows out of it, and he is standing behind the message box.
 // The chat is the one from Mamdani (its size, its layout and the way it opens), in this site's colours.
 // His answers come from /api/ask. Where WebGL or the model cannot be had, a picture of him stands in.
@@ -41,7 +42,7 @@ export default function MiniOmar() {
   const [open, setOpen] = useState(false)
   const [atShore, setAtShore] = useState(false)
   const [crowded, setCrowded] = useState(false)
-  const [dawn, setDawn] = useState(false)
+  const [hour, setHour] = useState<Light>('morning')
   const [bubble, setBubble] = useState(false)
   const [hover, setHover] = useState(false)
   const [active, setActive] = useState(false)
@@ -127,10 +128,10 @@ export default function MiniOmar() {
     }, { threshold: [0, .45, .6] })
     if (terrain) observer.observe(terrain)
     if (toolkit) observer.observe(toolkit)
-    // His moon pales with the sky, once the walk is past the dunes. The page works out its chapter in a
-    // frame of its own, so this reads it one frame later.
+    // He is lit by the same sun as the page: pink and low over the terraces, high and white through the day,
+    // gold on the way down. The page works out its chapter in a frame of its own, so this reads it one frame later.
     let frame = 0
-    const onScroll = () => { frame ||= requestAnimationFrame(() => { frame = requestAnimationFrame(() => { frame = 0; setDawn(world.chapter > 1.5) }) }) }
+    const onScroll = () => { frame ||= requestAnimationFrame(() => { frame = requestAnimationFrame(() => { frame = 0; setHour(world.chapter < .6 ? 'morning' : world.chapter > 5.4 ? 'golden' : 'day') }) }) }
     window.addEventListener('scroll', onScroll, { passive: true })
     onScroll()
     return () => {
@@ -155,7 +156,7 @@ export default function MiniOmar() {
   }, [ready, spot, stand])
 
   useEffect(() => { stage.current?.act(behavior) }, [behavior, ready])
-  useEffect(() => { stage.current?.light(spot === 'shore' || (spot === 'dock' && dawn) ? 'dawn' : 'night') }, [dawn, spot, ready])
+  useEffect(() => { stage.current?.light(spot === 'shore' ? 'golden' : spot === 'chat' ? 'day' : hour) }, [hour, spot, ready])
 
   // He arrives with a wave, and once per visit says what he is for.
   useEffect(() => {
@@ -313,18 +314,19 @@ export default function MiniOmar() {
 
   return (
     <>
-      <div className={styles.dock} data-open={open} data-hidden={hidden} data-dawn={dawn}>
+      <div className={styles.dock} data-open={open} data-hidden={hidden} data-live={active}>
         {bubble && !open && !hover && spot === 'dock' && (
           <button type="button" className={styles.bubble} onClick={talk} tabIndex={-1}>I’m the small Omar. Ask me anything about my work.</button>
         )}
-        {/* Outside the quarter circle, so nothing clips it. */}
+        {/* Outside the pod, so nothing clips it. */}
         <span className={styles.hint} data-on={hover && !open} aria-hidden="true">Ask Omar <kbd>Ctrl J</kbd></span>
         <button ref={launcher} type="button" className={styles.launcher} onClick={talk} tabIndex={hidden || open ? -1 : 0}
           onPointerEnter={event => { if (event.pointerType === 'mouse') setHover(true) }} onPointerLeave={() => setHover(false)}
           onFocus={event => { if (event.currentTarget.matches(':focus-visible')) setHover(true) }} onBlur={() => setHover(false)}
           aria-label="Ask Omar, a small AI version of him" aria-expanded={open} aria-controls="mini-omar-chat">
-          <span className={styles.moon} aria-hidden="true" />
+          <PodBack className={styles.pod} />
           <span ref={dockSeat} className={styles.seat}>{still(styles.canvas)}</span>
+          <PodFront className={styles.pod} />
         </button>
       </div>
 

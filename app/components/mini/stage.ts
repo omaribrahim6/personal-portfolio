@@ -8,7 +8,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 
 export type Behavior = 'watch' | 'listen' | 'think' | 'talk'
 export type Framing = 'bust' | 'waist' | 'full'
-export type Light = 'night' | 'dawn'
+export type Light = 'morning' | 'day' | 'golden'
 
 const MODEL = '/models/omar-rigged.glb'
 
@@ -31,9 +31,12 @@ const FRAMES: Record<Framing, { at: [number, number, number]; look: [number, num
   full: { at: [0, .54, 2.95], look: [0, .5, 0], fov: 22, turn: .1 },
 }
 
+// The light he stands in follows the sun over the page: low and pink over the terraces, high and white with
+// green coming up off the grass through the day, gold over the shore.
 const LIGHTS: Record<Light, { sky: string; ground: string; key: string; from: [number, number, number]; fill: number; strength: number }> = {
-  night: { sky: '#cfd4ff', ground: '#4a2f78', key: '#ffd0b4', from: [1.2, 1.6, 2.2], fill: 1.35, strength: 2.1 },
-  dawn: { sky: '#fff4e2', ground: '#8f88d6', key: '#fff2d6', from: [1.8, 1.9, 1.6], fill: 2.2, strength: 2.3 },
+  morning: { sky: '#eadcf2', ground: '#7c6c9c', key: '#ffd8b2', from: [-1.4, 1.5, 2.2], fill: 1.6, strength: 2.1 },
+  day: { sky: '#f2f6ff', ground: '#86a070', key: '#fff6e6', from: [1.2, 1.9, 2], fill: 2.1, strength: 2.2 },
+  golden: { sky: '#ffe4cc', ground: '#a08070', key: '#ffc68c', from: [1.8, 1.3, 1.6], fill: 1.9, strength: 2.4 },
 }
 
 type Angles = [number, number, number]
@@ -124,7 +127,7 @@ export class MiniStage {
     this.renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true })
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
     this.scene.add(this.sky, this.key, this.character)
-    this.light('night')
+    this.light('morning')
     this.frame('bust')
     this.observer = new IntersectionObserver(entries => { this.visible = entries.some(entry => entry.isIntersecting) })
     this.observer.observe(canvas)

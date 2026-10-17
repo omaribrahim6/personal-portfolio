@@ -1,4 +1,4 @@
-.ground { --accent: var(--color-coral); }
+.ground { --accent: var(--color-lime); --on-accent: var(--color-ink); }
 
 .list {
   padding-top: clamp(1rem, 3vw, 2.5rem);
@@ -7,10 +7,11 @@
 .work {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: clamp(2.2rem, 5vw, 3rem);
+  gap: clamp(2.6rem, 5vw, 3rem);
   align-items: center;
   align-content: start;
   width: 100%;
+  padding: 12px;
   list-style: none;
 }
 
@@ -19,47 +20,78 @@
 .number {
   display: flex;
   flex-wrap: wrap;
-  gap: .4rem 1.4em;
-  margin-bottom: 1.2rem;
+  align-items: center;
+  gap: .5rem 1em;
+  margin-bottom: 1.3rem;
 }
-.number span:first-child { opacity: .6; }
-.number span:last-child { color: var(--color-gold); }
+.number span:first-child { opacity: .65; }
+/* The award, on a ribbon with notched tails. */
+.number span:last-child {
+  padding: .42rem 1.1rem .42rem .8rem;
+  background: var(--color-sun);
+  color: var(--color-ink);
+  clip-path: polygon(0 0, 100% 0, calc(100% - .55rem) 50%, 100% 100%, 0 100%);
+  font-weight: 700;
+}
 
 .copy h3 {
   font-family: var(--font-display);
-  font-size: clamp(3rem, 7.4vw, 6.2rem);
-  font-weight: 300;
-  font-variation-settings: 'SOFT' 100, 'WONK' 1;
-  line-height: .92;
-  letter-spacing: -.04em;
+  font-size: clamp(2.7rem, 6.6vw, 5.8rem);
+  font-weight: 400;
+  line-height: .95;
+  letter-spacing: .015em;
   scroll-margin-top: 9rem;
+  --line: var(--color-glass);
 }
+.copy h3 :global(.sign) { text-shadow: .02em .02em 0 #071c18, .04em .04em 0 #071c18, .06em .06em 0 #071c18; }
+.copy h3 :global(.sign) > [data-line] { text-shadow: none; }
 
 .description {
   max-width: 36rem;
   margin-top: 1.5rem;
-  color: rgba(242, 236, 219, .86);
+  color: rgba(248, 241, 221, .88);
   text-wrap: pretty;
 }
 
-/* Tools as a plain run of words, separated by slashes. */
+/* The tools, as tags tied on with string: a punched hole at the head of each. */
 .tags {
   display: flex;
   flex-wrap: wrap;
-  max-width: 36rem;
+  gap: .45rem;
+  max-width: 38rem;
   margin-top: 1.4rem;
-  font-size: .86rem;
-  color: var(--color-peri);
 }
-.tags li:not(:last-child)::after { content: '/'; margin: 0 .7em; opacity: .45; }
+.tags li {
+  position: relative;
+  padding: .32rem .7rem .32rem 1.45rem;
+  border: 1.5px solid rgba(127, 214, 198, .5);
+  border-radius: .35rem .9rem .9rem .35rem;
+  background: rgba(127, 214, 198, .08);
+  color: #c9f0e6;
+  font-family: var(--font-label);
+  font-size: .62rem;
+  letter-spacing: .06em;
+}
+.tags li::before {
+  content: '';
+  position: absolute;
+  left: .5rem;
+  top: 50%;
+  width: .42rem;
+  height: .42rem;
+  margin-top: -.21rem;
+  border-radius: 50%;
+  background: var(--ground);
+  box-shadow: 0 0 0 1.5px rgba(127, 214, 198, .7);
+}
 
 .links {
   display: flex;
   flex-wrap: wrap;
-  gap: .4rem 1.8rem;
+  gap: .6rem;
   margin-top: 1.7rem;
-  font-size: .98rem;
 }
+.links :global(.go) { --tint: var(--color-glass); }
 
 @media (min-width: 860px) {
   .work { grid-template-columns: minmax(0, 23rem) minmax(0, 1fr); gap: clamp(3.5rem, 8vw, 8rem); }

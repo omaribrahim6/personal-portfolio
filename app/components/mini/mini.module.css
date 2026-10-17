@@ -1,7 +1,7 @@
 /* ------------------------------------------------------------------ the corner */
 
 .dock {
-  --size: clamp(118px, 13vw, 172px);
+  --size: clamp(128px, 13vw, 180px);
   position: fixed;
   right: 0;
   bottom: 0;
@@ -12,7 +12,7 @@
   transition: transform .9s cubic-bezier(.3, 1.45, .45, 1), opacity .3s ease;
 }
 
-/* Not loaded yet, away on the beach, or making room: he is below the edge of the screen. */
+/* Not loaded yet, away on the beach, or making room: the pod has sunk below the edge of the screen. */
 .dock[data-hidden='true'] {
   transform: translate(28%, 112%);
   transition: transform .45s cubic-bezier(.6, 0, .8, .4);
@@ -33,28 +33,35 @@
   display: block;
   width: 100%;
   height: 100%;
-  border-top-left-radius: 100%;
+  border-top-left-radius: 70% 60%;
   -webkit-tap-highlight-color: transparent;
   transform-origin: 100% 100%;
   transition: transform .45s cubic-bezier(.22, 1, .36, 1);
 }
 .launcher:hover { transform: scale(1.04); }
-.launcher:focus-visible { outline-offset: -6px; }
+.launcher:focus-visible { outline-offset: -10px; }
 
-/* A low moon: coral at night, paler once the sky is. Rings like the ones around the real one. */
-.moon {
+.pod {
   position: absolute;
   inset: 0;
-  border-top-left-radius: 100%;
-  background:
-    repeating-radial-gradient(circle at 100% 100%, transparent 0 21px, rgba(255, 244, 224, .16) 21px 22px),
-    radial-gradient(circle at 100% 100%, #ffd2a6 0%, #f9986f 42%, #ee6d5f 72%, #d9485a 100%);
-  box-shadow: 0 0 0 1px rgba(255, 210, 170, .35), 0 0 46px rgba(246, 134, 106, .38);
-  transition: filter .8s ease;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
 }
-.dock[data-dawn='true'] .moon { filter: saturate(.9) brightness(1.06); }
 
-/* He is taller than his moon, and his hand goes wide when he waves: the seat overhangs it on every side. */
+/* The lamp on the antenna: amber while there is no one to answer, green and breathing when there is. */
+.dock :global(.lamp) { fill: var(--color-sun); transition: fill .4s ease; }
+.dock[data-live='true'] :global(.lamp) { fill: #8fe35a; animation: lamp 2.4s ease-in-out infinite; }
+.launcher:hover :global(.lamp) { animation: blink .5s steps(1) 3; }
+
+/* The vines stir. */
+.dock :global(.vines) { transform-box: view-box; transform-origin: 20px 60px; animation: stir 7s ease-in-out infinite; }
+
+/*
+ * He is taller than his window, and his hand goes wide when he waves: the seat overhangs the pod on every
+ * side. Below the middle of the porthole he is inside it, cut to the glass; above it he leans out.
+ */
 .seat {
   position: absolute;
   right: -22%;
@@ -63,6 +70,10 @@
   width: 140%;
   height: 132%;
   pointer-events: none;
+}
+.dock .seat {
+  -webkit-mask: radial-gradient(circle calc(var(--size) * .272) at 50% 59.8%, #000 98%, transparent 100%), linear-gradient(#000 0 59.8%, transparent 59.8%);
+  mask: radial-gradient(circle calc(var(--size) * .272) at 50% 59.8%, #000 98%, transparent 100%), linear-gradient(#000 0 59.8%, transparent 59.8%);
 }
 
 .canvas {
@@ -74,52 +85,55 @@
   animation: arrive .5s ease both;
 }
 
-/* What the corner is for, on hover. */
-/* It sits clear of him, to his left, and above anything of his that reaches that far. */
+/* What the corner is for, on hover: a tag on a string, clear of him, to his left. */
 .hint {
   position: absolute;
-  right: 106%;
-  bottom: 38%;
+  right: 118%;
+  bottom: 52%;
   z-index: 2;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   padding: 7px 12px;
+  border: 2px solid var(--color-ink);
   border-radius: 999px;
   background: var(--color-cream);
   color: var(--color-ink);
   font-size: 12.5px;
-  font-weight: 500;
+  font-weight: 700;
   white-space: nowrap;
-  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, .8);
+  box-shadow: 3px 3px 0 var(--color-ink);
   pointer-events: none;
   opacity: 0;
-  transform: translateX(8px);
+  transform: translateX(8px) rotate(-2deg);
   transition: opacity .2s, transform .3s cubic-bezier(.22, 1, .36, 1);
 }
-.hint[data-on='true'] { opacity: 1; transform: none; }
+.hint[data-on='true'] { opacity: 1; transform: rotate(-2deg); }
 .hint kbd {
-  padding: 2px 5px;
-  border-radius: 5px;
-  background: rgba(11, 12, 40, .12);
-  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
-  font-size: 10.5px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--color-sun);
+  font-family: var(--font-label);
+  font-size: 10px;
 }
 
+/* Once a visit he says what he is for, in a speech balloon out of the window. */
 .bubble {
   position: absolute;
-  right: 78%;
-  bottom: 74%;
+  right: 82%;
+  bottom: 96%;
   width: max-content;
-  max-width: min(260px, 62vw);
-  padding: 12px 14px;
-  border-radius: 18px 18px 4px 18px;
+  max-width: min(250px, 62vw);
+  padding: 12px 15px;
+  border: 2px solid var(--color-ink);
+  border-radius: 20px 20px 4px 20px;
   background: var(--color-cream);
   color: var(--color-ink);
-  font-size: 13px;
+  font-size: 13.5px;
+  font-weight: 600;
   line-height: 1.4;
   text-align: left;
-  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, .8);
+  box-shadow: 4px 4px 0 var(--color-ink);
   animation: bubble .55s cubic-bezier(.22, 1, .36, 1) both;
 }
 
@@ -147,7 +161,7 @@
   width: 70%;
   height: 8%;
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(20, 21, 74, .45), rgba(20, 21, 74, 0));
+  background: radial-gradient(closest-side, rgba(90, 60, 20, .45), rgba(90, 60, 20, 0));
   transform: translate(-14%, 30%) skewX(-40deg);
 }
 
@@ -159,9 +173,11 @@
   align-items: center;
   gap: .5em;
   padding: .45rem .7rem;
+  border: 2px solid var(--color-ink);
   border-radius: 999px 999px 999px 0;
-  background: #14154a;
-  color: var(--color-cream);
+  background: var(--color-sun);
+  color: var(--color-ink);
+  box-shadow: 3px 3px 0 var(--color-ink);
   white-space: nowrap;
   opacity: 0;
   transform: translateY(.4rem);
@@ -172,21 +188,22 @@
 
 /* ------------------------------------------------------------------ the chat */
 
-/* Mamdani's chat panel: the same box, measurements and motion. Only the colours are this site's. */
+/* Mamdani's chat panel: the same box, measurements and motion. Inside, it is the pod: paper, brass and a view out. */
 .chat {
-  --panel: #10113a;
-  --panel-2: #181a4c;
-  --line: rgba(242, 236, 219, .1);
-  --line-2: rgba(242, 236, 219, .2);
-  --ink: var(--color-cream);
-  --ink-2: rgba(242, 236, 219, .76);
-  --ink-3: rgba(242, 236, 219, .52);
-  --black: var(--color-cream);
-  --on-black: var(--color-ink);
-  --accent: var(--color-coral);
-  --good: #5fd39a;
-  --bad: #ffb7a0;
+  --panel: #fbf7ea;
+  --panel-2: #f3ecd7;
+  --line: rgba(16, 38, 28, .14);
+  --line-2: rgba(16, 38, 28, .32);
+  --ink: var(--color-ink);
+  --ink-2: rgba(16, 38, 28, .8);
+  --ink-3: rgba(16, 38, 28, .55);
+  --black: var(--color-forest);
+  --on-black: var(--color-cream);
+  --accent: var(--color-sun);
+  --good: #8fe35a;
+  --bad: #b8532b;
   --ease: cubic-bezier(.22, 1, .36, 1);
+  --focus: var(--color-copper);
 
   position: fixed;
   right: 16px;
@@ -199,14 +216,14 @@
   height: min(740px, calc(100vh - 32px));
   height: min(740px, calc(100dvh - 32px));
   overflow: hidden;
-  border: 1px solid var(--line);
+  border: 2px solid var(--color-ink);
   border-radius: 28px;
   background: var(--panel);
   color: var(--ink);
   font-size: 13.5px;
   line-height: 1.5;
-  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, .8);
-  /* It grows out of the corner he lives in, and goes back into it a little faster. */
+  box-shadow: 7px 7px 0 rgba(16, 38, 28, .92), 0 30px 70px -24px rgba(0, 0, 0, .7);
+  /* It grows out of the corner the pod stands in, and goes back into it a little faster. */
   clip-path: circle(0% at 100% 100%);
   visibility: hidden;
   transition: clip-path .45s cubic-bezier(.5, 0, .75, 0), visibility 0s linear .45s;
@@ -224,21 +241,23 @@
 .chat[data-open='true'] .hello { animation-delay: .3s; }
 .chat[data-open='true'] .composer { animation-delay: .35s; }
 
+/* The header is the pod's nameplate: lacquer and brass. */
 .head {
   position: relative;
   z-index: 3;
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 14px 14px 14px 16px;
-  border-bottom: 1px solid var(--line);
-  background: var(--panel);
+  padding: 13px 13px 13px 18px;
+  border-bottom: 3px solid #c39345;
+  background: linear-gradient(180deg, #24493a, #173a2a);
+  color: var(--color-cream);
 }
 
-/* His name, and a green dot while there is a model behind him to answer. */
-.title { display: flex; flex: 1; align-items: center; gap: 9px; min-width: 0; padding-left: 2px; }
-.title b { font-size: 16px; font-weight: 600; letter-spacing: -.02em; line-height: 1.1; }
-.live { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--good); animation: live 2s infinite; }
+/* His name, and a green lamp while there is a model behind him to answer. */
+.title { display: flex; flex: 1; align-items: center; gap: 10px; min-width: 0; padding-left: 2px; }
+.title b { font-family: var(--font-thin); font-size: 17px; font-weight: 400; letter-spacing: .14em; line-height: 1.1; color: #f3d58a; text-shadow: 0 0 10px rgba(247, 182, 56, .4); }
+.live { flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--good); box-shadow: 0 0 0 2px rgba(16, 38, 28, .5); animation: live 2s infinite; }
 
 .icon {
   display: inline-grid;
@@ -246,12 +265,12 @@
   flex: none;
   width: 36px;
   height: 36px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  color: var(--ink-2);
-  transition: color .2s var(--ease), border-color .2s var(--ease), transform .2s var(--ease);
+  border: 1.5px solid rgba(243, 213, 138, .45);
+  border-radius: 50%;
+  color: #f3d58a;
+  transition: color .2s var(--ease), border-color .2s var(--ease), transform .3s var(--ease), background-color .2s var(--ease);
 }
-.icon:hover { border-color: var(--line-2); color: var(--ink); transform: translateY(-1px); }
+.icon:hover { border-color: #f3d58a; background: rgba(243, 213, 138, .14); transform: rotate(-12deg); }
 
 .scroll {
   position: relative;
@@ -270,20 +289,35 @@
 }
 
 .hello { display: flex; flex-direction: column; gap: 16px; padding-top: 6px; }
-.big { font-size: 24px; font-weight: 500; letter-spacing: -.02em; line-height: 1.2; }
-.big span { color: var(--ink-3); }
+.big { font-family: var(--font-serif); font-size: 30px; font-weight: 400; line-height: 1.05; }
+.big span { color: var(--ink-3); font-style: italic; }
 
+/* Questions to ask, as tags: a punched hole at the head of each. */
 .list { display: flex; flex-direction: column; gap: 8px; }
 .list button {
-  padding: 11px 14px;
-  border: 1px solid var(--line);
-  border-radius: 14px;
+  position: relative;
+  padding: 10px 14px 10px 30px;
+  border: 1.5px solid var(--line-2);
+  border-radius: 8px 16px 16px 8px;
   background: var(--panel-2);
   font-size: 13px;
+  font-weight: 600;
   text-align: left;
   transition: border-color .2s var(--ease), background .2s var(--ease), transform .2s var(--ease);
 }
-.list button:hover, .list button:focus-visible { border-color: var(--line-2); background: var(--panel); transform: translateX(3px); }
+.list button::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  margin-top: -3.5px;
+  border-radius: 50%;
+  background: var(--panel);
+  box-shadow: 0 0 0 1.5px var(--line-2);
+}
+.list button:hover, .list button:focus-visible { border-color: var(--ink); background: #fbe6a6; transform: translateX(4px); }
 
 .note { color: var(--ink-3); font-size: 11.5px; line-height: 1.45; }
 .note a { border-bottom: 1px solid currentColor; }
@@ -299,11 +333,11 @@
   color: var(--on-black);
   overflow-wrap: anywhere;
 }
-.msg[data-from='him'] { display: flex; align-self: stretch; flex-direction: column; gap: 10px; }
+.msg[data-from='him'] { display: flex; align-self: stretch; flex-direction: column; gap: 10px; font-size: 14px; }
 .msg[data-failed='true'] > p { color: var(--bad); }
 
-.typing { display: flex; gap: 4px; padding: 6px 0; }
-.typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--ink-3); animation: typing 1s infinite; }
+.typing { display: flex; gap: 5px; padding: 6px 0; }
+.typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--color-sun); box-shadow: 0 0 0 1px rgba(16, 38, 28, .4); animation: typing 1s infinite; }
 .typing i:nth-child(2) { animation-delay: .15s; }
 .typing i:nth-child(3) { animation-delay: .3s; }
 
@@ -314,18 +348,21 @@
   align-self: flex-start;
   gap: 6px;
   max-width: 100%;
-  padding: 7px 12px;
+  padding: 7px 13px;
+  border: 1.5px solid var(--ink);
   border-radius: 999px;
-  background: var(--black);
-  color: var(--on-black);
+  background: var(--color-sun);
+  color: var(--ink);
   font-size: 12px;
+  font-weight: 700;
+  box-shadow: 2px 2px 0 var(--ink);
   transition: transform .2s var(--ease);
 }
 .cta:hover { transform: translateX(3px); }
 .cta svg { flex: none; }
 .cta span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* He stands behind the message box. */
+/* He stands behind the message box, in front of the view out of the pod: sky, the sun, two green hills. */
 .stage {
   position: relative;
   z-index: 1;
@@ -333,7 +370,11 @@
   height: 132px;
   margin-top: -20px;
   overflow: hidden;
-  background: radial-gradient(60% 90% at 50% 100%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%);
+  background:
+    radial-gradient(circle at 80% 34%, #fff6d0 0 9px, rgba(255, 214, 90, .55) 10px 18px, rgba(255, 214, 90, 0) 34px),
+    radial-gradient(130% 70% at 12% 112%, #5d9a4a 0 48%, transparent 49%),
+    radial-gradient(120% 80% at 88% 120%, #3f7a3a 0 46%, transparent 47%),
+    linear-gradient(#8cc2ef, #e9f2df 85%);
   pointer-events: none;
 }
 .behind {
@@ -354,13 +395,13 @@
   gap: 8px;
   margin: -26px 14px 14px;
   padding: 8px 8px 8px 16px;
-  border: 1px solid var(--line-2);
+  border: 2px solid var(--ink);
   border-radius: 20px;
   background: var(--panel);
-  box-shadow: 0 -10px 30px -12px rgba(0, 0, 0, .45);
-  transition: border-color .2s var(--ease);
+  box-shadow: 3px 3px 0 var(--ink);
+  transition: box-shadow .2s var(--ease);
 }
-.composer:focus-within { border-color: color-mix(in srgb, var(--accent) 70%, transparent); }
+.composer:focus-within { box-shadow: 3px 3px 0 var(--ink), 0 0 0 4px rgba(247, 182, 56, .45); }
 .composer textarea {
   flex: 1;
   min-width: 0;
@@ -378,19 +419,21 @@
 }
 .composer textarea::placeholder { color: var(--ink-3); }
 
+/* Send: the sun. */
 .send {
   display: grid;
   place-items: center;
   flex: none;
   width: 38px;
   height: 38px;
-  border-radius: 13px;
-  background: var(--accent);
-  color: var(--on-black);
-  transition: transform .2s var(--ease), opacity .2s;
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+  background: radial-gradient(circle at 36% 30%, #fffbe8, #ffd65a 55%, #f39c1e);
+  color: var(--ink);
+  transition: transform .3s var(--ease), opacity .2s;
 }
 .send:disabled { opacity: .35; }
-.send:not(:disabled):hover { transform: scale(1.06); }
+.send:not(:disabled):hover { transform: rotate(45deg) scale(1.08); }
 .send[data-stop] { background: var(--black); color: var(--on-black); }
 
 @keyframes arrive { from { opacity: 0; } }
@@ -399,10 +442,13 @@
 @keyframes msg { from { opacity: 0; transform: translateY(8px); } }
 @keyframes typing { 50% { opacity: .4; transform: translateY(-4px); } }
 @keyframes live {
-  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--good) 60%, transparent); }
-  70% { box-shadow: 0 0 0 6px transparent; }
-  100% { box-shadow: 0 0 0 0 transparent; }
+  0% { box-shadow: 0 0 0 2px rgba(16, 38, 28, .5), 0 0 0 2px color-mix(in srgb, var(--good) 60%, transparent); }
+  70% { box-shadow: 0 0 0 2px rgba(16, 38, 28, .5), 0 0 0 8px transparent; }
+  100% { box-shadow: 0 0 0 2px rgba(16, 38, 28, .5), 0 0 0 2px transparent; }
 }
+@keyframes lamp { 50% { filter: drop-shadow(0 0 4px #8fe35a) brightness(1.15); } }
+@keyframes blink { 50% { fill: #fff6d0; } }
+@keyframes stir { 0%, 100% { transform: rotate(-1.5deg); } 50% { transform: rotate(2deg); } }
 
 /* On a phone it is a smaller card, not most of the screen. */
 @media (max-width: 640px) {
@@ -419,14 +465,14 @@
   .head { padding: 10px 10px 10px 14px; }
   .scroll { gap: 12px; padding: 14px 14px 22px; mask-image: linear-gradient(to bottom, #000 calc(100% - 30px), transparent); }
   .hello { gap: 12px; padding-top: 0; }
-  .big { font-size: 19px; }
   .list { gap: 6px; }
-  .list button { padding: 8px 12px; border-radius: 12px; font-size: 12.5px; }
+  .list button { padding: 8px 12px 8px 28px; font-size: 12.5px; }
   /* Four questions fit a card this size; the fifth is for wider screens. */
   .list button:nth-child(n + 5) { display: none; }
   .stage { height: 96px; margin-top: -16px; }
   .behind { top: -16px; width: 140px; height: 148px; }
   .composer { margin: -24px 10px 10px; padding: 6px 6px 6px 14px; border-radius: 18px; }
+  .big { font-size: 24px; }
   /* 16px, or iOS zooms the whole page in when the box is tapped. */
   .composer textarea { padding: 7px 0; font-size: 16px; }
   .send { width: 36px; height: 36px; border-radius: 12px; }

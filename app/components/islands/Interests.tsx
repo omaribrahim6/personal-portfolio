@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties, type Keyb
 import { ArrowLeft, ArrowRight, ArrowUpRight, Images, Pause, Play, X } from 'lucide-react'
 import { interests, type Interest, type Photo } from '../../content'
 import Plate, { Ground } from '../Plate'
+import Sign from '../Sign'
 import { useMotionPreference } from '../useMotionPreference'
 import type { IslandStage, Outfit } from './stage'
 import styles from './Interests.module.css'
@@ -144,7 +145,7 @@ export default function Interests() {
     tabs.current[to]?.focus()
   }
 
-  // Pointing at him: the moon cursor grows, and a click changes his outfit or makes him hop.
+  // Pointing at him: the sun cursor puts out its rays, and a click changes his outfit or makes him hop.
   function onPointerMove(event: PointerEvent<HTMLCanvasElement>) {
     const over = !!stage.current?.hits(event.clientX, event.clientY)
     if (over !== pointing) setPointing(over)
@@ -171,11 +172,11 @@ export default function Interests() {
 
   return (
     <section id="interests" aria-labelledby="interests-title">
-      <Plate index={5} scene="islands" after="field" tone="light" numeral="VI" place="the islands" kicker="five islands" title="Off the clock" titleId="interests-title">
+      <Plate index={5} chapter="interests" scene="islands" after="sunflowers" tone="light" kicker="five islands" title="Off the clock" titleId="interests-title">
         What I do when I am not shipping something. Each island is one of them.
       </Plate>
 
-      <Ground scene="islands" className={styles.ground}>
+      <Ground scene="islands" tone="light" className={styles.ground}>
         <div ref={section} className={`measure ${styles.body}`}>
           <div className={styles.top}>
             <div className={styles.tabs} role="tablist" aria-label="Interests">
@@ -238,8 +239,8 @@ export default function Interests() {
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div key={interest.id} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: .35 }}>
                   <p className={`label ${styles.kicker}`}>{interest.kicker}</p>
-                  {interest.figure && <p className={styles.figure}>{interest.figure}</p>}
-                  <h3>{interest.title}</h3>
+                  {interest.figure && <p className={styles.figure}><Sign text={interest.figure} /></p>}
+                  <h3><Sign text={interest.title} /></h3>
                   <p className={styles.words}>{interest.body}</p>
                   {interest.outfits && (
                     <div className={`label filters ${styles.outfits}`} role="group" aria-label="What he is dressed for">

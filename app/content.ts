@@ -10,13 +10,13 @@ export const links = {
 }
 
 export const chapters = [
-  { id: 'home', numeral: 'I', place: 'the ridge', label: 'Hello' },
-  { id: 'about', numeral: 'II', place: 'the dunes', label: 'The story' },
-  { id: 'projects', numeral: 'III', place: 'the arch', label: 'Selected work' },
-  { id: 'awards', numeral: 'IV', place: 'the hill', label: 'Wins' },
-  { id: 'skills', numeral: 'V', place: 'the field', label: 'The toolkit' },
-  { id: 'interests', numeral: 'VI', place: 'the islands', label: 'Off the clock' },
-  { id: 'contact', numeral: 'VII', place: 'the shore', label: 'Say hello' },
+  { id: 'home', numeral: 'I', hour: '06:10', place: 'the terraces', label: 'Hello' },
+  { id: 'about', numeral: 'II', hour: '08:30', place: 'the gardens', label: 'The story' },
+  { id: 'projects', numeral: 'III', hour: '10:45', place: 'the glasshouse', label: 'Selected work' },
+  { id: 'awards', numeral: 'IV', hour: '12:20', place: 'the wind farm', label: 'Wins' },
+  { id: 'skills', numeral: 'V', hour: '14:05', place: 'the sunflowers', label: 'The toolkit' },
+  { id: 'interests', numeral: 'VI', hour: '16:30', place: 'the sky islands', label: 'Off the clock' },
+  { id: 'contact', numeral: 'VII', hour: '18:40', place: 'the shore', label: 'Say hello' },
 ] as const
 
 /* ---------------------------------------------------------------- the story */

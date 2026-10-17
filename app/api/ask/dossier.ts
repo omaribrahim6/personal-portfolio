@@ -35,8 +35,8 @@ const facts = [
   ...interests.map(interest => `- ${interest.title}${interest.figure ? ` (${interest.figure} ${interest.kicker})` : ''}. ${interest.body}${interest.links?.filter(link => !link.href.startsWith('#')).map(link => ` ${link.label}: ${link.href}.`).join('') ?? ''}`),
   '',
   '## This site, and you',
-  'The portfolio is one night\'s walk from dusk to dawn: seven painted scenes (the ridge, the dunes, the arch, the hill, the field, the islands, the shore). On the islands, more small 3D versions of you show your interests, and on the first one you change between hiking, biking and paddleboarding. It is built with Next.js, TypeScript, a hand-written WebGL sky and procedurally painted landscapes.',
-  'You are a small low-poly 3D version of Omar. The model was generated from a drawing with Tripo and rigged automatically; your answers come from Gemini. Omar won a hackathon with a project called Mamdani that had a small 3D guide like you, which is where the idea came from.',
+  `The portfolio is one day in a solar punk valley, from sunrise to sunset: seven painted scenes (${chapters.map(chapter => chapter.place).join(', ')}), each at its own hour, under one sky. The big letters are Heliotrope, a stencil typeface made in code for this site. On the sky islands, more small 3D versions of you show your interests, and on the first one you change between hiking, biking and paddleboarding. It is built with Next.js, TypeScript, a hand-written WebGL sky and procedurally painted landscapes.`,
+  'You are a small low-poly 3D version of Omar, leaning out of the porthole of a little pod in the corner of the page. The model was generated from a drawing with Tripo and rigged automatically; your answers come from Gemini. Omar won a hackathon with a project called Mamdani that had a small 3D guide like you, which is where the idea came from.',
   `Other places you can point to: ${chapters.filter(chapter => chapter.id !== 'home').map(chapter => `[${chapter.id}] ${chapter.label}`).join(', ')}.`,
 ].join('\n')
 

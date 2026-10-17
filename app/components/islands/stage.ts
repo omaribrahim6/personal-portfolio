@@ -16,10 +16,10 @@ const OUTFITS: Outfit[] = ['hike', 'bike', 'paddle']
 const MODEL_OF: Record<Exclude<IslandId, 'outdoors'>, ModelName> = { competing: 'podium', games: 'games', security: 'security', soccer: 'soccer' }
 const url = (name: ModelName) => `/models/interests/${name}.glb`
 
-// The page under the canvas. Fog fades into it, so far islands sink into the ground colour, not into black.
-const GROUND = '#14153f'
-// Rock: from the band of earth under the meadow down to the tip, lit coral and falling into violet.
-const ROCK_TOP = new THREE.Color('#d9607a'), ROCK_LOW = new THREE.Color('#3a2150'), EARTH = new THREE.Color('#4a2a5c')
+// The page under the canvas. Fog fades into it, so far islands sink into the pale sky, not into black.
+const GROUND = '#dfe9ec'
+// Rock: from the band of earth under the meadow down to the tip, warm sandstone in the late sun, cooling to the tip.
+const ROCK_TOP = new THREE.Color('#ebbb86'), ROCK_LOW = new THREE.Color('#7c5a5a'), EARTH = new THREE.Color('#6b4a3c')
 
 // The gap in the vault door on the security island, in the island's own space (he stands at the origin,
 // facing +Z). Gold light comes out of it: the gold inside glows, a lamp sits in the gap, shafts of light
@@ -97,12 +97,12 @@ const flat = (color: string, extra: THREE.MeshStandardMaterialParameters = {}) =
 function pine(height: number, seed: number) {
   const rand = rng(seed)
   const group = new THREE.Group()
-  const trunk = new THREE.Mesh(new THREE.CylinderGeometry(.018, .026, height * .3, 5), flat('#3a2430'))
+  const trunk = new THREE.Mesh(new THREE.CylinderGeometry(.018, .026, height * .3, 5), flat('#5a3f2c'))
   trunk.position.y = height * .15
   group.add(trunk)
   for (let k = 0; k < 3; k++) {
     const r = height * (.3 - k * .07), h = height * (.42 - k * .06)
-    const cone = new THREE.Mesh(new THREE.ConeGeometry(r, h, 6), flat(k === 2 ? '#3f7766' : '#2c5a50'))
+    const cone = new THREE.Mesh(new THREE.ConeGeometry(r, h, 6), flat(k === 2 ? '#5d9a4a' : '#3a7a44'))
     cone.position.y = height * (.32 + k * .2) + h / 2 - height * .1
     cone.rotation.y = rand() * 3
     group.add(cone)
@@ -113,7 +113,7 @@ function pine(height: number, seed: number) {
 function puff(seed: number, size: number) {
   const rand = rng(seed)
   const group = new THREE.Group()
-  const material = flat('#e6e0f6', { roughness: 1 })
+  const material = flat('#fffaf0', { roughness: 1 })
   for (let i = 0; i < 5; i++) {
     const ball = new THREE.Mesh(new THREE.IcosahedronGeometry(size * (.5 + rand() * .5), 0), material)
     ball.position.set((i - 2) * size * .7, (rand() - .3) * size * .4, (rand() - .5) * size * .6)
@@ -144,7 +144,7 @@ function pitchTexture() {
   canvas.width = canvas.height = size
   const ctx = canvas.getContext('2d')!
   for (let i = 0; i < 12; i++) {
-    ctx.fillStyle = i % 2 ? '#5662d2' : '#6d79e0'
+    ctx.fillStyle = i % 2 ? '#5d9e48' : '#73b55a'
     ctx.fillRect(i * size / 12, 0, size / 12 + 1, size)
   }
   ctx.strokeStyle = 'rgba(242,236,219,.95)'
@@ -234,6 +234,7 @@ export class IslandStage {
   private sparkles: THREE.Points
   private flash: THREE.Sprite
   private gold = { value: 1 }
+  private kites: { group: THREE.Group; rotor: THREE.Group; line: THREE.Line; anchor: THREE.Vector3; at: THREE.Vector3; phase: number }[] = []
 
   constructor(private canvas: HTMLCanvasElement, private reduced = false) {
     this.renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true })
@@ -241,10 +242,11 @@ export class IslandStage {
     this.renderer.outputColorSpace = THREE.SRGBColorSpace
     this.scene.fog = new THREE.Fog(GROUND, 9, 26)
 
-    const sky = new THREE.HemisphereLight('#d6d9ff', '#4a2f78', 1.5)
-    const key = new THREE.DirectionalLight('#ffd6b8', 2.3)
+    // Late afternoon: a warm sun from the right, the blue of the sky on the shadow side, green coming up off the grass.
+    const sky = new THREE.HemisphereLight('#eef4ff', '#7f9a62', 1.7)
+    const key = new THREE.DirectionalLight('#fff0d6', 2.5)
     key.position.set(3, 5, 4)
-    const rim = new THREE.DirectionalLight('#8e9cee', 1.3)
+    const rim = new THREE.DirectionalLight('#a9cdff', 1.1)
     rim.position.set(-4, 2, -3)
     this.scene.add(sky, key, rim)
 
@@ -256,7 +258,7 @@ export class IslandStage {
     const sparkle = new THREE.BufferGeometry()
     sparkle.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(count * 3), 3))
     const tints = new Float32Array(count * 3)
-    const palette = ['#fff1dc', '#f6b455', '#f6866a', '#c9cffb'].map(c => new THREE.Color(c))
+    const palette = ['#fff4e0', '#f7b638', '#c6e26c', '#ef8fa3'].map(c => new THREE.Color(c))
     for (let i = 0; i < count; i++) palette[i % palette.length].toArray(tints, i * 3)
     sparkle.setAttribute('color', new THREE.Float32BufferAttribute(tints, 3))
     this.sparkles = new THREE.Points(sparkle, new THREE.PointsMaterial({ map: glow, vertexColors: true, size: .11, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }))
@@ -295,7 +297,7 @@ export class IslandStage {
       this.scene.add(group)
       return isle
     }
-    const meadow = (seed: number) => { const rand = rng(seed); return () => new THREE.Color('#5f6ad8').lerp(new THREE.Color('#8e9cee'), rand() * .6) }
+    const meadow = (seed: number) => { const rand = rng(seed); return () => new THREE.Color('#5d9a4a').lerp(new THREE.Color('#a6d36e'), rand() * .7) }
 
     // The outdoors: pines, a few stones, and a pool that opens up under him when he takes the board out.
     const outdoors = place('outdoors', [0, 0, 0], 1.3, 1.25, 11, meadow(12))
@@ -305,7 +307,7 @@ export class IslandStage {
       outdoors.group.add(tree)
     })
     ;[[.78, .55, .07], [-.5, .9, .05], [.25, .95, .04]].forEach(([x, z, r], i) => {
-      const stone = new THREE.Mesh(new THREE.DodecahedronGeometry(r, 0), flat('#8f7fb8'))
+      const stone = new THREE.Mesh(new THREE.DodecahedronGeometry(r, 0), flat('#c9b08a'))
       stone.position.set(x, .03, z)
       stone.rotation.set(i, i * 2, 0)
       outdoors.group.add(stone)
@@ -386,7 +388,7 @@ export class IslandStage {
     pitch.rotation.x = -Math.PI / 2
     pitch.position.y = .056
     soccer.group.add(pitch)
-    const line = flat('#f2ecdb')
+    const line = flat('#f8f1dd')
     const goal = new THREE.Group()
     const post = (w: number, h: number, d: number, x: number, y: number, z: number) => {
       const bar = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), line)
@@ -402,9 +404,15 @@ export class IslandStage {
     for (let k = 0; k <= 4; k++) net.push(-.48, k * .105, 0, -.48, k * .105, -.18, .48, k * .105, 0, .48, k * .105, -.18)
     const netGeometry = new THREE.BufferGeometry()
     netGeometry.setAttribute('position', new THREE.Float32BufferAttribute(net, 3))
-    goal.add(new THREE.LineSegments(netGeometry, new THREE.LineBasicMaterial({ color: '#d6d4f2', transparent: true, opacity: .55 })))
+    goal.add(new THREE.LineSegments(netGeometry, new THREE.LineBasicMaterial({ color: '#ffffff', transparent: true, opacity: .6 })))
     goal.position.set(.15, .06, -.85)
     soccer.group.add(goal)
+
+    // Airborne turbines on tethers, riding the wind over two of the islands, and panels on two others.
+    this.kite(outdoors, new THREE.Vector3(-.85, 1.75, -.75), new THREE.Vector3(-.55, .05, -.35), 1)
+    this.kite(soccer, new THREE.Vector3(.95, 1.6, -.9), new THREE.Vector3(.55, .05, -.55), 2)
+    this.solar(competing, [[.78, .5, -.3], [-.82, -.32, .4]])
+    this.solar(security, [[-.86, .42, .5]])
 
     // Far islands and loose cloud, for depth. They are scenery: nothing stands on them.
     const rand = rng(51)
@@ -418,6 +426,67 @@ export class IslandStage {
       const cloud = puff(80 + i, .22 + rand() * .3)
       cloud.position.set(-3 + i * 1.45 + rand(), -1.7 - rand() * 1.4, -1 - rand() * 6)
       this.scene.add(cloud)
+    }
+  }
+
+  /** A puffed white ring on a tether, a rotor turning inside it, fins at the back. It faces into the wind. */
+  private kite(isle: Isle, at: THREE.Vector3, anchor: THREE.Vector3, seed: number) {
+    const group = new THREE.Group()
+    const shell = flat('#fffaf0', { roughness: .75 })
+    for (let k = 0; k < 4; k++) {
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(.115 - k * .012, .052 - k * .004, 8, 18), k === 1 ? flat('#ef7f6e', { roughness: .7 }) : shell)
+      ring.position.x = k * .07
+      ring.rotation.y = Math.PI / 2
+      group.add(ring)
+    }
+    for (const side of [-1, 1]) {
+      const fin = new THREE.Mesh(new THREE.BoxGeometry(.12, .1, .012), flat('#e6dccb'))
+      fin.position.set(.27, side * .13, 0)
+      fin.rotation.z = side * .5
+      group.add(fin)
+    }
+    const rotor = new THREE.Group()
+    for (let k = 0; k < 3; k++) {
+      const blade = new THREE.Mesh(new THREE.BoxGeometry(.008, .2, .022), shell)
+      blade.position.y = .09
+      const arm = new THREE.Group()
+      arm.rotation.x = k * Math.PI * 2 / 3
+      arm.add(blade)
+      rotor.add(arm)
+    }
+    rotor.add(new THREE.Mesh(new THREE.SphereGeometry(.022, 8, 6), flat('#ef7f6e')))
+    rotor.position.x = -.01
+    group.add(rotor)
+    group.position.copy(at)
+    group.rotation.y = -.35
+    const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(Array.from({ length: 10 }, () => new THREE.Vector3())), new THREE.LineBasicMaterial({ color: '#4d5f57', transparent: true, opacity: .55 }))
+    isle.group.add(group, line)
+    this.kites.push({ group, rotor, line, anchor, at, phase: seed * 1.7 })
+  }
+
+  /** Solar panels standing on the meadow, tilted to the sun: [x, z, turn] in the island's own space. */
+  private solar(isle: Isle, spots: [number, number, number][]) {
+    const glass = new THREE.MeshStandardMaterial({ color: '#2a4fa8', roughness: .25, metalness: .35, flatShading: true })
+    const frame = new THREE.LineBasicMaterial({ color: '#f1f4f8' })
+    for (const [x, z, turn] of spots) {
+      const stand = new THREE.Group()
+      const panel = new THREE.Mesh(new THREE.BoxGeometry(.34, .014, .2), glass)
+      panel.rotation.x = -.55
+      panel.position.y = .13
+      const edges = new THREE.LineSegments(new THREE.EdgesGeometry(panel.geometry), frame)
+      panel.add(edges)
+      // Two cells' worth of lines across it, so it reads as a panel and not a slab.
+      const cells = new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints([-.085, 0, .085].flatMap(cx => [new THREE.Vector3(cx, .008, -.1), new THREE.Vector3(cx, .008, .1)]).concat([new THREE.Vector3(-.17, .008, 0), new THREE.Vector3(.17, .008, 0)])), new THREE.LineBasicMaterial({ color: '#9fbff5', transparent: true, opacity: .6 }))
+      panel.add(cells)
+      for (const side of [-1, 1]) {
+        const leg = new THREE.Mesh(new THREE.CylinderGeometry(.007, .007, .12, 5), flat('#4b5752'))
+        leg.position.set(side * .12, .06, 0)
+        stand.add(leg)
+      }
+      stand.add(panel)
+      stand.position.set(x, .04, z)
+      stand.rotation.y = turn
+      isle.group.add(stand)
     }
   }
 
@@ -633,6 +702,7 @@ export class IslandStage {
 
     this.updateSpin(dt)
     this.updateWater(t, dt)
+    this.updateKites(t, dt)
 
   }
 
@@ -704,6 +774,23 @@ export class IslandStage {
     }
   }
 
+  /** The turbines ride the wind on their tethers, rotors turning; the tethers sag a little between. */
+  private updateKites(t: number, dt: number) {
+    for (const kite of this.kites) {
+      const still = this.reduced
+      kite.group.position.set(kite.at.x + (still ? 0 : Math.sin(t * .7 + kite.phase) * .05), kite.at.y + (still ? 0 : Math.sin(t * .9 + kite.phase) * .06), kite.at.z)
+      kite.group.rotation.z = still ? 0 : Math.sin(t * .6 + kite.phase) * .06
+      if (!still) kite.rotor.rotation.x += dt * 9
+      const position = kite.line.geometry.getAttribute('position') as THREE.BufferAttribute
+      const from = kite.anchor, to = kite.group.position.clone().add(new THREE.Vector3(.08, -.1, 0))
+      for (let i = 0; i < position.count; i++) {
+        const u = i / (position.count - 1)
+        position.setXYZ(i, from.x + (to.x - from.x) * u, from.y + (to.y - from.y) * u - Math.sin(Math.PI * u) * .12, from.z + (to.z - from.z) * u)
+      }
+      position.needsUpdate = true
+    }
+  }
+
   /** The pool on the first island: there while he has the board out, rippling, gone when he puts it away. */
   private updateWater(t: number, dt: number) {
     const water = this.water
@@ -729,7 +816,7 @@ export class IslandStage {
     this.observer.disconnect()
     this.scene.traverse(node => {
       const mesh = node as THREE.Mesh
-      if (!mesh.isMesh && !(node as THREE.Points).isPoints && !(node as THREE.Sprite).isSprite) return
+      if (!mesh.isMesh && !(node as THREE.Points).isPoints && !(node as THREE.Sprite).isSprite && !(node as THREE.Line).isLine) return
       mesh.geometry?.dispose()
       const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material]
       for (const material of materials) {

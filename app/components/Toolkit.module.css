@@ -1,4 +1,4 @@
-.ground { --accent: var(--color-coral); }
+.ground { --accent: var(--color-sun); --on-accent: var(--color-ink); }
 
 .body {
   display: grid;
@@ -7,117 +7,173 @@
 
 .groups { display: grid; }
 
+/* Each group is a row of the field, with a furrow between it and the next. */
 .group {
   display: grid;
   gap: .9rem;
   padding: clamp(1.4rem, 2.6vw, 2rem) 0;
-  border-top: 1px solid rgba(242, 236, 219, .14);
+  border-top: 2px dashed rgba(247, 200, 56, .2);
 }
-.group:last-child { border-bottom: 1px solid rgba(242, 236, 219, .14); }
-.group h3 { padding-top: .75rem; opacity: .62; }
+.group:last-child { border-bottom: 2px dashed rgba(247, 200, 56, .2); }
+.group h3 { padding-top: .75rem; color: var(--color-lime); opacity: .85; }
 
 .tools {
   display: flex;
   flex-wrap: wrap;
-  gap: .1rem clamp(1rem, 2.2vw, 1.9rem);
+  gap: .2rem clamp(1rem, 2.2vw, 1.9rem);
 }
 
-/* Tools are set as words, not chips. */
+/* Tools are set as words, each with its flower. */
 .tool {
   display: inline-flex;
   align-items: center;
-  gap: .5rem;
+  gap: .55rem;
   padding: .42rem 0;
-  color: rgba(242, 236, 219, .78);
-  font-family: var(--font-display);
-  font-size: clamp(1.25rem, 2.1vw, 1.7rem);
-  font-weight: 300;
-  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+  color: rgba(248, 241, 221, .8);
+  font-family: var(--font-round);
+  font-size: clamp(1.05rem, 1.75vw, 1.4rem);
+  font-weight: 400;
   line-height: 1.2;
-  letter-spacing: -.015em;
-  transition: color .25s ease;
+  letter-spacing: -.02em;
+  transition: color .25s ease, transform .3s var(--ease-spring);
 }
 .tool:hover, .tool[data-current='true'] { color: #fff; }
-.tool[aria-pressed='true'] { color: #ffb7a0; }
+.tool[aria-pressed='true'] { color: var(--color-sun); }
 
-.bud { width: .82rem; height: .82rem; flex: none; overflow: visible; }
+.bloom { width: 1.15rem; height: 1.15rem; flex: none; overflow: visible; }
 .petals {
-  fill: var(--color-ember);
-  transform-box: fill-box;
-  transform-origin: center;
-  transform: scale(.34);
-  transition: transform .5s cubic-bezier(.3, 1.5, .4, 1), fill .3s ease;
+  fill: #f7c838;
+  stroke: rgba(122, 74, 16, .5);
+  stroke-width: .5;
+  transform-box: view-box;
+  transform-origin: 10px 10px;
+  transform: scale(.42) rotate(-30deg);
+  transition: transform .6s cubic-bezier(.3, 1.5, .4, 1), fill .3s ease;
 }
-.seed { fill: #2a0d20; opacity: 0; transition: opacity .3s ease; }
-.tool[data-has='false'] .petals { fill: none; stroke: rgba(242, 236, 219, .5); stroke-width: 2.4; }
-.tool[data-current='true'] .petals, .tool[aria-pressed='true'] .petals { transform: scale(1); fill: #ef5a3c; }
-.tool[data-current='true'][data-has='false'] .petals, .tool[aria-pressed='true'][data-has='false'] .petals { fill: none; stroke-width: 1; }
-.tool[data-current='true'][data-has='true'] .seed, .tool[aria-pressed='true'][data-has='true'] .seed { opacity: 1; }
+.seed { fill: #6b3d16; transition: transform .4s ease, fill .3s ease; transform-box: view-box; transform-origin: 10px 10px; }
+/* No receipt: a green bud that stays shut. */
+.tool[data-has='false'] .petals { fill: #4f8a35; stroke: rgba(198, 226, 108, .5); }
+.tool[data-has='false'] .seed { fill: #6fa957; transform: scale(.8); }
+.tool[data-current='true'] .petals, .tool[aria-pressed='true'] .petals { transform: scale(1) rotate(0deg); }
+.tool[data-current='true'][data-has='false'] .petals, .tool[aria-pressed='true'][data-has='false'] .petals { transform: scale(.6) rotate(10deg); }
+.tool[data-current='true'][data-has='true'] .seed, .tool[aria-pressed='true'][data-has='true'] .seed { transform: scale(1.1); }
 
 .note {
   max-width: 40rem;
   margin-top: 2rem;
-  font-size: .98rem;
-  color: rgba(242, 236, 219, .8);
+  font-size: 1rem;
+  color: rgba(248, 241, 221, .82);
 }
-.note strong { font-family: var(--font-display); font-style: italic; font-weight: 400; font-size: 1.15em; color: var(--color-cream); }
+.note strong { font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: 1.3em; color: var(--color-sun); }
 
 /* ------------------------------------------------------------------ receipt */
 
+/*
+ * A receipt from the co-op, on thermal paper: torn in zigzags top and bottom, set in the mono, with dotted
+ * leaders out to each place the tool turns up, the total, and a barcode.
+ */
 .receipt {
+  --zig: 12px;
   position: sticky;
   bottom: 0;
   z-index: 5;
   margin-inline: calc(var(--edge) * -1);
-  padding: 1.1rem var(--edge) 1.3rem;
-  border-top: 1px solid rgba(242, 236, 219, .22);
-  background: var(--ground);
+  padding: 1.4rem var(--edge) 1.2rem;
+  background: #fbf7ea;
+  color: var(--color-ink);
+  font-family: var(--font-label);
+  -webkit-mask: conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) top / var(--zig) 51% repeat-x, linear-gradient(#000, #000) 0 calc(var(--zig) / 2) / 100% 100% no-repeat;
+  mask: conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) top / var(--zig) 51% repeat-x, linear-gradient(#000, #000) 0 calc(var(--zig) / 2) / 100% 100% no-repeat;
+  filter: drop-shadow(0 -6px 14px rgba(0, 0, 0, .3));
 }
 
-.overline { display: flex; justify-content: space-between; gap: 1rem; opacity: .62; }
-.overline span:first-child { color: var(--color-coral); }
+.shop { display: none; }
+.overline { display: flex; justify-content: space-between; gap: 1rem; opacity: .7; }
+.overline span:first-child { font-weight: 700; }
 
 .receipt h3 {
   margin-top: .35rem;
   font-family: var(--font-display);
-  font-size: clamp(1.7rem, 4.4vw, 3.4rem);
-  font-weight: 300;
-  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+  font-size: clamp(1.6rem, 4.4vw, 3rem);
+  font-weight: 400;
   line-height: 1;
-  letter-spacing: -.03em;
+  letter-spacing: .02em;
 }
 
-.lead { margin-top: .5rem; font-family: var(--font-display); font-style: italic; opacity: .7; }
+.lead { margin-top: .5rem; font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; opacity: .6; }
 
-.receipts { display: flex; flex-wrap: wrap; gap: 0 1.3rem; margin-top: .1rem; }
-.receipts a { font-size: .98rem; }
+.receipts { display: flex; flex-wrap: wrap; gap: .2rem 1.2rem; margin-top: .3rem; }
+.receipts a {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .2rem 0;
+  font-size: .72rem;
+  font-weight: 600;
+  transition: color .2s ease;
+}
+.receipts a b { font-weight: 700; }
+.receipts a i { display: none; }
+.receipts a:hover, .receipts a:focus-visible { color: var(--color-copper); }
 /* The notes are read out, and shown once there is room for them. */
 .receipts span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
-.none { max-width: 24rem; margin-top: .5rem; font-size: .95rem; opacity: .78; }
+.none { max-width: 24rem; margin-top: .5rem; font-size: .74rem; line-height: 1.6; opacity: .8; }
 
-.receiptFoot { display: none; margin-top: 1.4rem; font-size: .8rem; opacity: .5; }
+.receiptFoot { display: none; }
+.barcode { display: none; }
 
 @media (min-width: 760px) {
   .group { grid-template-columns: 11rem minmax(0, 1fr); gap: 2rem; }
 }
 
 @media (min-width: 1000px) {
-  .body { grid-template-columns: minmax(0, 1fr) minmax(0, 21rem); align-items: start; }
+  .body { grid-template-columns: minmax(0, 1fr) minmax(0, 22rem); align-items: start; }
   .receipt {
-    top: 6rem;
+    top: 6.5rem;
     bottom: auto;
     margin: 0;
-    padding: .2rem 0 .4rem 2.2rem;
-    border-top: 0;
-    border-left: 1px solid rgba(242, 236, 219, .22);
-    background: none;
+    padding: 2rem 1.6rem 2.2rem;
+    -webkit-mask:
+      conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) top / var(--zig) 51% repeat-x,
+      conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / var(--zig) 51% repeat-x;
+    mask:
+      conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) top / var(--zig) 51% repeat-x,
+      conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / var(--zig) 51% repeat-x;
+    filter: drop-shadow(0 18px 24px rgba(0, 0, 0, .35));
+    transform: rotate(1.2deg);
   }
-  .receipt h3 { margin-top: .5rem; }
-  .lead, .none { margin-top: .9rem; }
-  .receipts { display: grid; gap: .5rem; margin-top: .6rem; }
+  .shop {
+    display: block;
+    padding-bottom: .9rem;
+    margin-bottom: .9rem;
+    border-bottom: 1.5px dashed rgba(16, 38, 28, .4);
+    text-align: center;
+    font-weight: 700;
+  }
+  .receipt h3 { margin-top: .7rem; text-align: center; font-size: clamp(2rem, 3vw, 2.8rem); }
+  .lead { margin-top: 1.1rem; padding-top: .9rem; border-top: 1.5px dashed rgba(16, 38, 28, .4); }
+  .none { margin-top: 1.1rem; padding-top: .9rem; border-top: 1.5px dashed rgba(16, 38, 28, .4); }
+  .receipts { display: grid; gap: .6rem; margin-top: .7rem; }
   .receipts li { display: grid; }
-  .receipts a { font-size: 1.02rem; }
-  .receipts span { position: static; width: auto; height: auto; clip-path: none; white-space: normal; font-size: .82rem; opacity: .6; }
-  .receiptFoot { display: block; }
+  .receipts a { font-size: .74rem; }
+  /* A dotted leader from the name out to the arrow, like a price. */
+  .receipts a i { display: block; flex: 1; min-width: 1rem; height: .7em; border-bottom: 2px dotted rgba(16, 38, 28, .4); }
+  .receipts span { position: static; width: auto; height: auto; clip-path: none; white-space: normal; font-size: .6rem; opacity: .6; }
+  .receiptFoot {
+    display: block;
+    margin-top: 1.2rem;
+    padding-top: .9rem;
+    border-top: 1.5px dashed rgba(16, 38, 28, .4);
+    font-size: .64rem;
+    font-weight: 600;
+    line-height: 1.6;
+  }
+  .barcode {
+    display: block;
+    height: 2.4rem;
+    margin-top: 1rem;
+    background: repeating-linear-gradient(90deg, var(--color-ink) 0 2px, transparent 2px 4px, var(--color-ink) 4px 5px, transparent 5px 8px, var(--color-ink) 8px 11px, transparent 11px 12px, var(--color-ink) 12px 13px, transparent 13px 16px);
+    opacity: .85;
+  }
 }

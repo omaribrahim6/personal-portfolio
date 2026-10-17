@@ -8,8 +8,8 @@ import Plate, { Ground } from './Plate'
 import Rail from './Rail'
 import styles from './Wins.module.css'
 
-// One mark per kind of win, left on the hill. A flag gets raised for something broken into,
-// stones get stacked for something built, and the moon fills for the one that was given.
+// One mark per kind of win, as on the hill. A turbine for something built, which spins up; a flag for
+// something broken into, which runs up its pole; and a sun for the one that was given, whose rays come out.
 function Mark({ mode }: { mode: Mode }) {
   if (mode === 'broke') return (
     <svg viewBox="0 0 30 44" className={styles.mark} aria-hidden="true">
@@ -20,17 +20,23 @@ function Mark({ mode }: { mode: Mode }) {
   )
   if (mode === 'built') return (
     <svg viewBox="0 0 30 44" className={styles.mark} aria-hidden="true">
-      <ellipse className={styles.stone} data-stone="0" cx="15" cy="36" rx="10" ry="4.6" />
-      <ellipse className={styles.stone} data-stone="1" cx="15" cy="27.4" rx="7.4" ry="4" />
-      <ellipse className={styles.stone} data-stone="2" cx="15" cy="20" rx="5" ry="3.2" />
-      <ellipse className={styles.stone} data-stone="3" cx="15" cy="14.4" rx="3" ry="2.2" />
+      <path className={styles.tower} d="M13.9 42 14.6 15h.8l.7 27Z" />
+      <g className={styles.blades}>
+        <path d="M15 15 14 2.5Q15 1.4 16 2.6Z" />
+        <path d="M15 15 14 2.5Q15 1.4 16 2.6Z" transform="rotate(120 15 15)" />
+        <path d="M15 15 14 2.5Q15 1.4 16 2.6Z" transform="rotate(240 15 15)" />
+      </g>
+      <circle className={styles.hub} cx="15" cy="15" r="1.8" />
+      <path className={styles.base} d="M8 42h14" />
     </svg>
   )
   return (
     <svg viewBox="0 0 30 44" className={styles.mark} aria-hidden="true">
-      <circle className={styles.halo} cx="15" cy="21" r="12.5" />
+      <g className={styles.rays}>
+        {Array.from({ length: 12 }, (_, k) => <path key={k} d="M15 5.2v-3.6" transform={`rotate(${k * 30} 15 21)`} />)}
+      </g>
       <circle className={styles.disc} cx="15" cy="21" r="8" />
-      <circle className={styles.bite} cx="19.5" cy="18.5" r="7" />
+      <path className={styles.face} d="M11.8 20.2h.01M18.2 20.2h.01M12.2 23.6q2.8 2.4 5.6 0" />
     </svg>
   )
 }
@@ -41,11 +47,11 @@ export default function Wins() {
 
   return (
     <section id="awards" aria-labelledby="awards-title">
-      <Plate index={3} scene="summit" after="arch" tone="light" numeral="IV" place="the hill" kicker="scoreboard" title="Wins" titleId="awards-title">
+      <Plate index={3} chapter="awards" scene="windfarm" after="glasshouse" tone="dark" kicker="scoreboard" title="Wins" titleId="awards-title">
         Hackathons, CTFs, and one award I didn’t see coming. Every win was either something I built or something I broke.
       </Plate>
 
-      <Ground scene="summit" className={styles.ground}>
+      <Ground scene="windfarm" className={styles.ground}>
         <div className="measure">
           <div className={`label filters ${styles.filters}`} role="group" aria-label="Filter the wins">
             {awardFilters.map(([key, label]) => (

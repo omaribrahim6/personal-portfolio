@@ -1,14 +1,14 @@
 # Mini Omar
 
-Branch: `portfolio-dreamscape-mini-omar` (on top of `portfolio-dreamscape-claude-opus-5-5`)
+Branch: `portfolio-dreamscape-mini-omar` (on top of `portfolio-dreamscape-claude-opus-5-5`); restyled on `solar-punk`.
 
 A small low-poly Omar who can answer questions about the portfolio. The idea comes from Mamdani, the hackathon project with a small 3D guide in the corner of its dashboard.
 
-- **In the corner, on every plate.** He leans out of a low coral moon at the bottom right. His head follows the pointer; left alone he looks around, blinks and breathes. Click him (or press Ctrl/Cmd + J) and the corner empties: the chat grows out of it, and he is standing behind the message box.
-- **On the shore.** At the last plate, where the painted figure has been walking to all night, he is standing on the beach at full height instead, facing you, under "Let's talk". Clicking him there opens the same chat.
+- **In the corner, on every plate.** He leans out of the brass porthole of a little pod at the bottom right: below the middle of the porthole he is inside it, cut to the glass, and above it he leans out over the rim. The pod has a panel on its roof, vines down its side, and an antenna whose lamp is green while the model behind him can answer and amber when it cannot. His head follows the pointer; left alone he looks around, blinks and breathes. He is lit by the same sun as the page: pink and low over the terraces, white through the day, gold at the shore. Click him (or press Ctrl/Cmd + J) and the corner empties: the chat grows out of it, and he is standing behind the message box.
+- **On the shore.** At the last plate, where the painted figure has been walking all day, he is standing on the beach at full height instead, facing you, under "Let's talk". Clicking him there opens the same chat.
 - **In the chat** he listens while you type, looks away while he thinks, and moves his mouth and hands while the answer streams in. Answers can end with a link to the part of the page they are about.
 
-The chat is Mamdani's, carried over: the same floating card (440 by up to 740 pixels, 16 from the corner), the same parts (his name, with a green dot while the model behind him is reachable, new conversation and close, a greeting with suggested questions, him behind the message box, a stop button while he answers) and the same opening, a circle growing out of the corner while the parts rise into place. Only the colours are this site's. On a phone it is a smaller card, at most 480 pixels tall, with four suggestions instead of five.
+The chat is Mamdani's, carried over: the same floating card (440 by up to 740 pixels, 16 from the corner), the same parts (his name, with a green dot while the model behind him is reachable, new conversation and close, a greeting with suggested questions, him behind the message box, a stop button while he answers) and the same opening, a circle growing out of the corner while the parts rise into place. Inside, it is the pod: paper and ink, his name on a lacquer-and-brass nameplate, the questions as tags, a view of hills and sun behind him, and the sun itself for the send button. On a phone it is a smaller card, at most 480 pixels tall, with four suggestions instead of five.
 
 ## The model
 

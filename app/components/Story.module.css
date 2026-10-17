@@ -1,4 +1,4 @@
-.ground { --accent: var(--color-coral); }
+.ground { --accent: var(--color-moss); --on-accent: var(--color-cream); }
 
 .filters { margin-bottom: clamp(2rem, 5vw, 3.5rem); }
 
@@ -7,11 +7,19 @@
   gap: clamp(2.5rem, 6vw, 5.5rem);
 }
 
-/* ------------------------------------------------------------------ the range */
+/* --------------------------------------------------------- the growing season */
 
-.range { --gutter: 6.4rem; }
+.range {
+  --gutter: 6.6rem;
+  padding: 1.2rem 1.2rem 1.3rem 0;
+  border: 1.5px solid rgba(16, 38, 28, .18);
+  border-radius: 1.2rem;
+  background:
+    linear-gradient(rgba(16, 38, 28, .045) 1px, transparent 1px) 0 0 / 100% 1.5rem,
+    rgba(255, 252, 240, .55);
+}
 
-.rangeHead { margin-bottom: .4rem; opacity: .62; }
+.rangeHead { margin: 0 0 .8rem 1.2rem; opacity: .7; }
 
 .plot {
   position: relative;
@@ -23,35 +31,55 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  /* Whatever is still going runs off the edge of the plot rather than stopping at it. */
+  overflow: visible;
+  /* Whatever is still growing runs off the edge of the plot rather than stopping at it. */
   -webkit-mask-image: linear-gradient(to right, #000 90%, transparent);
   mask-image: linear-gradient(to right, #000 90%, transparent);
 }
 
-.dune { --c: var(--color-coral); transition: opacity .35s ease; }
-.dune[data-category='volunteer'] { --c: var(--color-gold); }
-.dune[data-category='education'] { --c: var(--color-peri); }
-.dune[data-dim='true'] { opacity: .22; }
+.bed { --c: #3f7a3a; transition: opacity .35s ease; }
+.bed[data-category='volunteer'] { --c: var(--color-copper); }
+.bed[data-category='education'] { --c: var(--color-sky); }
+.bed[data-dim='true'] { opacity: .2; }
 
-.fill { fill: url(#dune-rest); }
-.glow { fill: url(#dune-lit); opacity: 0; transition: opacity .45s ease; }
-.dune[data-active='true'] .glow { opacity: 1; }
+.fill { fill: url(#bed-rest); }
+.glow { fill: url(#bed-lit); opacity: 0; transition: opacity .45s ease; }
+.bed[data-active='true'] .glow { opacity: 1; }
 
 .crest {
   fill: none;
   stroke: var(--c);
-  stroke-width: 1.3;
+  stroke-width: 1.6;
   stroke-linecap: round;
   vector-effect: non-scaling-stroke;
-  opacity: .6;
-  transition: opacity .3s ease, stroke .3s ease;
+  opacity: .7;
+  transition: opacity .3s ease, stroke-width .3s ease;
 }
-.dune[data-active='true'] .crest { opacity: 1; stroke: #ffd0bb; stroke-width: 1.6; }
+.bed[data-active='true'] .crest { opacity: 1; stroke-width: 2.4; }
 
 .floor {
-  stroke: rgba(242, 236, 219, .07);
+  stroke: rgba(16, 38, 28, .16);
+  stroke-dasharray: 2 4;
   vector-effect: non-scaling-stroke;
 }
+
+/* A sprout for every month of the bed being read: a stem and two leaves, coming up one after another. */
+.sprouts { position: absolute; inset: 0; pointer-events: none; }
+.sprouts i {
+  --c: #3f7a3a;
+  position: absolute;
+  width: 12px;
+  height: 14px;
+  margin: -14px 0 0 -6px;
+  background:
+    radial-gradient(ellipse 4px 2.6px at 3px 5px, var(--c) 92%, transparent),
+    radial-gradient(ellipse 4px 2.6px at 9px 3.6px, var(--c) 92%, transparent),
+    linear-gradient(var(--c), var(--c)) 5.4px 4px / 1.4px 10px no-repeat;
+  transform-origin: 50% 100%;
+  animation: sprout .5s var(--ease-spring) both;
+}
+.sprouts i[data-category='volunteer'] { --c: var(--color-copper); }
+.sprouts i[data-category='education'] { --c: var(--color-sky); }
 
 .rows {
   position: absolute;
@@ -64,138 +92,161 @@
   justify-content: space-between;
   width: 100%;
   height: 100%;
-  padding-bottom: .1rem;
+  padding: 0 0 .1rem 1.2rem;
   color: inherit;
   font-size: .74rem;
+  font-weight: 600;
   line-height: 1.1;
   text-align: left;
-  opacity: .6;
+  opacity: .62;
   transition: opacity .25s ease, color .25s ease;
 }
-.rows button span { width: var(--gutter); padding-right: .6rem; }
-.rows button i { font-style: normal; color: var(--color-peri); transform: translateY(-1.2rem); }
-.rows button[data-active='true'], .rows button:hover { opacity: 1; color: #ffc3ad; }
+.rows button span { width: calc(var(--gutter) - .6rem); padding-right: .6rem; }
+.rows button i { font-style: normal; color: var(--color-moss); font-weight: 700; transform: translateY(-1.2rem); }
+.rows button[data-active='true'], .rows button:hover { opacity: 1; color: var(--color-moss); }
 .rows button[data-dim='true'] { opacity: .25; }
 
 .axis {
   display: grid;
-  margin: .5rem 0 0 var(--gutter);
-  font-size: .56rem;
-  line-height: 1.5;
-  color: rgba(242, 236, 219, .45);
+  margin: .55rem 0 0 var(--gutter);
+  font-family: var(--font-label);
+  font-size: .5rem;
+  line-height: 1.6;
+  color: rgba(16, 38, 28, .45);
 }
-.axis b { grid-row: 1; font-family: var(--font-label); font-weight: 400; letter-spacing: .12em; color: rgba(242, 236, 219, .8); white-space: nowrap; }
+.axis b { grid-row: 1; font-weight: 600; letter-spacing: .12em; color: rgba(16, 38, 28, .85); white-space: nowrap; }
 .axis span { grid-row: 2; text-align: center; }
 
 .legend {
   display: flex;
   flex-wrap: wrap;
-  gap: .4rem 1.4rem;
-  margin: 1.4rem 0 0 var(--gutter);
-  font-size: .78rem;
-  opacity: .85;
+  gap: .4rem 1.3rem;
+  margin: 1.2rem 0 0 1.2rem;
+  font-size: .8rem;
+  font-weight: 600;
 }
-.legend span { display: inline-flex; align-items: center; gap: .55rem; }
-.legend i { width: 1.4rem; height: 1.5px; background: var(--color-coral); }
-.legend [data-category='volunteer'] i { background: var(--color-gold); }
-.legend [data-category='education'] i { background: var(--color-peri); }
+.legend span { display: inline-flex; align-items: center; gap: .5rem; }
+.legend i { width: .8rem; height: .8rem; border-radius: 0 70% 0 70%; background: #3f7a3a; transform: rotate(-10deg); }
+.legend [data-category='volunteer'] i { background: var(--color-copper); }
+.legend [data-category='education'] i { background: var(--color-sky); }
 
 .foot {
-  margin: .9rem 0 0 var(--gutter);
-  font-size: .78rem;
+  margin: .9rem 0 0 1.2rem;
+  font-size: .8rem;
   line-height: 1.5;
-  opacity: .5;
+  opacity: .6;
 }
 
-/* ---------------------------------------------------------------- the entries */
+/* --------------------------------------------------------------- seed packets */
 
 .entry {
-  --c: var(--color-coral);
+  --c: #3f7a3a;
+  --band: #8fbd6c;
   position: relative;
-  width: min(34rem, 88%);
-  padding: clamp(1.5rem, 3vw, 2.2rem);
-  border: 1px solid rgba(242, 236, 219, .13);
-  border-radius: 1.2rem;
-  background: rgba(13, 14, 44, .42);
+  width: min(34rem, 86%);
+  padding: 0 clamp(1.4rem, 3vw, 2rem) clamp(1.5rem, 3vw, 2rem);
+  overflow: hidden;
+  border: 2px solid var(--color-ink);
+  border-radius: 1.1rem;
+  background: #fdf9ec;
+  color: var(--color-ink);
+  box-shadow: 6px 6px 0 var(--color-ink);
   list-style: none;
+  transition: transform .45s var(--ease-spring), box-shadow .45s var(--ease-spring);
 }
-.entry[data-category='volunteer'] { --c: var(--color-gold); }
-.entry[data-category='education'] { --c: var(--color-peri); }
+.entry[data-category='volunteer'] { --c: #b8532b; --band: #f2a35c; }
+.entry[data-category='education'] { --c: var(--color-sky); --band: #8cc2ef; }
+.entry[data-active='true'] { transform: translate(-3px, -3px); box-shadow: 9px 9px 0 var(--color-ink); }
 
-/* The lit crest: a line of light along the top of whichever entry is being read. */
-.entry::before {
-  content: '';
-  position: absolute;
-  top: -1px;
-  left: 1.2rem;
-  right: 1.2rem;
-  height: 1px;
-  background: linear-gradient(90deg, var(--c), transparent 70%);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform .6s cubic-bezier(.2, .7, .2, 1);
-}
-.entry[data-active='true']::before { transform: scaleX(1); }
-
+/* The top of the packet: a band in its colour, printed with a pattern of seeds, then a perforated line to tear along. */
 .meta {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   gap: .3rem 1.5rem;
-  margin-bottom: .9rem;
-  opacity: .68;
+  margin: 0 calc(clamp(1.4rem, 3vw, 2rem) * -1) 1.3rem;
+  padding: .8rem clamp(1.4rem, 3vw, 2rem) .75rem;
+  padding-right: 4.4rem;
+  border-bottom: 2px dashed var(--color-ink);
+  background:
+    radial-gradient(circle at 25% 30%, rgba(255, 255, 255, .45) 0 1.6px, transparent 2px) 0 0 / 14px 14px,
+    radial-gradient(circle at 75% 80%, rgba(16, 38, 28, .18) 0 1.4px, transparent 1.8px) 0 0 / 14px 14px,
+    var(--band);
 }
-.meta span:first-child { color: var(--c); }
+.meta span:first-child { font-weight: 700; }
+
+/* A stamp on the corner of the packet, with a sign for what kind of entry it is. */
+.entry::after {
+  content: '';
+  position: absolute;
+  top: .55rem;
+  right: .9rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 2px solid var(--color-ink);
+  border-radius: 50%;
+  background: var(--icon) center / 62% no-repeat, #fdf9ec;
+  box-shadow: 2px 2px 0 var(--color-ink);
+  transform: rotate(-8deg);
+  transition: transform .5s var(--ease-spring);
+}
+.entry[data-active='true']::after { transform: rotate(10deg) scale(1.06); }
+.entry[data-category='experience'] { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2310261c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 21v-8'/%3E%3Cpath d='M12 13c0-4 3-6 7-6 0 4-3 6-7 6zM12 15c0-3-2-5-6-5 0 3 2 5 6 5z' fill='%235d9a4a'/%3E%3Cpath d='M7 21h10'/%3E%3C/svg%3E"); }
+.entry[data-category='volunteer'] { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2310261c' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg fill='%23f2a35c'%3E%3Ccircle cx='12' cy='6.5' r='3'/%3E%3Ccircle cx='17.2' cy='10.3' r='3'/%3E%3Ccircle cx='15.2' cy='16.4' r='3'/%3E%3Ccircle cx='8.8' cy='16.4' r='3'/%3E%3Ccircle cx='6.8' cy='10.3' r='3'/%3E%3C/g%3E%3Ccircle cx='12' cy='12' r='2.4' fill='%23f7b638'/%3E%3C/svg%3E"); }
+.entry[data-category='education'] { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2310261c' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6.5c3-1 6-1 9 1 3-2 6-2 9-1v12c-3-1-6-1-9 1-3-2-6-2-9-1z' fill='%238cc2ef'/%3E%3Cpath d='M12 7.5v12'/%3E%3C/svg%3E"); }
 
 .entry h3 {
-  font-family: var(--font-display);
-  font-size: clamp(1.55rem, 2.7vw, 2.2rem);
-  font-weight: 300;
-  font-variation-settings: 'SOFT' 100, 'WONK' 1;
-  line-height: 1.08;
+  font-family: var(--font-round);
+  font-size: clamp(1.3rem, 2.3vw, 1.8rem);
+  font-weight: 500;
+  line-height: 1.12;
   letter-spacing: -.02em;
   text-wrap: balance;
-  transition: color .3s ease;
 }
-.entry[data-active='true'] h3 { color: #ffd3c0; }
 
 .org {
-  margin-top: .3rem;
-  font-family: var(--font-display);
+  margin-top: .35rem;
+  font-family: var(--font-serif);
   font-style: italic;
-  font-size: 1.08rem;
+  font-size: 1.2rem;
   color: var(--c);
 }
 
 .entry ul {
   display: grid;
-  gap: .5rem;
+  gap: .55rem;
   max-width: 40rem;
   margin-top: 1.1rem;
   font-size: .98rem;
   line-height: 1.55;
-  color: rgba(242, 236, 219, .84);
+  color: rgba(16, 38, 28, .86);
 }
 .entry li { position: relative; padding-left: 1.5rem; text-wrap: pretty; }
+/* Each line starts with a leaf. */
 .entry li::before {
   content: '';
   position: absolute;
-  left: 0;
-  top: .78em;
+  left: .1rem;
+  top: .5em;
   width: .7rem;
-  height: 1px;
+  height: .5rem;
+  border-radius: 0 100% 0 100%;
   background: var(--c);
-  opacity: .7;
+  transform: rotate(-12deg);
 }
-.entry li a { border-bottom: 1px solid var(--c); color: #ffd3c0; }
-.entry li a:hover { color: var(--color-coral); }
+.entry li a { border-bottom: 2px solid var(--band); font-weight: 600; color: var(--c); }
+.entry li a:hover { background: var(--band); color: var(--color-ink); }
+
+@keyframes sprout { from { opacity: 0; transform: scaleY(0); } }
 
 @media (min-width: 1000px) {
-  .body { grid-template-columns: minmax(0, 28rem) minmax(0, 1fr); align-items: start; }
+  .body { grid-template-columns: minmax(0, 29rem) minmax(0, 1fr); align-items: start; }
 }
 
 @media (max-width: 560px) {
-  .range { --gutter: 5.3rem; }
+  .range { --gutter: 5.4rem; }
+  /* Taller on a phone, so the labels down the side have a line each. */
+  .plot { aspect-ratio: 600 / 600 !important; }
   .rows button { font-size: .68rem; }
   .axis span { display: none; }
 }

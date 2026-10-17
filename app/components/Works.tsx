@@ -4,6 +4,7 @@ import { ArrowUpRight } from 'lucide-react'
 import { projects, type Project } from '../content'
 import Plate, { Ground } from './Plate'
 import Rail from './Rail'
+import Sign from './Sign'
 import ProjectWindow from './ProjectWindow'
 import styles from './Works.module.css'
 
@@ -19,7 +20,7 @@ function Work({ project, index }: { project: Project; index: number }) {
       <ProjectWindow project={project} index={index} />
       <div className={styles.copy}>
         <p className={`label ${styles.number}`}><span>Nº {project.number}</span><span>{project.award}</span></p>
-        <h3 id={`project-${index}`}>{project.title}</h3>
+        <h3 id={`project-${index}`}><Sign text={project.title} /></h3>
         <p className={styles.description}>{project.description}</p>
         <ul className={styles.tags} aria-label={`${project.title} technologies`}>
           {project.tags.map(tag => <li key={tag}>{tag}</li>)}
@@ -35,10 +36,10 @@ function Work({ project, index }: { project: Project; index: number }) {
 export default function Works() {
   return (
     <section id="projects" aria-labelledby="projects-title">
-      <Plate index={2} scene="arch" after="dunes" tone="light" numeral="III" place="the arch" kicker="ideas, made real" title="Selected work" titleId="projects-title" tall>
+      <Plate index={2} chapter="projects" scene="glasshouse" after="gardens" tone="dark" kicker="ideas, made real" title="Selected work" titleId="projects-title" tall>
         Hackathon wins and things I build for fun. There’s a little something to play with in each one.
       </Plate>
-      <Ground scene="arch" className={styles.ground}>
+      <Ground scene="glasshouse" className={styles.ground}>
         <div className={`measure ${styles.list}`}>
           <Rail label="Selected work, one project per card">
             {projects.map((project, index) => <Work key={project.title} project={project} index={index} />)}

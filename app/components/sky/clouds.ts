@@ -34,15 +34,15 @@ function grow(parents: [number, number, number][], seed: number): Cloud {
   return { lobes, box: [x0, y0, x1 - x0, y1 - y0] }
 }
 
-// The thunderhead over the ridge: a tall dome right of centre, shoulders stepping down either side.
-export const thunderhead = grow([
+// The cumulus over the terraces: a tall dome right of centre, shoulders stepping down either side.
+export const cumulus = grow([
   [.22, 1.12, .4], [-.2, .88, .36], [.64, .8, .34], [.1, .62, .44],
   [-.58, .58, .3], [.96, .47, .28], [-.92, .37, .24], [-.34, .33, .34],
   [.5, .3, .36], [1.28, .26, .2], [0, .08, .34],
   [-.7, .08, .26], [.92, .08, .26],
 ], 11)
 
-// The bank behind the hill and the field: wider than it is tall.
+// The bank behind the wind farm and the sunflowers: wider than it is tall.
 export const bank = grow([
   [-1.34, .52, .42], [-.76, .88, .46], [-.14, .62, .5], [.46, .98, .5],
   [1.06, .72, .46], [1.62, .46, .4], [.2, .2, .5], [-.62, .2, .45],

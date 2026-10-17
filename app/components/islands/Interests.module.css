@@ -1,18 +1,20 @@
-.ground { --accent: var(--color-coral); }
+.ground { --accent: var(--color-moss); --on-accent: var(--color-cream); }
 
-/* ------------------------------------------------------------------ the tabs */
+/* ------------------------------------------------------------------ the route */
 
+/* The islands are stops on an airship route: a dashed line, a ring at each stop, the one you are at lit. */
 .top {
   display: flex;
   align-items: flex-end;
   gap: 1.5rem;
-  border-bottom: 1px solid rgba(242, 236, 219, .14);
+  border-bottom: 2px dashed rgba(16, 38, 28, .28);
 }
 
 .tabs {
   display: flex;
   flex: 1;
   gap: clamp(1.2rem, 3vw, 2.8rem);
+  padding-top: .4rem;
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -22,46 +24,64 @@
   position: relative;
   display: grid;
   flex: none;
-  gap: .2rem;
-  padding: .9rem 0 1rem;
-  color: rgba(242, 236, 219, .62);
+  gap: .3rem;
+  padding: .9rem 0 1.25rem;
+  color: rgba(16, 38, 28, .55);
   font-family: var(--font-display);
-  font-size: clamp(1.15rem, 2vw, 1.6rem);
-  font-weight: 300;
-  font-variation-settings: 'SOFT' 100, 'WONK' 1;
-  line-height: 1.1;
-  letter-spacing: -.015em;
+  font-size: clamp(1.05rem, 1.8vw, 1.45rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: .02em;
   text-align: left;
   transition: color .25s ease;
 }
-.tab .label { font-size: .58rem; opacity: .7; }
-.tab:hover { color: var(--color-cream); }
-.tab[aria-selected='true'] { color: #ffb7a0; }
-
-/* How long until the islands move on: a line along the foot of the open tab. */
-.tab i {
+.tab .label { font-family: var(--font-label); font-size: .56rem; letter-spacing: .14em; opacity: .75; }
+.tab:hover { color: var(--color-ink); }
+.tab[aria-selected='true'] { color: var(--color-ink); }
+/* The stop on the line. */
+.tab::after {
+  content: '';
   position: absolute;
   left: 0;
-  right: 0;
-  bottom: -1px;
-  height: 1px;
-  background: var(--accent);
+  bottom: -8px;
+  width: 14px;
+  height: 14px;
+  border: 2.5px solid var(--color-ink);
+  border-radius: 50%;
+  background: #dfe9ec;
+  transition: background-color .3s ease, box-shadow .3s ease, transform .4s var(--ease-spring);
+}
+.tab[aria-selected='true']::after { background: var(--color-sun); box-shadow: 0 0 0 4px rgba(247, 182, 56, .3), 0 0 14px rgba(247, 182, 56, .8); transform: scale(1.15); }
+
+/* How long until the islands move on: the route filling in from this stop toward the next. */
+.tab i {
+  position: absolute;
+  left: 14px;
+  right: -1.2rem;
+  bottom: -3px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-sun);
   transform: scaleX(0);
   transform-origin: left;
 }
-.tab[aria-selected='true'] i { transform: scaleX(max(var(--p, 0), .06)); }
+.tab[aria-selected='true'] i { transform: scaleX(max(var(--p, 0), .02)); }
 
+/* Play and pause: a small lever. */
 .play {
   display: inline-flex;
   flex: none;
   align-items: center;
-  gap: .5em;
-  padding: .9rem 0 1.05rem;
+  gap: .55em;
+  margin-bottom: .8rem;
+  padding: .45rem .75rem .45rem .55rem;
+  border: 1.5px solid rgba(16, 38, 28, .4);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .45);
   color: inherit;
-  opacity: .6;
-  transition: opacity .25s ease, color .25s ease;
+  transition: background-color .25s ease, color .25s ease, border-color .25s ease;
 }
-.play:hover { opacity: 1; color: var(--accent); }
+.play:hover { border-color: var(--color-ink); background: var(--color-sun); }
 
 /* ------------------------------------------------------------------ the view */
 
@@ -118,20 +138,42 @@
 
 .print {
   --print: clamp(8.5rem, 34vw, 11rem);
+  --tape: rgba(239, 127, 110, .6);
+  position: relative;
   flex: none;
   width: calc(var(--print) * clamp(.8, var(--ratio, .8) * 1.05, 1.45));
   padding: .45rem .45rem .5rem;
-  background: #f4efe2;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset, 0 14px 28px -12px rgba(4, 4, 24, .8), 0 2px 6px rgba(4, 4, 24, .4);
+  background: #fbf7ea;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset, 0 14px 28px -12px rgba(20, 40, 50, .55), 0 2px 6px rgba(20, 40, 50, .25);
   transition: filter .4s ease, scale .4s ease;
+}
+.print[data-slot='1'] { --tape: rgba(127, 214, 198, .65); }
+.print[data-slot='2'] { --tape: rgba(247, 200, 56, .6); }
+.print[data-slot='3'] { --tape: rgba(164, 147, 212, .6); }
+/* A strip of washi tape holding each print up. */
+.print::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -.55rem;
+  z-index: 1;
+  width: 3.6rem;
+  height: 1.1rem;
+  margin-left: -1.8rem;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .25) 0 3px, transparent 3px 7px),
+    var(--tape);
+  -webkit-mask: conic-gradient(from -45deg at left, #0000, #000 1deg 89deg, #0000 90deg) left / 51% 5px repeat-y, conic-gradient(from 135deg at right, #0000, #000 1deg 89deg, #0000 90deg) right / 51% 5px repeat-y;
+  mask: conic-gradient(from -45deg at left, #0000, #000 1deg 89deg, #0000 90deg) left / 51% 5px repeat-y, conic-gradient(from 135deg at right, #0000, #000 1deg 89deg, #0000 90deg) right / 51% 5px repeat-y;
+  transform: rotate(-4deg);
 }
 .print button { display: block; width: 100%; cursor: zoom-in; }
 .print figcaption {
   padding-top: .45rem;
   overflow: hidden;
-  color: rgba(20, 21, 63, .72);
-  font-family: var(--font-display);
-  font-size: .78rem;
+  color: rgba(16, 38, 28, .75);
+  font-family: var(--font-serif);
+  font-size: .92rem;
   font-style: italic;
   line-height: 1.2;
   white-space: nowrap;
@@ -143,8 +185,8 @@
   width: 100%;
   aspect-ratio: var(--ratio, .8);
   object-fit: cover;
-  /* A little of the dusk in every photo, so they sit in the same light as the rest of the page. */
-  filter: sepia(.12) saturate(1.05) hue-rotate(-6deg) contrast(1.02);
+  /* A little of the afternoon in every photo, so they sit in the same light as the rest of the page. */
+  filter: sepia(.08) saturate(1.08) contrast(1.02);
 }
 .print:hover { scale: 1.04; }
 
@@ -155,20 +197,21 @@
   align-self: center;
   gap: .5em;
   padding: .6rem .9rem;
-  border: 1px solid rgba(242, 236, 219, .3);
+  border: 1.5px solid rgba(16, 38, 28, .4);
   border-radius: 999px;
-  color: var(--color-cream);
-  transition: border-color .25s ease, color .25s ease;
+  background: rgba(255, 255, 255, .5);
+  color: var(--color-ink);
+  transition: border-color .25s ease, background-color .25s ease;
 }
-.more:hover { border-color: var(--accent); color: var(--accent); }
+.more:hover { border-color: var(--color-ink); background: var(--color-sun); }
 
 .missing {
   display: grid;
   place-items: center;
   padding: 1rem;
-  border: 1px dashed rgba(20, 21, 63, .35);
-  background: repeating-linear-gradient(135deg, #e7e1d2 0 8px, #ede8da 8px 16px);
-  color: rgba(20, 21, 63, .6);
+  border: 1px dashed rgba(16, 38, 28, .35);
+  background: repeating-linear-gradient(135deg, #ece5d0 0 8px, #f3eedd 8px 16px);
+  color: rgba(16, 38, 28, .6);
   font-family: var(--font-label);
   font-size: .55rem;
   letter-spacing: .16em;
@@ -180,35 +223,36 @@
 
 .panel { min-height: 15rem; }
 
-.kicker { color: var(--accent); }
+.kicker { color: var(--color-copper); font-weight: 700; }
 
 .figure {
-  margin-top: .5rem;
+  margin-top: .6rem;
   font-family: var(--font-display);
-  font-size: clamp(3.4rem, 8vw, 6rem);
-  font-weight: 300;
-  font-style: italic;
-  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+  font-size: clamp(3.2rem, 7.4vw, 5.6rem);
+  font-weight: 400;
   line-height: .9;
-  letter-spacing: -.04em;
-  color: var(--color-gold);
+  letter-spacing: .02em;
+  color: var(--color-sun);
+  --line: var(--color-ink);
 }
+.figure :global(.sign) { text-shadow: .03em .03em 0 var(--color-ink), .06em .06em 0 var(--color-ink); }
+.figure :global(.sign) > [data-line] { text-shadow: none; }
 
 .panel h3 {
-  margin-top: .45rem;
+  margin-top: .5rem;
   font-family: var(--font-display);
-  font-size: clamp(2rem, 4.6vw, 3.4rem);
-  font-weight: 300;
-  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+  font-size: clamp(1.9rem, 4.2vw, 3.1rem);
+  font-weight: 400;
   line-height: 1;
-  letter-spacing: -.03em;
+  letter-spacing: .02em;
+  --line: var(--color-sun);
 }
-.figure + h3 { margin-top: .2rem; font-size: clamp(1.4rem, 2.6vw, 2rem); }
+.figure + h3 { margin-top: .3rem; font-size: clamp(1.4rem, 2.6vw, 2rem); }
 
 .words {
   max-width: 30rem;
   margin-top: .9rem;
-  color: rgba(242, 236, 219, .82);
+  color: rgba(16, 38, 28, .85);
 }
 
 .outfits { margin-top: 1.2rem; }
@@ -251,7 +295,7 @@
   .print[data-slot='1'] { left: 0; top: 2%; }
   .print[data-slot='2'] { right: 2%; top: 40%; }
   .print[data-slot='3'] { left: -2%; top: 44%; }
-  .more { position: absolute; left: 2%; bottom: 8%; pointer-events: auto; background: rgba(20, 21, 63, .55); backdrop-filter: blur(6px); }
+  .more { position: absolute; left: 2%; bottom: 8%; pointer-events: auto; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
 }
 
 /* ------------------------------------------------------------------ opened large */
@@ -268,16 +312,16 @@
   color: var(--color-cream);
 }
 .sheet[open] { display: grid; place-items: center; }
-.sheet::backdrop { background: rgba(8, 9, 30, .88); backdrop-filter: blur(6px); }
+.sheet::backdrop { background: rgba(10, 30, 22, .88); backdrop-filter: blur(6px); }
 
 .sheet figure {
   display: grid;
   gap: .8rem;
   max-width: min(100%, 72rem);
   padding: .6rem .6rem .8rem;
-  background: #f4efe2;
+  background: #fbf7ea;
   box-shadow: 0 30px 80px -20px rgba(0, 0, 0, .8);
-  color: #14153f;
+  color: var(--color-ink);
 }
 .sheet img {
   display: block;
@@ -292,9 +336,10 @@
   align-items: center;
   justify-content: space-between;
   gap: .6rem 1.5rem;
-  font-family: var(--font-display);
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
   font-style: italic;
 }
 .sheetNav { display: inline-flex; align-items: center; gap: .9rem; font-style: normal; }
-.sheetNav button { display: grid; place-items: center; width: 2.2rem; height: 2.2rem; border-radius: 50%; color: inherit; transition: background .2s ease; }
-.sheetNav button:hover { background: rgba(20, 21, 63, .1); }
+.sheetNav button { display: grid; place-items: center; width: 2.3rem; height: 2.3rem; border: 1.5px solid rgba(16, 38, 28, .35); border-radius: 50%; color: inherit; transition: background .2s ease, border-color .2s ease; }
+.sheetNav button:hover { background: var(--color-sun); border-color: var(--color-ink); }

@@ -1,33 +1,49 @@
 @import 'tailwindcss';
 
 @theme {
-  /* Night */
-  --color-ink: #0b0c28;
-  --color-night: #11123a;
-  --color-indigo: #232080;
-  --color-ultra: #3b47bd;
-  --color-peri: #8e9cee;
-  --color-lilac: #d6d4f2;
-  /* Light */
-  --color-coral: #f6866a;
-  --color-ember: #d9485a;
-  --color-gold: #f6b455;
-  --color-cream: #f2ecdb;
+  /* Growing things */
+  --color-ink: #10261c;
+  --color-forest: #173a2a;
+  --color-moss: #2e5b3c;
+  --color-leaf: #5d9a4a;
+  --color-lime: #c6e26c;
+  --color-sage: #a3c196;
+  /* Paper and sand */
+  --color-cream: #f8f1dd;
+  --color-paper: #ede3c5;
+  --color-sand: #efd6a4;
+  /* Sun, brass and clay */
+  --color-sun: #f7b638;
+  --color-brass: #c39345;
+  --color-copper: #cd6a3c;
+  --color-coral: #ef7f6e;
+  /* Sky and glass */
+  --color-sky: #2d5fc6;
+  --color-ultra: #1e3f98;
+  --color-azure: #8cc2ef;
+  --color-glass: #7fd6c6;
+  --color-teal: #0f2f2b;
 
-  --font-display: var(--font-fraunces), 'Iowan Old Style', Georgia, serif;
-  --font-sans: var(--font-hanken), system-ui, sans-serif;
-  --font-label: var(--font-michroma), var(--font-hanken), system-ui, sans-serif;
+  --font-display: var(--font-heliotrope), var(--font-unbounded), system-ui, sans-serif;
+  --font-line: var(--font-heliotrope-line);
+  --font-thin: var(--font-heliotrope-light), var(--font-unbounded), system-ui, sans-serif;
+  --font-round: var(--font-unbounded), system-ui, sans-serif;
+  --font-sans: var(--font-instrument), system-ui, sans-serif;
+  --font-serif: var(--font-instrument-serif), 'Iowan Old Style', Georgia, serif;
+  --font-label: var(--font-martian), ui-monospace, 'SF Mono', Menlo, monospace;
 }
 
 @layer base {
   :root {
     /* The one margin everything hangs from: the header, the name, every title and every column. */
     --edge: max(clamp(1.25rem, 3.4vw, 3rem), calc((100vw - 84rem) / 2));
+    --ease-out: cubic-bezier(.2, .7, .2, 1);
+    --ease-spring: cubic-bezier(.3, 1.45, .45, 1);
   }
 
   html {
     overflow-x: clip;
-    background: var(--color-night);
+    background: var(--color-forest);
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
@@ -36,7 +52,7 @@
   body {
     min-height: 100svh;
     overflow-x: clip;
-    background: var(--color-night);
+    background: var(--color-forest);
     color: var(--color-cream);
     font-family: var(--font-sans);
     font-size: 1.0625rem;
@@ -46,77 +62,177 @@
   }
 
   /* Anchors land below the fixed header. */
-  [id] { scroll-margin-top: 5.5rem; }
+  [id] { scroll-margin-top: 6rem; }
 
-  ::selection { background: var(--color-coral); color: var(--color-ink); }
+  ::selection { background: var(--color-sun); color: var(--color-ink); }
 
-  :where(a, button, input, [tabindex]):focus-visible {
-    outline: 2px solid var(--color-gold);
+  :where(a, button, input, textarea, [tabindex]):focus-visible {
+    outline: 2.5px solid var(--focus, var(--color-sun));
     outline-offset: 4px;
-    border-radius: 2px;
+    border-radius: 4px;
   }
 
   button { cursor: pointer; }
   button:disabled { cursor: default; }
 
-  html { scrollbar-color: #3a3a8c var(--color-ink); }
+  html { scrollbar-color: #5d9a4a #10261c; }
 }
 
 @layer components {
-  /* Small wide capitals: the captions under the paintings. */
+  /* Small print: wide mono capitals, like the captions on a spec sheet. */
   .label {
     font-family: var(--font-label);
-    font-size: .65rem;
+    font-size: .62rem;
+    font-weight: 500;
     line-height: 1.5;
-    letter-spacing: .2em;
+    letter-spacing: .14em;
     text-transform: uppercase;
+    font-variation-settings: 'wdth' 108;
   }
 
   .measure { margin-inline: var(--edge); }
 
-  /* Text links: a rule that fills in from the left, and an arrow that leans the way it is going. */
+  /* The lit sign: Heliotrope, with its hairline cut laid over it in a second colour. */
+  .sign { position: relative; display: inline-block; }
+  .sign > [data-line] {
+    position: absolute;
+    inset: 0;
+    font-family: var(--font-line);
+    color: var(--line, var(--color-ink));
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /*
+   * Links that go somewhere: a capsule with a round cell at its head that holds the arrow. On the way in the
+   * cell charges (its ring fills round with sun) and a glint runs across the glass.
+   */
   .go {
+    --tint: var(--accent, var(--color-sun));
+    position: relative;
+    isolation: isolate;
     display: inline-flex;
     align-items: center;
-    gap: .4em;
-    padding-block: .3em;
-    background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
-    transition: color .25s ease, background-size .35s ease;
+    gap: .6em;
+    min-height: 2.55rem;
+    padding: .3rem 1.05rem .3rem .3rem;
+    overflow: hidden;
+    border: 1.5px solid color-mix(in srgb, currentColor 55%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, currentColor 5%, transparent);
+    font-family: var(--font-sans);
+    font-size: .9rem;
+    font-weight: 600;
+    letter-spacing: .005em;
+    line-height: 1.1;
+    white-space: nowrap;
+    transition: border-color .3s ease, background-color .3s ease, color .3s ease, transform .35s var(--ease-spring);
   }
-  .go svg { flex: none; transition: transform .3s cubic-bezier(.2, .7, .2, 1); }
-  .go:hover, .go:focus-visible { color: var(--accent, var(--color-coral)); }
-  .go:hover svg, .go:focus-visible svg { transform: translate(2px, -2px); }
-  .go[data-down]:hover svg, .go[data-down]:focus-visible svg { transform: translateY(3px); }
+  .go svg {
+    order: -1;
+    flex: none;
+    box-sizing: content-box;
+    width: .95rem;
+    height: .95rem;
+    padding: .44rem;
+    border-radius: 50%;
+    color: var(--on-tint, var(--color-ink));
+    background:
+      radial-gradient(circle at 34% 28%, rgba(255, 255, 255, .65), transparent 42%),
+      var(--tint);
+    box-shadow: 0 0 0 1.5px color-mix(in srgb, currentColor 0%, transparent), inset 0 -2px 3px rgba(0, 0, 0, .18);
+    transition: transform .45s var(--ease-spring), box-shadow .3s ease;
+  }
+  /* The glint. */
+  .go::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(105deg, transparent 35%, color-mix(in srgb, var(--tint) 45%, transparent) 50%, transparent 65%) no-repeat;
+    background-size: 220% 100%;
+    background-position: 140% 0;
+    opacity: 0;
+    transition: background-position .8s var(--ease-out), opacity .3s ease;
+  }
+  .go:hover, .go:focus-visible {
+    border-color: var(--tint);
+    background-color: color-mix(in srgb, var(--tint) 14%, transparent);
+    transform: translateY(-1px);
+  }
+  .go:hover::after, .go:focus-visible::after { opacity: 1; background-position: -40% 0; }
+  .go:hover svg, .go:focus-visible svg { transform: rotate(45deg) scale(1.06); box-shadow: 0 0 0 3px color-mix(in srgb, var(--tint) 35%, transparent), 0 0 18px color-mix(in srgb, var(--tint) 70%, transparent); }
+  .go[data-down]:hover svg, .go[data-down]:focus-visible svg { transform: translateY(2px) scale(1.06); }
+  .go:active { transform: translateY(1px) scale(.98); }
 
-  /* Filters: plain words, the chosen one underlined with light. */
+  /* The one that matters most on a screen is a solar panel: cells under glass, in a brass frame. */
+  .go[data-panel] {
+    --tint: var(--color-sun);
+    border: 2px solid var(--color-brass);
+    border-radius: .55rem;
+    color: var(--color-cream);
+    background:
+      repeating-linear-gradient(90deg, transparent 0 calc(.95rem - 1px), rgba(196, 220, 255, .28) calc(.95rem - 1px) .95rem),
+      repeating-linear-gradient(0deg, transparent 0 calc(.8rem - 1px), rgba(196, 220, 255, .28) calc(.8rem - 1px) .8rem),
+      linear-gradient(160deg, #4a7fe0, #1d3d93 70%, #17306f);
+    box-shadow: 0 0 0 3px rgba(16, 38, 28, .35), 0 10px 24px -12px rgba(9, 24, 60, .8), inset 0 1px 0 rgba(255, 255, 255, .25);
+  }
+  .go[data-panel]:hover, .go[data-panel]:focus-visible {
+    background-color: transparent;
+    border-color: var(--color-sun);
+    box-shadow: 0 0 0 3px rgba(247, 182, 56, .35), 0 14px 28px -12px rgba(9, 24, 60, .9), inset 0 1px 0 rgba(255, 255, 255, .3);
+  }
+  .go[data-panel]::after { background-image: linear-gradient(105deg, transparent 38%, rgba(255, 248, 225, .55) 50%, transparent 62%); }
+
+  /*
+   * Filters: switches on a console. Each has a lamp that lights when it is on; the count sits in its own
+   * small window.
+   */
   .filters {
     display: flex;
     flex-wrap: wrap;
-    gap: .35rem 1.6rem;
+    gap: .5rem;
   }
   .filters button {
     position: relative;
-    padding: .55rem 0;
+    display: inline-flex;
+    align-items: center;
+    gap: .6em;
+    padding: .55rem .8rem .55rem .7rem;
+    border: 1.5px solid color-mix(in srgb, currentColor 32%, transparent);
+    border-radius: .65rem;
+    background: color-mix(in srgb, currentColor 4%, transparent);
     color: inherit;
-    opacity: .58;
-    transition: opacity .25s ease, color .25s ease;
+    box-shadow: 0 2px 0 color-mix(in srgb, currentColor 22%, transparent);
+    transition: background-color .25s ease, color .25s ease, border-color .25s ease, box-shadow .2s ease, transform .2s ease;
   }
-  .filters button small { margin-left: .5em; font-size: 1em; opacity: .6; }
-  .filters button::after {
+  .filters button::before {
     content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: .2rem;
-    height: 1px;
-    background: var(--accent, var(--color-coral));
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform .35s cubic-bezier(.2, .7, .2, 1);
+    flex: none;
+    width: .55rem;
+    height: .55rem;
+    border-radius: 50%;
+    background: color-mix(in srgb, currentColor 22%, transparent);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .35);
+    transition: background-color .25s ease, box-shadow .25s ease;
   }
-  .filters button:hover { opacity: 1; }
-  .filters button[aria-pressed='true'] { opacity: 1; color: var(--accent, var(--color-coral)); }
-  .filters button[aria-pressed='true']::after { transform: scaleX(1); }
+  .filters button small {
+    margin-left: .1em;
+    padding: .12em .5em;
+    border-radius: 999px;
+    background: color-mix(in srgb, currentColor 11%, transparent);
+    font-size: 1em;
+  }
+  .filters button:hover { border-color: color-mix(in srgb, currentColor 60%, transparent); transform: translateY(-1px); }
+  .filters button:active { transform: translateY(1px); box-shadow: 0 0 0 transparent; }
+  .filters button[aria-pressed='true'] {
+    border-color: var(--accent, var(--color-sun));
+    background: var(--accent, var(--color-sun));
+    color: var(--on-accent, var(--color-ink));
+    box-shadow: 0 2px 0 color-mix(in srgb, var(--accent, var(--color-sun)) 55%, #000);
+  }
+  .filters button[aria-pressed='true']::before { background: var(--color-lime); box-shadow: 0 0 0 2px rgba(16, 38, 28, .25), 0 0 10px 2px rgba(198, 226, 108, .9); }
+  .filters button[aria-pressed='true'] small { background: rgba(16, 38, 28, .16); }
 }
 
 @media (prefers-reduced-motion: reduce) {

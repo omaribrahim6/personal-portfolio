@@ -34,7 +34,7 @@ export default function Shore() {
 
   return (
     <section id="contact" aria-labelledby="contact-title">
-      <Plate index={6} scene="shore" after="islands" tone="light" numeral="VII" place="the shore" kicker="one more thing to build?" title="Let’s talk" titleId="contact-title" href={links.email} />
+      <Plate index={6} chapter="contact" scene="shore" after="islands" tone="light" kicker="one more thing to build?" title="Let’s talk" titleId="contact-title" href={links.email} />
 
       <Ground scene="shore" tone="light" className={styles.ground}>
         <div className={`measure ${styles.body}`}>
@@ -43,15 +43,21 @@ export default function Shore() {
           </p>
 
           <div className={styles.reach}>
-            <div className={styles.email}>
-              <a href={links.email}>{email}</a>
-              <button type="button" onClick={copyEmail} aria-label={copied ? 'Email copied' : 'Copy email'}>
-                {copied ? <Check size={18} /> : <Copy size={18} />}
-              </button>
+            {/* A postcard home: the address written on it, a stamp with the sun on it, and the postmark of this hour. */}
+            <div className={styles.postcard}>
+              <span className={styles.stamp} aria-hidden="true"><i /></span>
+              <span className={`label ${styles.postmark}`} aria-hidden="true">Ottawa · 18:40</span>
+              <p className={`label ${styles.to}`}>Write to</p>
+              <div className={styles.email}>
+                <a href={links.email}>{email}</a>
+                <button type="button" onClick={copyEmail} aria-label={copied ? 'Email copied' : 'Copy email'}>
+                  {copied ? <Check size={18} /> : <Copy size={18} />}
+                </button>
+              </div>
+              <p className={styles.status} role="status">
+                {copied ? 'Email copied to clipboard.' : copyError ? 'Could not copy. You can select the address or use the email link.' : ''}
+              </p>
             </div>
-            <p className={styles.status} role="status">
-              {copied ? 'Email copied to clipboard.' : copyError ? 'Could not copy. You can select the address or use the email link.' : ''}
-            </p>
             <div className={styles.links}>
               {elsewhere.map(link => (
                 <a key={link.label} className="go" href={link.href} target="_blank" rel="noopener noreferrer">{link.label}<ArrowUpRight size={15} /></a>
@@ -63,7 +69,7 @@ export default function Shore() {
         <footer className={`measure label ${styles.footer}`}>
           <p>Designed &amp; built by <span>Omar</span></p>
           <p suppressHydrationWarning>© {new Date().getFullYear()} All rights reserved.</p>
-          <a href="#home">Back to the ridge <ArrowUp size={12} /></a>
+          <a href="#home">Back to sunrise <ArrowUp size={12} /></a>
         </footer>
       </Ground>
     </section>

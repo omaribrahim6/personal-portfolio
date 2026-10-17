@@ -1,29 +1,27 @@
 import type { Metadata, Viewport } from 'next'
-import { Fraunces, Hanken_Grotesk, Michroma } from 'next/font/google'
+import { Instrument_Sans, Instrument_Serif, Martian_Mono, Unbounded } from 'next/font/google'
+import localFont from 'next/font/local'
 import './globals.css'
 
-// A soft, slightly odd serif for the big words, in the spirit of a painted paperback cover.
-const fraunces = Fraunces({
-  subsets: ['latin'],
-  style: ['normal', 'italic'],
-  axes: ['opsz', 'SOFT', 'WONK'],
-  variable: '--font-fraunces',
-  display: 'swap',
-})
+// Heliotrope, the site's own display face: wide stencil capitals in one heavy stroke, like the lettering on
+// a retro-futurist expo poster. Made by scripts/heliotrope.mjs. The line cut is a hairline down the middle of
+// every stroke, laid over the solid in a second colour; the light cut is the same skeletons, drawn thin.
+// All three are a few kilobytes, so they block rather than swap: the line cut drawn in a stand-in face over
+// the solid one would be worse than a moment without the words.
+const heliotrope = localFont({ src: './fonts/heliotrope.woff', variable: '--font-heliotrope', display: 'block' })
+const heliotropeLine = localFont({ src: './fonts/heliotrope-line.woff', variable: '--font-heliotrope-line', display: 'block', adjustFontFallback: false })
+const heliotropeLight = localFont({ src: './fonts/heliotrope-light.woff', variable: '--font-heliotrope-light', display: 'block' })
 
-const hanken = Hanken_Grotesk({
-  subsets: ['latin'],
-  variable: '--font-hanken',
-  display: 'swap',
-})
+// Round, wide and confident: the second voice, for titles inside a chapter.
+const unbounded = Unbounded({ subsets: ['latin'], variable: '--font-unbounded', display: 'swap' })
 
-// Wide, squared capitals for captions and coordinates.
-const michroma = Michroma({
-  weight: '400',
-  subsets: ['latin'],
-  variable: '--font-michroma',
-  display: 'swap',
-})
+const instrumentSans = Instrument_Sans({ subsets: ['latin'], axes: ['wdth'], variable: '--font-instrument', display: 'swap' })
+
+// The editorial italic, for the asides.
+const instrumentSerif = Instrument_Serif({ subsets: ['latin'], weight: '400', style: ['normal', 'italic'], variable: '--font-instrument-serif', display: 'swap' })
+
+// Captions, counts and receipts: a wide technical mono, like the small print on a spec sheet.
+const martian = Martian_Mono({ subsets: ['latin'], axes: ['wdth'], variable: '--font-martian', display: 'swap' })
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://omaribrahim.me'),
@@ -71,9 +69,11 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#11123a',
-  colorScheme: 'dark',
+  themeColor: '#173a2a',
+  colorScheme: 'light dark',
 }
+
+const fonts = [heliotrope, heliotropeLine, heliotropeLight, unbounded, instrumentSans, instrumentSerif, martian].map(font => font.variable).join(' ')
 
 export default function RootLayout({
   children,
@@ -81,7 +81,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${hanken.variable} ${michroma.variable}`}>
+    <html lang="en" className={fonts}>
       <body>
         {children}
       </body>

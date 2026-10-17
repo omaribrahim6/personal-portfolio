@@ -6,22 +6,40 @@
   justify-content: space-between;
   margin-bottom: 1.2rem;
 }
-.count { opacity: .7; font-variant-numeric: tabular-nums; }
+.count { opacity: .75; font-variant-numeric: tabular-nums; }
 .count i { font-style: normal; opacity: .5; margin: 0 .3em; }
 
-.arrows { display: flex; gap: .6rem; }
+/* Portholes in brass: the arrow behind glass, a rivet ring round it. */
+.arrows { display: flex; gap: .7rem; }
 .arrows button {
+  position: relative;
   display: grid;
   place-items: center;
-  width: 2.7rem;
-  height: 2.7rem;
-  border: 1px solid rgba(242, 236, 219, .28);
+  width: 2.9rem;
+  height: 2.9rem;
   border-radius: 50%;
-  color: inherit;
-  transition: border-color .25s ease, color .25s ease, background-color .25s ease, opacity .25s ease;
+  color: var(--color-ink);
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, .7), transparent 38%),
+    radial-gradient(circle, #d9f2ec 0 52%, transparent 53%),
+    conic-gradient(from 210deg, #f0cd84, #c39345, #7d5a26, #c39345, #f0cd84);
+  box-shadow: 0 0 0 1.5px rgba(16, 38, 28, .55), 0 6px 14px -6px rgba(0, 0, 0, .55), inset 0 0 0 1px rgba(255, 255, 255, .3);
+  transition: transform .4s var(--ease-spring), box-shadow .25s ease, opacity .25s ease, filter .25s ease;
 }
-.arrows button:hover:not(:disabled) { border-color: var(--accent, var(--color-coral)); color: var(--accent, var(--color-coral)); }
-.arrows button:disabled { opacity: .28; }
+.arrows button::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(from 11deg, rgba(90, 60, 20, .8) 0 4deg, transparent 4deg 45deg);
+  -webkit-mask: radial-gradient(circle, transparent 0 78%, #000 80% 88%, transparent 90%);
+  mask: radial-gradient(circle, transparent 0 78%, #000 80% 88%, transparent 90%);
+  pointer-events: none;
+}
+.arrows button svg { position: relative; z-index: 1; }
+.arrows button:hover:not(:disabled) { transform: rotate(-12deg) scale(1.06); box-shadow: 0 0 0 1.5px rgba(16, 38, 28, .55), 0 0 0 5px color-mix(in srgb, var(--accent, var(--color-sun)) 35%, transparent), 0 8px 18px -6px rgba(0, 0, 0, .6); }
+.arrows button:active:not(:disabled) { transform: scale(.94); }
+.arrows button:disabled { opacity: .38; filter: grayscale(.7); }
 
 /* The shelf runs off the right edge of the screen so the next card always peeks in. */
 .track {
@@ -30,7 +48,8 @@
   display: flex;
   gap: clamp(1rem, 2.4vw, 1.8rem);
   margin-right: calc(var(--peek) * -1);
-  padding: 0 var(--peek) .4rem 0;
+  padding: .4rem var(--peek) 1.2rem .4rem;
+  margin-left: -.4rem;
   overflow-x: auto;
   overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory;
@@ -39,20 +58,46 @@
   list-style: none;
 }
 .track::-webkit-scrollbar { display: none; }
-.track > * { flex: none; scroll-snap-align: start; }
+.track > * { flex: none; scroll-snap-align: start; scroll-margin-left: .4rem; }
 .track:focus-visible { outline-offset: 6px; }
 
-.progress {
-  height: 1px;
-  margin-top: 1.4rem;
-  background: rgba(242, 236, 219, .14);
+/* The battery: a row of cells in a case with a terminal, lit one by one, and the charge beside it. */
+.battery {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  margin-top: 1rem;
 }
-.progress i {
-  display: block;
-  height: 100%;
-  background: var(--accent, var(--color-coral));
-  transition: width .4s cubic-bezier(.2, .7, .2, 1);
+.cells {
+  position: relative;
+  display: flex;
+  flex: 1;
+  gap: 3px;
+  max-width: 26rem;
+  padding: 3px;
+  border: 1.5px solid color-mix(in srgb, currentColor 45%, transparent);
+  border-radius: 5px;
 }
+.cells::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  width: 4px;
+  height: 7px;
+  margin-top: -3.5px;
+  border-radius: 0 2px 2px 0;
+  background: color-mix(in srgb, currentColor 45%, transparent);
+}
+.cells i {
+  flex: 1;
+  height: 8px;
+  border-radius: 2px;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  transition: background-color .35s ease, box-shadow .35s ease;
+}
+.cells i[data-on='true'] { background: var(--accent, var(--color-sun)); box-shadow: 0 0 8px color-mix(in srgb, var(--accent, var(--color-sun)) 60%, transparent); }
+.battery b { font-family: var(--font-label); font-size: .62rem; font-weight: 500; letter-spacing: .1em; opacity: .7; font-variant-numeric: tabular-nums; }
 
 @media (prefers-reduced-motion: reduce) {
   .track { scroll-behavior: auto; }

@@ -3,22 +3,21 @@
 import { useEffect, useRef } from 'react'
 import { useMotionPreference } from '../useMotionPreference'
 import { world } from '../scroll'
-import { bank, shapeOf, thunderhead } from './clouds'
+import { bank, cumulus, shapeOf } from './clouds'
 import type { ShapeReply, ShapeRequest } from './shape.worker'
 import { skyAt, skyGradient } from './keys'
 import { fragment, vertex } from './shader'
 import styles from './Sky.module.css'
 
-const LIGHT_A = normalize([.72, -.42, .5])
+// Both clouds are lit from the left and a little above: the sun is never on the far side of them.
+const LIGHT_A = normalize([-.7, .32, .56])
 const LIGHT_B = normalize([-.62, .5, .5])
-const THUNDERHEAD = { uALit: '#f6866a', uAShade: '#8d88c6', uADeep: '#9c2a40', uATop: '#eba3ad' }
-/** How long the thunderhead takes to grow when the page opens. */
+/** How long the cumulus over the terraces takes to grow when the page opens. */
 const BLOOM = 2600
-/** Width, in texels, of the image each cloud's shape is kept in. While the thunderhead is growing it is drawn at half that. */
+/** Width, in texels, of the image each cloud's shape is kept in. While the cumulus is growing it is drawn at half that. */
 const SHAPE = 1152
 
 function normalize(v: number[]) { const l = Math.hypot(...v); return v.map(n => n / l) }
-function rgb(color: string) { const n = parseInt(color.slice(1), 16); return [(n >> 16) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255] }
 
 function link(gl: WebGLRenderingContext) {
   const program = gl.createProgram()!
@@ -75,7 +74,7 @@ export default function Sky() {
       let raf = 0, last = 0, start = 0, painted = 0, slow = 0, frames = 0
       let chapter = world.chapter
       let dirty = true, lost = false, wasReduced = still.current
-      // grown: the full-size thunderhead has been asked for. settled: it has arrived. banked: the bank has been asked for.
+      // grown: the full-size cumulus has been asked for. settled: it has arrived. banked: the bank has been asked for.
       let grown = false, settled = false, banked = false
       const pointer = [0, 0]
       let at: ReturnType<typeof link>
@@ -94,7 +93,7 @@ export default function Sky() {
       let busy = false
       const waiting: ShapeRequest[] = []
       function shape(request: ShapeRequest) {
-        if (!worker) return receive({ ...request, ...shapeOf(request.which ? bank : thunderhead, request.size, request.bloom) })
+        if (!worker) return receive({ ...request, ...shapeOf(request.which ? bank : cumulus, request.size, request.bloom) })
         if (busy) { waiting.push(request); return }
         busy = true
         worker.postMessage(request)
@@ -130,12 +129,11 @@ export default function Sky() {
           gl!.texParameteri(gl!.TEXTURE_2D, gl!.TEXTURE_WRAP_T, gl!.CLAMP_TO_EDGE)
         }
 
-        for (const [name, color] of Object.entries(THUNDERHEAD)) gl!.uniform3fv(at(name), rgb(color))
         gl!.uniform3fv(at('uLightA'), LIGHT_A)
         gl!.uniform3fv(at('uLightB'), LIGHT_B)
         gl!.uniform1i(at('uShapeA'), 0)
         gl!.uniform1i(at('uShapeB'), 1)
-        gl!.uniform4fv(at('uBoxA'), thunderhead.box)
+        gl!.uniform4fv(at('uBoxA'), cumulus.box)
         gl!.uniform4fv(at('uBoxB'), bank.box)
         grown = settled = banked = false
       }
@@ -167,7 +165,7 @@ export default function Sky() {
           pointer[0] += (world.pointer[0] - pointer[0]) * Math.min(1, dt * 3)
           pointer[1] += (world.pointer[1] - pointer[1]) * Math.min(1, dt * 3)
         }
-        // The thunderhead grows once, as the page opens: a half-size shape for each step of the way, then the full one.
+        // The cumulus grows once, as the page opens: a half-size shape for each step of the way, then the full one.
         // Without a worker, or with motion reduced, it simply arrives fully grown.
         if (!grown && !(busy && worker)) {
           const bloom = reduced || !worker ? 1 : Math.min(1, (now - start) / BLOOM)
@@ -199,6 +197,10 @@ export default function Sky() {
         gl!.uniform3fv(at('uOrbCol'), s.orbCol)
         gl!.uniform1f(at('uHalo'), s.halo)
         gl!.uniform4f(at('uA'), s.a[0] - drift[0], s.a[1] + drift[1], s.a[2], s.a[3])
+        gl!.uniform3fv(at('uALit'), s.aLit)
+        gl!.uniform3fv(at('uAShade'), s.aShade)
+        gl!.uniform3fv(at('uADeep'), s.aDeep)
+        gl!.uniform3fv(at('uATop'), s.aTop)
         gl!.uniform4f(at('uB'), s.b[0] - drift[0], s.b[1] + drift[1], s.b[2], s.b[3])
         gl!.uniform3fv(at('uBLit'), s.bLit)
         gl!.uniform3fv(at('uBShade'), s.bShade)

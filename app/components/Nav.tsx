@@ -3,21 +3,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { ArrowUpRight } from 'lucide-react'
 import { chapters, links } from '../content'
+import SunDial from './SunDial'
 import styles from './Nav.module.css'
 
 const short: Record<string, string> = { about: 'Story', projects: 'Work', awards: 'Wins', skills: 'Toolkit', interests: 'Off hours', contact: 'Contact' }
-
-// How far down the page you are, drawn as how full the moon is.
-function Phase({ progress }: { progress: number }) {
-  const p = Math.min(.999, Math.max(.02, progress))
-  const bulge = (7 * Math.abs(1 - 2 * p)).toFixed(2)
-  return (
-    <svg className={styles.phase} viewBox="0 0 16 16" aria-hidden="true">
-      <circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" strokeOpacity=".45" />
-      <path d={`M8 1A7 7 0 0 1 8 15A${bulge} 7 0 0 ${p < .5 ? 0 : 1} 8 1`} fill="currentColor" />
-    </svg>
-  )
-}
 
 export default function Nav({ active, tone, progress }: { active: string; tone: 'dark' | 'light'; progress: number }) {
   const [open, setOpen] = useState(false)
@@ -56,37 +45,48 @@ export default function Nav({ active, tone, progress }: { active: string; tone: 
   return (
     <>
       <header className={styles.bar} data-tone={open ? 'dark' : tone} data-hidden={hidden && !open}>
-        <a href="#home" className={styles.name} aria-label="Omar Ibrahim, back to the top" onClick={() => setOpen(false)}>
-          <Phase progress={progress} />
-          <span>Omar Ibrahim</span>
+        {/* The name on a lacquered plaque in a brass frame. The sun on it crosses the sky as you read down the page. */}
+        <a href="#home" className={styles.plaque} aria-label="Omar Ibrahim, back to the top" onClick={() => setOpen(false)}>
+          <SunDial at={progress} className={styles.dial} />
+          <span className={styles.name}>Omar Ibrahim</span>
         </a>
         <nav className={styles.links} aria-label="Chapters">
           {chapters.slice(1).map(chapter => (
             <a key={chapter.id} href={`#${chapter.id}`} className="label" aria-current={active === chapter.id ? 'location' : undefined}>
-              <i aria-hidden="true">{chapter.numeral}</i>{short[chapter.id]}
+              <i aria-hidden="true">{chapter.hour}</i>{short[chapter.id]}
             </a>
           ))}
-          <a className="label" href={links.resume} target="_blank" rel="noopener noreferrer">Résumé <ArrowUpRight size={11} /></a>
+          <a className={`label ${styles.resume}`} href={links.resume} target="_blank" rel="noopener noreferrer">Résumé <ArrowUpRight size={12} /></a>
         </nav>
         <button ref={toggle} type="button" className={`label ${styles.toggle}`} aria-expanded={open} aria-controls="index" onClick={() => setOpen(!open)}>
+          <svg viewBox="0 0 20 20" aria-hidden="true" className={styles.sun} data-open={open}>
+            <circle cx="10" cy="10" r="3.6" />
+            {Array.from({ length: 8 }, (_, k) => <path key={k} d="M10 1.6v2.6" transform={`rotate(${k * 45} 10 10)`} />)}
+          </svg>
           {open ? 'Close' : 'Index'}
         </button>
       </header>
 
+      {/* The index on small screens: the day as a timetable, one stop for each chapter. */}
       <div id="index" ref={panel} className={styles.index} data-open={open} hidden={!open}>
+        <p className={`label ${styles.heading}`}>Today’s route · sunrise to sunset</p>
         <nav aria-label="Index">
           {chapters.map(chapter => (
             <a key={chapter.id} href={`#${chapter.id}`} aria-current={active === chapter.id ? 'location' : undefined} onClick={() => setOpen(false)}>
-              <span className="label">{chapter.numeral} · {chapter.place}</span>
-              {chapter.label}
+              <span className={`label ${styles.hour}`}>{chapter.hour}</span>
+              <i aria-hidden="true" />
+              <span className={styles.stop}>
+                <span className="label">{chapter.numeral} · {chapter.place}</span>
+                {chapter.label}
+              </span>
             </a>
           ))}
         </nav>
-        <p className={`label ${styles.elsewhere}`}>
-          <a href={links.github} target="_blank" rel="noopener noreferrer">GitHub</a>
-          <a href={links.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
-          <a href={links.resume} target="_blank" rel="noopener noreferrer">Résumé</a>
-          <a href={links.email}>Email</a>
+        <p className={styles.elsewhere}>
+          <a className="go" href={links.github} target="_blank" rel="noopener noreferrer">GitHub<ArrowUpRight size={14} /></a>
+          <a className="go" href={links.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn<ArrowUpRight size={14} /></a>
+          <a className="go" href={links.resume} target="_blank" rel="noopener noreferrer">Résumé<ArrowUpRight size={14} /></a>
+          <a className="go" href={links.email}>Email<ArrowUpRight size={14} /></a>
         </p>
       </div>
     </>

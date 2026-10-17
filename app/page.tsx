@@ -7,7 +7,7 @@ import Wins from './components/Wins'
 import Works from './components/Works'
 import World from './components/World'
 
-// One night's walk, dusk to dawn: seven paintings under a single sky, and the portfolio written on the ground between them.
+// One day in a solar punk valley, sunrise to sunset: seven paintings under a single sky, and the portfolio written on the ground between them.
 export default function Home() {
   return (
     <World>

@@ -5,7 +5,7 @@ import { MiniStage, type Behavior, type Framing, type Light } from '../component
 
 const BEHAVIORS: Behavior[] = ['watch', 'listen', 'think', 'talk']
 const FRAMINGS: Framing[] = ['bust', 'waist', 'full']
-const LIGHTS: Light[] = ['night', 'dawn']
+const LIGHTS: Light[] = ['morning', 'day', 'golden']
 // Poses that stress the skin: what the cloth does when the arms go where they rarely will.
 const POSES: Record<string, Parameters<MiniStage['hold']>[0]> = {
   free: null,
@@ -16,7 +16,7 @@ const POSES: Record<string, Parameters<MiniStage['hold']>[0]> = {
 
 /**
  * A bench for the character exactly as the site uses him: the same stage, framings and lighting.
- * His head follows the pointer. For screenshots: `?act=talk`, `?frame=full`, `?light=dawn`,
+ * His head follows the pointer. For screenshots: `?act=talk`, `?frame=full`, `?light=golden`,
  * `?look=yaw,pitch` (radians), `?pose=arms%20out` and `?wave=1`.
  */
 export default function ModelLab() {
@@ -24,7 +24,7 @@ export default function ModelLab() {
   const stage = useRef<MiniStage | null>(null)
   const [behavior, setBehavior] = useState<Behavior>('watch')
   const [framing, setFraming] = useState<Framing>('bust')
-  const [light, setLight] = useState<Light>('night')
+  const [light, setLight] = useState<Light>('morning')
   const [status, setStatus] = useState('loading…')
   const [pose, setPose] = useState('free')
 
@@ -81,7 +81,7 @@ export default function ModelLab() {
   )
 
   return (
-    <main style={{ position: 'fixed', inset: 0, background: light === 'dawn' ? '#d6d4f2' : '#15173f', color: light === 'dawn' ? '#14154a' : '#f2ecdb' }}>
+    <main style={{ position: 'fixed', inset: 0, background: light === 'golden' ? '#efd6a4' : light === 'day' ? '#dfe9ec' : '#173a2a', color: light === 'morning' ? '#f8f1dd' : '#10261c' }}>
       <canvas ref={canvas} style={{ width: '100%', height: '100%', display: 'block' }} />
       <div style={{ position: 'absolute', left: '1.5rem', top: '1.2rem', display: 'grid', gap: '.2rem' }}>
         {group('Behaviour', BEHAVIORS, behavior, setBehavior)}

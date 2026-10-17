@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
 import { ArrowUpRight, FileText, Globe } from 'lucide-react'
 import Painting from '../components/Painting'
+import Sign from '../components/Sign'
 import { links } from '../content'
 import styles from './card.module.css'
 
-// Where the NFC card at events lands: the ridge from the first plate, and three ways in.
+// Where the NFC card at events lands: the terraces at sunrise from the first plate, and three ways in.
 // This season's events are security ones, so the résumé here is the cyber one; the main site keeps the software one.
 const RESUME = '/resumes/cyber/resume.pdf'
 
@@ -32,13 +33,13 @@ const options = [
 export default function Card() {
   return (
     <main className={styles.card}>
-      <div className={styles.sky} aria-hidden="true"><i className={styles.moon} /></div>
+      <div className={styles.sky} aria-hidden="true"><i className={styles.sun} /></div>
 
       <div className={styles.copy}>
         <p className={styles.hello}>hi, my name is</p>
         <h1 aria-label="Omar Ibrahim">
-          <span aria-hidden="true"><span>Omar</span></span>
-          <span aria-hidden="true"><span>Ibrahim</span></span>
+          <span aria-hidden="true"><span><Sign text="Omar" /></span></span>
+          <span aria-hidden="true"><span><Sign text="Ibrahim" /></span></span>
         </h1>
         <p className={styles.lede}>A <strong>developer</strong> and <strong>security auditor</strong>.</p>
 
@@ -58,7 +59,7 @@ export default function Card() {
       </div>
 
       <div className={styles.land} aria-hidden="true">
-        <Painting scene="ridge" className={styles.painting} />
+        <Painting scene="terraces" className={styles.painting} />
       </div>
       <p className={`label ${styles.caption}`}><span>Software Engineering</span><span>Carleton University</span></p>
     </main>
