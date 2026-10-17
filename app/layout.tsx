@@ -5,14 +5,14 @@ import './globals.css'
 
 // Heliotrope, the site's own display face: wide stencil capitals in one heavy stroke, like the lettering on
 // a retro-futurist expo poster. Made by scripts/heliotrope.mjs. The line cut is a hairline down the middle of
-// every stroke, laid over the solid in a second colour; the light cut is the same skeletons, drawn thin.
+// every stroke, laid over the solid in a second colour; the light cut is the same skeletons, drawn thin, for page numbers.
 // All three are a few kilobytes, so they block rather than swap: the line cut drawn in a stand-in face over
 // the solid one would be worse than a moment without the words.
 const heliotrope = localFont({ src: './fonts/heliotrope.woff', variable: '--font-heliotrope', display: 'block' })
 const heliotropeLine = localFont({ src: './fonts/heliotrope-line.woff', variable: '--font-heliotrope-line', display: 'block', adjustFontFallback: false })
 const heliotropeLight = localFont({ src: './fonts/heliotrope-light.woff', variable: '--font-heliotrope-light', display: 'block' })
 
-// Round, wide and confident: the second voice, for titles inside a chapter.
+// Round, wide and confident: the second voice, for titles inside a section.
 const unbounded = Unbounded({ subsets: ['latin'], variable: '--font-unbounded', display: 'swap' })
 
 const instrumentSans = Instrument_Sans({ subsets: ['latin'], axes: ['wdth'], variable: '--font-instrument', display: 'swap' })
@@ -69,8 +69,8 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#173a2a',
-  colorScheme: 'light dark',
+  themeColor: '#f5edda',
+  colorScheme: 'light',
 }
 
 const fonts = [heliotrope, heliotropeLine, heliotropeLight, unbounded, instrumentSans, instrumentSerif, martian].map(font => font.variable).join(' ')

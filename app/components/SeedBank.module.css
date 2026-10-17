@@ -1,0 +1,213 @@
+.bank {
+  padding: 5rem 0 6rem;
+  border-bottom: 2px solid var(--color-ink);
+}
+.count { padding: .3rem .7rem; border: 2px solid currentColor; border-radius: 999px; }
+
+.body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 22rem;
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  align-items: start;
+}
+
+/* ------------------------------------------------------------- the cabinet */
+
+.cabinet {
+  display: grid;
+  gap: .9rem;
+  padding: 1.1rem;
+  border: 2px solid var(--color-ink);
+  border-radius: 1rem 1rem .6rem .6rem;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .05) 0 2px, transparent 2px 9px),
+    #2f7d72;
+  box-shadow: 7px 8px 0 var(--color-ink);
+}
+.crest {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: .8rem;
+  padding: .2rem 0 .4rem;
+  color: var(--color-sun);
+}
+.crest span { font-family: var(--font-display); font-size: 1.5rem; text-transform: uppercase; letter-spacing: .06em; }
+.crest i { font-family: var(--font-serif); font-size: 1.05rem; color: var(--color-card); }
+
+.drawer {
+  border: 2px solid var(--color-ink);
+  border-radius: .45rem;
+  background: var(--color-paper-2);
+  overflow: hidden;
+  --c: var(--color-sun);
+}
+.drawer[data-drawer='1'] { --c: var(--color-rose); }
+.drawer[data-drawer='2'] { --c: #a6d46a; }
+.drawer[data-drawer='3'] { --c: #9cc8ef; }
+.drawer[data-drawer='4'] { --c: var(--color-coral); }
+
+.front {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: .55rem .8rem;
+  border-bottom: 2px solid var(--color-ink);
+  background: linear-gradient(#3b8f83, #2f7d72);
+  color: var(--color-card);
+}
+/* The brass frame the label slides into. */
+.holder {
+  display: inline-flex;
+  align-items: baseline;
+  gap: .6rem;
+  padding: .3rem .8rem;
+  border: 2px solid var(--color-ink);
+  border-radius: .25rem;
+  background: var(--color-card);
+  color: var(--color-ink);
+  font-family: var(--font-round);
+  font-size: .82rem;
+  font-weight: 600;
+  box-shadow: 0 0 0 3px var(--color-brass), 0 0 0 4.5px var(--color-ink);
+}
+.holder :global(.label) { color: var(--color-ink-3); }
+.pull {
+  width: 3.2rem;
+  height: .9rem;
+  margin-left: auto;
+  border: 2px solid var(--color-ink);
+  border-radius: 0 0 1rem 1rem;
+  border-top-width: 3px;
+  background: var(--color-brass);
+}
+.drawerCount { width: 2rem; text-align: right; }
+
+.tray {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .55rem;
+  padding: .9rem .8rem .8rem;
+  background:
+    linear-gradient(rgba(22, 36, 29, .08), transparent 1.2rem),
+    var(--color-paper-2);
+}
+
+/* A seed packet: a paper envelope with a flap, in its drawer's colour. */
+.packet {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .55rem .75rem .45rem .5rem;
+  border: 1.5px solid var(--color-ink);
+  border-radius: .2rem;
+  background:
+    linear-gradient(170deg, color-mix(in srgb, var(--c) 55%, var(--color-card)) 0 1.05rem, transparent 1.05rem),
+    var(--color-card);
+  color: var(--color-ink);
+  font-size: .86rem;
+  font-weight: 600;
+  box-shadow: 2px 2px 0 var(--color-ink);
+  transition: transform .3s var(--ease-spring), box-shadow .2s ease, background-color .2s ease;
+}
+.packet[data-grown='false'] { color: var(--color-ink-2); font-weight: 500; background: var(--color-card); border-style: dashed; }
+.packet:hover { transform: translateY(-3px) rotate(-1.5deg); box-shadow: 3px 5px 0 var(--color-ink); }
+.packet[data-current='true'] { transform: translateY(-5px) rotate(-2deg); box-shadow: 4px 7px 0 var(--color-ink); background-color: var(--color-sun); }
+.packet[aria-pressed='true'] { outline: 2px solid var(--color-ink); outline-offset: 2px; }
+
+.sprout { flex: none; width: 1.1rem; height: 1.1rem; fill: none; stroke: var(--color-ink); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.packet[data-grown='true'] .sprout path:not(:first-child) { fill: #8bc66a; }
+.packet[data-grown='false'] .sprout ellipse { fill: #c9a878; }
+.packet[data-current='true'] .sprout { animation: sway 1.6s ease-in-out infinite; transform-origin: 50% 100%; }
+@keyframes sway { 50% { transform: rotate(-9deg); } }
+
+/* ---------------------------------------------------------- the index card */
+
+.side { position: sticky; top: 5rem; display: grid; gap: 1.4rem; }
+
+.card {
+  position: relative;
+  min-height: 21rem;
+  padding: 1.1rem 1.3rem 2.6rem 2.6rem;
+  border: 2px solid var(--color-ink);
+  border-radius: .35rem;
+  background:
+    linear-gradient(90deg, transparent 1.9rem, rgba(236, 123, 96, .7) 1.9rem, rgba(236, 123, 96, .7) calc(1.9rem + 2px), transparent calc(1.9rem + 2px)),
+    repeating-linear-gradient(transparent 0 calc(1.6rem - 1px), rgba(47, 96, 200, .25) calc(1.6rem - 1px) 1.6rem) 0 3.6rem / 100% calc(100% - 3.6rem) no-repeat,
+    #fffdf6;
+  box-shadow: 6px 7px 0 var(--color-ink);
+  transform: rotate(-1deg);
+}
+.cardHead {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 0 .6rem;
+  padding-bottom: .5rem;
+  border-bottom: 2px solid var(--color-ink);
+  color: var(--color-ink-2);
+}
+.card h3 {
+  margin: 0 0 .3rem;
+  font-family: var(--font-display);
+  font-size: 2.1rem;
+  font-weight: 400;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.planted, .none { margin: 0; font-family: var(--font-serif); font-size: 1.15rem; font-style: italic; line-height: 1.6rem; }
+.receipts { margin: 0; padding: 0; list-style: none; }
+.receipts li { line-height: 1.6rem; }
+.receipts a {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  color: var(--color-ink);
+  font-family: var(--font-label);
+  font-size: .76rem;
+  text-decoration: none;
+}
+.receipts a b { font-weight: 700; }
+.receipts a i { flex: 1; border-bottom: 1.5px dotted color-mix(in srgb, var(--color-ink) 50%, transparent); }
+.receipts a:hover b { background: var(--color-sun); }
+.receipts li > span { display: block; margin-top: -.45rem; font-family: var(--font-serif); font-size: .92rem; font-style: italic; color: var(--color-ink-3); line-height: 1.6rem; }
+.cardFoot { margin: .6rem 0 0; font-family: var(--font-label); font-size: .6rem; letter-spacing: .06em; color: var(--color-ink-3); }
+.hole {
+  position: absolute;
+  left: 50%;
+  bottom: .7rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 2px solid var(--color-ink);
+  border-radius: 50%;
+  background: var(--color-paper);
+  transform: translateX(-50%);
+}
+
+.note {
+  margin: 0;
+  padding: 1rem 1.1rem;
+  border-left: 4px solid var(--color-leaf);
+  font-family: var(--font-serif);
+  font-size: 1.12rem;
+  font-style: italic;
+  line-height: 1.35;
+  color: var(--color-ink-2);
+}
+.note strong { font-weight: 400; color: var(--color-ink); background: linear-gradient(transparent 60%, color-mix(in srgb, var(--color-sun) 70%, transparent) 60%); }
+
+@media (max-width: 1000px) {
+  .body { grid-template-columns: 1fr; }
+  /* On small screens the card rides along the bottom edge while you go through the drawers. */
+  .side { display: contents; }
+  .card { position: sticky; bottom: .6rem; z-index: 5; order: 1; min-height: 0; max-height: 38svh; overflow: auto; transform: none; padding-bottom: 1.4rem; }
+  .hole { display: none; }
+  .note { order: 2; }
+}
+@media (max-width: 600px) {
+  .bank { padding: 3.5rem 0 4rem; }
+  .cabinet { padding: .6rem; box-shadow: 4px 5px 0 var(--color-ink); }
+  .front { gap: .5rem; }
+  .pull { width: 2rem; }
+}

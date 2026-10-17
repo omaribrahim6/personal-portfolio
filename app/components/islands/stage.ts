@@ -1,5 +1,7 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
+import { Inker } from '../toon/ink'
+import { plain } from '../toon/kit'
 
 // The islands: one floating island for each interest, and a camera that flies from one to the next.
 // Omar stands on each of them, as a Tripo model baked by scripts/bake-interests.mjs (facing +Z, feet on
@@ -16,8 +18,9 @@ const OUTFITS: Outfit[] = ['hike', 'bike', 'paddle']
 const MODEL_OF: Record<Exclude<IslandId, 'outdoors'>, ModelName> = { competing: 'podium', games: 'games', security: 'security', soccer: 'soccer' }
 const url = (name: ModelName) => `/models/interests/${name}.glb`
 
-// The page under the canvas. Fog fades into it, so far islands sink into the pale sky, not into black.
-const GROUND = '#dfe9ec'
+// The sky at the foot of the poster the islands are framed in. Fog fades into it, so far islands sink into the
+// haze, not into black.
+const GROUND = '#dfeef0'
 // Rock: from the band of earth under the meadow down to the tip, warm sandstone in the late sun, cooling to the tip.
 const ROCK_TOP = new THREE.Color('#ebbb86'), ROCK_LOW = new THREE.Color('#7c5a5a'), EARTH = new THREE.Color('#6b4a3c')
 
@@ -210,6 +213,7 @@ type Loaded = { root: THREE.Object3D; meshes: THREE.Mesh[]; ghosts: THREE.Group 
 export class IslandStage {
   readonly ready: Promise<void>
   private renderer: THREE.WebGLRenderer
+  private inker: Inker
   private scene = new THREE.Scene()
   private camera = new THREE.PerspectiveCamera(30, 1, .1, 60)
   private isles: Isle[] = []
@@ -241,6 +245,8 @@ export class IslandStage {
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75))
     this.renderer.outputColorSpace = THREE.SRGBColorSpace
     this.scene.fog = new THREE.Fog(GROUND, 9, 26)
+    // Drawn in ink like every other picture on the page.
+    this.inker = new Inker(this.renderer, { line: 1.3, boil: reduced ? 0 : 4, depthEdge: .05 })
 
     // Late afternoon: a warm sun from the right, the blue of the sky on the shadow side, green coming up off the grass.
     const sky = new THREE.HemisphereLight('#eef4ff', '#7f9a62', 1.7)
@@ -265,7 +271,7 @@ export class IslandStage {
     this.sparkles.visible = false
     this.flash = new THREE.Sprite(new THREE.SpriteMaterial({ map: glow, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }))
     this.flash.visible = false
-    this.isles[0].mount.parent!.add(this.sparkles, this.flash)
+    this.isles[0].mount.parent!.add(plain(this.sparkles), plain(this.flash))
 
     const first = this.isles[0].view
     this.camera.position.copy(first.at)
@@ -314,7 +320,7 @@ export class IslandStage {
     })
     const pool = new THREE.RingGeometry(.001, .74, 20, 3)
     pool.rotateX(-Math.PI / 2)
-    this.water = new THREE.Mesh(pool, new THREE.MeshStandardMaterial({ color: '#3f86d8', flatShading: true, roughness: .25, transparent: true, opacity: .94 }))
+    this.water = plain(new THREE.Mesh(pool, new THREE.MeshStandardMaterial({ color: '#3f86d8', flatShading: true, roughness: .25, transparent: true, opacity: .94 })))
     this.waterBase = Float32Array.from(pool.getAttribute('position').array as Float32Array)
     this.water.position.y = .06
     this.water.scale.setScalar(.001)
@@ -460,7 +466,7 @@ export class IslandStage {
     group.position.copy(at)
     group.rotation.y = -.35
     const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(Array.from({ length: 10 }, () => new THREE.Vector3())), new THREE.LineBasicMaterial({ color: '#4d5f57', transparent: true, opacity: .55 }))
-    isle.group.add(group, line)
+    isle.group.add(group, plain(line))
     this.kites.push({ group, rotor, line, anchor, at, phase: seed * 1.7 })
   }
 
@@ -506,7 +512,7 @@ export class IslandStage {
       const mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ map: shaft, color: GOLD, transparent: true, opacity: .42 - k * .06, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, fog: false }))
       mesh.position.copy(GAP.at).add(new THREE.Vector3(.02, (k - 1) * .12, .02))
       mesh.rotation.set(0, turn, -.22 + tilt)
-      isle.group.add(mesh)
+      isle.group.add(plain(mesh))
       shafts.push(mesh)
     })
 
@@ -514,7 +520,7 @@ export class IslandStage {
     const pool = new THREE.Mesh(new THREE.PlaneGeometry(1.5, .9), new THREE.MeshBasicMaterial({ map: glow, color: '#ffa63d', transparent: true, opacity: .85, blending: THREE.AdditiveBlending, depthWrite: false }))
     pool.rotation.x = -Math.PI / 2
     pool.position.set(GAP.at.x + .45, .065, GAP.at.z + .32)
-    isle.group.add(pool)
+    isle.group.add(plain(pool))
 
     // Motes of gold drifting up and out of the gap, and fading.
     const count = 42
@@ -522,7 +528,7 @@ export class IslandStage {
     const motes = new THREE.Points(new THREE.BufferGeometry(), new THREE.PointsMaterial({ map: glow, color: '#ffd27a', size: .055, transparent: true, opacity: .9, blending: THREE.AdditiveBlending, depthWrite: false }))
     const position = new THREE.Float32BufferAttribute(new Float32Array(count * 3), 3)
     motes.geometry.setAttribute('position', position)
-    isle.group.add(motes)
+    isle.group.add(plain(motes))
 
     isle.tick = t => {
       const breathe = .85 + .15 * Math.sin(t * 1.6) + .05 * Math.sin(t * 7.3)
@@ -653,6 +659,8 @@ export class IslandStage {
     const { clientWidth: w, clientHeight: h } = this.canvas
     if (!w || !h) return
     this.renderer.setSize(w, h, false)
+    const size = this.renderer.getDrawingBufferSize(new THREE.Vector2())
+    this.inker.setSize(size.x, size.y)
     this.camera.aspect = w / h
     // Squarer and taller screens step back, so the island still fits across.
     this.camera.fov = w / h < 1.15 ? 37 : 30
@@ -666,7 +674,7 @@ export class IslandStage {
       this.last = now
       if (!this.visible || document.hidden) return
       this.update(dt)
-      this.renderer.render(this.scene, this.camera)
+      this.inker.render(this.scene, this.camera, this.clock)
     }
     this.raf = requestAnimationFrame(tick)
   }
@@ -831,6 +839,7 @@ export class IslandStage {
       ;(mesh.material as THREE.MeshStandardMaterial).map?.dispose()
       ;(mesh.material as THREE.MeshStandardMaterial).dispose()
     })
+    this.inker.dispose()
     this.renderer.dispose()
   }
 }

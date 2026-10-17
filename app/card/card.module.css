@@ -1,58 +1,35 @@
-/* The first plate's sunrise: the same three colours the sky shader paints over the terraces, and the sun just up. */
+/* The pocket edition: paper, the name in stencil capitals, three tickets, and the island in a plate. */
 .card {
   position: relative;
-  isolation: isolate;
   display: flex;
   flex-direction: column;
   min-height: 100svh;
   overflow: hidden;
-  color: var(--color-cream);
-  background: linear-gradient(to bottom, #4a5db4 0%, #9a8cc4 34%, #e1a9b4 60%, #ffcf98 82%, #ffd9a6 100%);
+  padding-bottom: 1rem;
+  background: var(--color-paper) var(--stock);
+  color: var(--color-ink);
 }
 
-.sky {
-  position: absolute;
-  inset: 0;
-  z-index: -2;
-  background:
-    radial-gradient(60% 40% at 62% 76%, rgba(255, 176, 106, .55), transparent 70%),
-    radial-gradient(1px 1px at 12% 8%, #fff8 50%, transparent),
-    radial-gradient(1px 1px at 27% 5%, #fff7 50%, transparent),
-    radial-gradient(1.2px 1.2px at 85% 6%, #fff8 50%, transparent);
+.dateline {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .6rem var(--edge) .5rem;
+  border-bottom: 2px solid var(--color-ink);
+  box-shadow: 0 3px 0 -1px var(--color-paper), 0 4px 0 -1px var(--color-ink);
 }
-
-/* The sun, just clear of the hills, with a slow turn of rays. */
-.sun {
-  position: absolute;
-  top: 54%;
-  right: 22%;
-  width: clamp(2.6rem, 8vw, 4rem);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: radial-gradient(circle at 40% 38%, #fffbe8, #fff0c4 60%, #ffd98a);
-  box-shadow: 0 0 2.4rem 1.4rem rgba(255, 220, 160, .45), 0 0 7rem 3rem rgba(255, 190, 120, .3);
-}
-.sun::before {
-  content: '';
-  position: absolute;
-  inset: -180%;
-  border-radius: 50%;
-  background: repeating-conic-gradient(from 0deg, rgba(255, 240, 200, .22) 0 4deg, transparent 4deg 22deg);
-  -webkit-mask: radial-gradient(circle, transparent 0 18%, #000 20%, transparent 70%);
-  mask: radial-gradient(circle, transparent 0 18%, #000 20%, transparent 70%);
-  animation: turn 90s linear infinite;
-}
+.dateline b { color: var(--color-coral); }
 
 .copy {
   position: relative;
   z-index: 1;
   width: 100%;
   max-width: 34rem;
-  padding: clamp(2.2rem, 7svh, 6rem) var(--edge) 0;
+  padding: clamp(1.4rem, 5svh, 4rem) var(--edge) 0;
 }
 
 .hello {
-  margin-bottom: .4rem;
+  margin: 0 0 .4rem;
   font-family: var(--font-serif);
   font-size: 1.35rem;
   font-style: italic;
@@ -60,22 +37,22 @@
 }
 
 .copy h1 {
-  margin-left: -.03em;
+  margin: 0 0 0 -.03em;
   font-family: var(--font-display);
-  font-size: clamp(3rem, min(16vw, 10svh), 5.6rem);
+  font-size: clamp(3rem, min(17vw, 10svh), 5.6rem);
   font-weight: 400;
   line-height: .9;
   letter-spacing: .02em;
+  text-transform: uppercase;
+  color: var(--color-ink);
   --line: var(--color-sun);
 }
-.copy h1 :global(.sign) { text-shadow: .012em .012em 0 #3a2c62, .024em .024em 0 #3a2c62, .036em .036em 0 #3a2c62, .048em .048em 0 #3a2c62; }
-.copy h1 :global(.sign) > [data-line] { text-shadow: none; }
 .copy h1 > span { display: block; padding-bottom: .16em; margin-bottom: -.16em; overflow: hidden; }
 .copy h1 > span > span { display: block; animation: lift 1.1s cubic-bezier(.16, .8, .2, 1) both .2s; }
 .copy h1 > span + span > span { animation-delay: .32s; }
 
 .lede {
-  margin-top: 1rem;
+  margin: .9rem 0 0;
   font-family: var(--font-serif);
   font-size: 1.5rem;
   line-height: 1.2;
@@ -84,16 +61,15 @@
 .lede strong {
   font-weight: 400;
   font-style: italic;
-  background: linear-gradient(transparent 62%, rgba(247, 182, 56, .55) 62%, rgba(247, 182, 56, .55) 92%, transparent 92%);
+  background: linear-gradient(transparent 62%, color-mix(in srgb, var(--color-sun) 75%, transparent) 62%, color-mix(in srgb, var(--color-sun) 75%, transparent) 92%, transparent 92%);
 }
 
-/* Three fat doors, easy to hit with a thumb in a crowded room: tickets with a brass porthole at the head. */
+/* Three fat tickets, easy to hit with a thumb in a crowded room. */
 .options {
   display: grid;
   gap: .8rem;
-  margin-top: clamp(1.4rem, 4svh, 2.8rem);
+  margin-top: clamp(1.4rem, 4svh, 2.6rem);
 }
-
 .option {
   display: flex;
   align-items: center;
@@ -101,74 +77,79 @@
   min-height: 4.6rem;
   padding: .9rem 1.2rem .9rem .9rem;
   border: 2px solid var(--color-ink);
-  border-radius: 1.2rem;
-  background: #fdf9ec;
+  border-radius: .9rem;
+  background: var(--color-card);
   color: var(--color-ink);
+  text-decoration: none;
   box-shadow: 5px 5px 0 var(--color-ink);
-  transition: transform .3s var(--ease-spring), box-shadow .3s var(--ease-spring);
+  transition: transform .3s var(--ease-spring), box-shadow .3s var(--ease-spring), background-color .2s ease;
   animation: settle .9s ease both;
 }
 .option:nth-child(1) { animation-delay: .75s; }
 .option:nth-child(2) { animation-delay: .85s; }
 .option:nth-child(3) { animation-delay: .95s; }
-.option:hover, .option:focus-visible { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--color-ink); }
+.option:hover, .option:focus-visible { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--color-ink); background: #fff3cf; }
 .option:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--color-ink); }
 
+/* The icon sits on a small sun. */
 .icon {
   display: grid;
   place-items: center;
   flex: none;
   width: 2.9rem;
   height: 2.9rem;
+  border: 2px solid var(--color-ink);
   border-radius: 50%;
+  background: var(--color-sun);
   color: var(--color-ink);
-  background:
-    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, .7), transparent 38%),
-    radial-gradient(circle, #d9f2ec 0 58%, transparent 59%),
-    conic-gradient(from 210deg, #f0cd84, #c39345, #7d5a26, #c39345, #f0cd84);
-  box-shadow: 0 0 0 1.5px rgba(16, 38, 28, .55);
 }
 
 .text { display: grid; gap: .15rem; flex: 1; min-width: 0; }
 .text b {
   font-family: var(--font-display);
-  font-size: 1.35rem;
+  font-size: 1.3rem;
   font-weight: 400;
   line-height: 1.1;
   letter-spacing: .03em;
+  text-transform: uppercase;
 }
-.text small { font-size: .86rem; font-weight: 500; opacity: .72; }
+.text small { font-family: var(--font-serif); font-size: 1rem; font-style: italic; color: var(--color-ink-2); }
 
 .arrow { flex: none; opacity: .7; transition: transform .3s var(--ease-out), opacity .25s ease; }
 .option:hover .arrow, .option:focus-visible .arrow { opacity: 1; transform: translate(2px, -2px); }
 
-/* The terraces fill whatever is left below the doors. */
-.land {
+/* The island, in a plate, filling whatever is left below the tickets. */
+.plate {
   position: relative;
-  flex: 1 0 clamp(7rem, 22svh, 15rem);
-  margin-top: 1.5rem;
+  flex: 1 0 clamp(9rem, 26svh, 18rem);
+  margin: 1.8rem var(--edge) 2.6rem;
+  overflow: hidden;
+  border: 2px solid var(--color-ink);
+  border-radius: 1rem;
+  background: linear-gradient(#3f7bd2, #8ec4ec 46%, #d3ecef 55%, #3fb0c2 56%, #2589a3);
+  box-shadow: 5px 6px 0 var(--color-ink);
 }
 .painting { position: absolute; inset: 0; width: 100%; height: 100%; }
 
 .caption {
   position: absolute;
   left: var(--edge);
-  bottom: 1.2rem;
+  bottom: .9rem;
   z-index: 1;
   display: flex;
   flex-wrap: wrap;
   gap: .4em 1.2em;
-  opacity: .85;
+  color: var(--color-ink-2);
 }
 
 @keyframes lift { from { transform: translateY(110%); } }
 @keyframes settle { from { opacity: 0; transform: translateY(.7rem); } }
-@keyframes turn { to { transform: rotate(360deg); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .hello, .lede, .option, .copy h1 > span > span, .sun::before { animation: none; }
+  .hello, .lede, .option, .copy h1 > span > span { animation: none; }
 }
 
 @media (min-width: 900px) {
   .copy { max-width: 40rem; margin-inline: auto; padding-inline: 0; }
+  .plate { width: min(40rem, 100% - 2 * var(--edge)); margin-inline: auto; }
 }

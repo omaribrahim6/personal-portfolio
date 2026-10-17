@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent, type PointerEvent } from 'react'
 import { ArrowLeft, ArrowRight, ArrowUpRight, Images, Pause, Play, X } from 'lucide-react'
 import { interests, type Interest, type Photo } from '../../content'
-import Plate, { Ground } from '../Plate'
+import Opener from '../Opener'
 import Sign from '../Sign'
 import { useMotionPreference } from '../useMotionPreference'
 import type { IslandStage, Outfit } from './stage'
@@ -172,11 +172,13 @@ export default function Interests() {
 
   return (
     <section id="interests" aria-labelledby="interests-title">
-      <Plate index={5} chapter="interests" scene="islands" after="sunflowers" tone="light" kicker="five islands" title="Off the clock" titleId="interests-title">
-        What I do when I am not shipping something. Each island is one of them.
-      </Plate>
+      <div className="measure">
+        <Opener chapter="interests" title="Off the clock" titleId="interests-title">
+          What I do when I am not shipping something. Five islands, one for each: the tour moves on by itself, or pick a stop.
+        </Opener>
+      </div>
 
-      <Ground scene="islands" tone="light" className={styles.ground}>
+      <div className={styles.ground}>
         <div ref={section} className={`measure ${styles.body}`}>
           <div className={styles.top}>
             <div className={styles.tabs} role="tablist" aria-label="Interests">
@@ -202,6 +204,8 @@ export default function Interests() {
             onFocus={event => { if (event.target.matches(':focus-visible')) held.current = true }} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) held.current = false }}>
             <div className={styles.scene} data-ready={ready} data-flat={flat}>
               <div className={styles.frame}>
+                <span className={`label ${styles.stop}`} aria-hidden="true">Island Nº {String(active + 1).padStart(2, '0')} of {String(interests.length).padStart(2, '0')}</span>
+                <span className={styles.visit} aria-hidden="true">Visit</span>
                 <canvas ref={canvas} className={styles.canvas} aria-hidden="true" data-cursor={pointing ? 'hover' : undefined}
                   onPointerMove={onPointerMove} onPointerLeave={() => setPointing(false)} onClick={onClick} />
                 {flat && poster && (
@@ -243,7 +247,7 @@ export default function Interests() {
                   <h3><Sign text={interest.title} /></h3>
                   <p className={styles.words}>{interest.body}</p>
                   {interest.outfits && (
-                    <div className={`label filters ${styles.outfits}`} role="group" aria-label="What he is dressed for">
+                    <div className={`label ${styles.outfits}`} role="group" aria-label="What he is dressed for">
                       {interest.outfits.map(each => (
                         <button key={each.id} type="button" aria-pressed={outfit === each.id} onClick={() => wear(each.id)}>{each.label}</button>
                       ))}
@@ -252,7 +256,7 @@ export default function Interests() {
                   {!!interest.links?.length && (
                     <p className={styles.links}>
                       {interest.links.map(link => (
-                        <a key={link.href} className="go" href={link.href} {...(link.href.startsWith('#') ? {} : { target: '_blank', rel: 'noopener noreferrer' })}>
+                        <a key={link.href} className="btn" data-tone="paper" data-size="small" href={link.href} {...(link.href.startsWith('#') ? {} : { target: '_blank', rel: 'noopener noreferrer' })}>
                           {link.label}<ArrowUpRight size={13} />
                         </a>
                       ))}
@@ -263,7 +267,7 @@ export default function Interests() {
             </div>
           </div>
         </div>
-      </Ground>
+      </div>
 
       {/* A photo opened large, with the rest of this island's either side of it. */}
       <dialog ref={sheet} className={styles.sheet} aria-label="Photos" onClose={() => setLooking(null)}

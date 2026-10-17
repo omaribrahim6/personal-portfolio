@@ -1,5 +1,8 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
+import { Inker } from '../toon/ink'
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js'
+import { C, light, plain, solarPanel, toon } from '../toon/kit'
 
 // The small 3D Omar: a Tripo model (one drawing in, a textured mesh out, auto-rigged with Mixamo bone
 // names) and everything that makes it seem alive. Tripo gives a skeleton but no face, so the blink and
@@ -23,13 +26,16 @@ const FACE = {
 }
 
 const FRAMES: Record<Framing, { at: [number, number, number]; look: [number, number, number]; fov: number; turn: number }> = {
-  // Head and shoulders, turned a little toward the page he is watching from the corner.
-  bust: { at: [0, .8, 1.78], look: [0, .71, 0], fov: 24, turn: -.3 },
+  // Head and shoulders out of the porthole of his pod, turned a little toward the page he is watching.
+  bust: { at: [.5, .9, 2.5], look: [.24, .64, 0], fov: 30, turn: -.3 },
   // Square on, from the chest up (on him that is most of the way to the waist): behind the message box of the chat.
   waist: { at: [0, .71, 2.26], look: [0, .655, 0], fov: 24, turn: 0 },
   // The whole of him, facing you.
   full: { at: [0, .54, 2.95], look: [0, .5, 0], fov: 22, turn: .1 },
 }
+
+// His pod: a round white house that the corner of the screen cuts off, with a porthole he leans out of.
+const POD = { centre: new THREE.Vector3(.428, .327, -.68), radius: .95, hole: new THREE.Vector3(0, .66, .1), opening: .27 }
 
 // The light he stands in follows the sun over the page: low and pink over the terraces, high and white with
 // green coming up off the grass through the day, gold over the shore.
@@ -122,11 +128,20 @@ export class MiniStage {
   private hands = 0
   private held: Partial<Record<JointName, Angles>> | null = null
   private turn = FRAMES.bust.turn
+  private inker: Inker
+  private pod = new THREE.Group()
+  private lamp: THREE.Mesh | null = null
+  // In the pod, everything of him below the porthole is inside it: cut away, so no hand or foot comes through.
+  private clip = new THREE.Plane(new THREE.Vector3(0, 1, 0), 1e6)
 
   constructor(private canvas: HTMLCanvasElement, private reduced = false) {
     this.renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true })
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
-    this.scene.add(this.sky, this.key, this.character)
+    this.renderer.localClippingEnabled = true
+    // Inked like the rest of the page.
+    this.inker = new Inker(this.renderer, { line: 1.25, boil: reduced ? 0 : 4, hatch: 0, depthEdge: .06 })
+    this.buildPod()
+    this.scene.add(this.sky, this.key, this.character, this.pod)
     this.light('morning')
     this.frame('bust')
     this.observer = new IntersectionObserver(entries => { this.visible = entries.some(entry => entry.isIntersecting) })
@@ -154,6 +169,8 @@ export class MiniStage {
         mesh.updateMorphTargets()
         const material = mesh.material as THREE.MeshStandardMaterial
         material.roughness = .9
+        material.clippingPlanes = [this.clip]
+        mesh.userData.inkNormal = new THREE.MeshNormalMaterial({ clippingPlanes: [this.clip] })
         addEyelids(material, this.blink)
       }
       const bone = node as THREE.Bone
@@ -182,6 +199,89 @@ export class MiniStage {
     this.start()
   }
 
+  /** The pod: shell, porthole, the warm room behind him, a panel and an antenna with a lamp on it. */
+  private buildPod() {
+    const { centre, radius, opening } = POD
+    // Where the porthole sits: on the shell, straight out from its middle toward him.
+    const out = POD.hole.clone().sub(centre).normalize()
+    const hole = centre.clone().add(out.clone().multiplyScalar(radius))
+    // The shell, with a round hole cut where the porthole is.
+    const shellMaterial = new THREE.MeshToonMaterial({ color: '#f7f0de', gradientMap: (toon(C.shell) as THREE.MeshToonMaterial).gradientMap, side: THREE.DoubleSide })
+    shellMaterial.onBeforeCompile = shader => {
+      shader.uniforms.uHole = { value: hole }
+      shader.uniforms.uOpening = { value: opening }
+      shader.vertexShader = shader.vertexShader
+        .replace('void main() {', 'varying vec3 vWorld;\nvoid main() {')
+        .replace('#include <project_vertex>', '#include <project_vertex>\nvWorld = (modelMatrix * vec4(transformed, 1.)).xyz;')
+      shader.fragmentShader = shader.fragmentShader
+        .replace('void main() {', 'varying vec3 vWorld;\nuniform vec3 uHole;\nuniform float uOpening;\nvoid main() {\n  if (distance(vWorld, uHole) < uOpening) discard;')
+    }
+    const shell = new THREE.Mesh(new THREE.SphereGeometry(radius, 72, 48), shellMaterial)
+    shell.position.copy(centre)
+    // The ink's facing pass has to see the same hole.
+    const shellNormal = new THREE.MeshNormalMaterial({ side: THREE.DoubleSide })
+    shellNormal.onBeforeCompile = shellMaterial.onBeforeCompile
+    shellNormal.customProgramCacheKey = () => 'pod-shell-normal'
+    shell.userData.inkNormal = shellNormal
+    // The room behind him, lit: what shows round his head through the porthole.
+    const room = new THREE.Mesh(new THREE.SphereGeometry(radius * .9, 48, 32), new THREE.MeshBasicMaterial({ color: '#ffd59a', side: THREE.BackSide }))
+    room.position.copy(centre)
+    const rim = new THREE.Group()
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(opening * 1.04, .032, 12, 64), toon(C.brass))
+    const lip = new THREE.Mesh(new THREE.CylinderGeometry(opening, opening, .06, 64, 1, true), toon(C.brassDark, { side: THREE.DoubleSide }))
+    lip.rotation.x = Math.PI / 2
+    lip.position.z = -.02
+    rim.add(ring, lip)
+    rim.position.copy(hole)
+    rim.lookAt(hole.clone().add(out))
+    // Rivets round the rim.
+    for (let k = 0; k < 16; k++) {
+      const a = k / 16 * Math.PI * 2
+      const rivet = new THREE.Mesh(new THREE.SphereGeometry(.011, 8, 6), toon(C.brassDark))
+      rivet.position.set(Math.cos(a) * opening * 1.04, Math.sin(a) * opening * 1.04, .026)
+      rim.add(rivet)
+    }
+    // A band of turquoise round the shell, below the porthole.
+    const lift = -radius * .1, across = Math.sqrt(radius * radius - lift * lift)
+    const band = new THREE.Mesh(new THREE.TorusGeometry(across, .045, 10, 96), toon(C.teal))
+    band.position.copy(centre).add(new THREE.Vector3(0, lift, 0))
+    band.rotation.x = Math.PI / 2
+    // A panel up on the roof, and the antenna whose lamp says whether he can answer.
+    const top = (azimuth: number, up: number) => {
+      const n = new THREE.Vector3(Math.sin(azimuth) * Math.cos(up), Math.sin(up), Math.cos(azimuth) * Math.cos(up))
+      return { at: centre.clone().add(n.clone().multiplyScalar(radius)), n }
+    }
+    const roof = top(.35, 1.05)
+    const panel = solarPanel(.46, .3, .04)
+    panel.position.copy(roof.at)
+    panel.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), roof.n)
+    panel.rotateY(-.4)
+    const mast = top(-.62, .82)
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(.008, .011, .3, 6), toon(C.ink))
+    pole.position.copy(mast.at).add(new THREE.Vector3(0, .14, 0))
+    const lamp = new THREE.Mesh(new THREE.SphereGeometry(.04, 14, 10), toon('#5d6d64'))
+    lamp.position.copy(mast.at).add(new THREE.Vector3(0, .31, 0))
+    this.lamp = lamp
+    // Ivy, trailing down the shell from the roof.
+    const leaves: THREE.BufferGeometry[] = []
+    for (const [azimuth, from, count] of [[-1.3, 1.0, 8], [-1.12, .92, 6], [.62, 1.2, 7]] as const) {
+      for (let i = 0; i < count; i++) {
+        const { at, n } = top(azimuth + Math.sin(i * 1.3) * .035, from - i * .065)
+        const leaf = new THREE.IcosahedronGeometry(.026 + ((i * 7) % 3) * .006, 1)
+        leaf.scale(1.3, .8, 1)
+        leaf.translate(at.x + n.x * .02, at.y + n.y * .02, at.z + n.z * .02)
+        leaves.push(leaf)
+      }
+    }
+    const ivy = new THREE.Mesh(mergeGeometries(leaves), toon(C.leaf))
+    this.pod.add(shell, plain(room), rim, band, panel, pole, lamp, ivy)
+  }
+
+  /** Whether there is a model behind him to answer: the lamp on his antenna. */
+  live(on: boolean) {
+    if (this.lamp) this.lamp.material = on ? light('#9be35c') : toon('#5d6d64')
+  }
+
   /** Turn a joint by angles given in character space (he faces +Z), whatever axes the rigger gave the bone. */
   private turnJoint(name: JointName, angles: Angles, amount = 1) {
     const joint = this.joints[name]
@@ -197,6 +297,9 @@ export class MiniStage {
     this.camera.lookAt(...f.look)
     this.camera.updateProjectionMatrix()
     this.turn = f.turn
+    // The pod is only there in the corner.
+    this.pod.visible = framing === 'bust'
+    this.clip.constant = framing === 'bust' ? -.37 : 1e6
   }
 
   light(light: Light) {
@@ -224,6 +327,8 @@ export class MiniStage {
     const { clientWidth: w, clientHeight: h } = this.canvas
     if (!w || !h) return
     this.renderer.setSize(w, h, false)
+    const size = this.renderer.getDrawingBufferSize(new THREE.Vector2())
+    this.inker.setSize(size.x, size.y)
     this.camera.aspect = w / h
     this.camera.updateProjectionMatrix()
   }
@@ -235,7 +340,7 @@ export class MiniStage {
       this.last = now
       if (!this.visible || document.hidden) return
       this.update(dt)
-      this.renderer.render(this.scene, this.camera)
+      this.inker.render(this.scene, this.camera, this.clock)
     }
     this.raf = requestAnimationFrame(tick)
   }
@@ -327,10 +432,12 @@ export class MiniStage {
       const mesh = node as THREE.Mesh
       if (!mesh.isMesh) return
       mesh.geometry.dispose()
-      const material = mesh.material as THREE.MeshStandardMaterial
-      material.map?.dispose()
-      material.dispose()
+      for (const material of ([] as THREE.Material[]).concat(mesh.material)) {
+        ;(material as THREE.MeshStandardMaterial).map?.dispose()
+        material.dispose()
+      }
     })
+    this.inker.dispose()
     this.renderer.dispose()
   }
 }

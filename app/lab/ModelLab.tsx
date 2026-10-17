@@ -75,7 +75,7 @@ export default function ModelLab() {
   useEffect(() => { stage.current?.frame(framing); stage.current?.resize() }, [framing])
 
   const group = <T extends string>(name: string, options: T[], value: T, set: (next: T) => void) => (
-    <div className="label filters" role="group" aria-label={name}>
+    <div className="label tabs" role="group" aria-label={name}>
       {options.map(option => <button key={option} type="button" aria-pressed={value === option} onClick={() => set(option)}>{option}</button>)}
     </div>
   )
@@ -88,7 +88,7 @@ export default function ModelLab() {
         {group('Framing', FRAMINGS, framing, setFraming)}
         {group('Light', LIGHTS, light, setLight)}
         {group('Pose', Object.keys(POSES), pose, setPose)}
-        <div className="label filters"><button type="button" onClick={() => stage.current?.wave()}>wave</button></div>
+        <div className="label tabs"><button type="button" onClick={() => stage.current?.wave()}>wave</button></div>
       </div>
       <p className="label" style={{ position: 'absolute', left: '1.5rem', bottom: '1.4rem', opacity: .8 }}>
         mini omar · {status} · his head follows the pointer

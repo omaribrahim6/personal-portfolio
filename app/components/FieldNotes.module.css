@@ -1,0 +1,225 @@
+.notes {
+  padding: 5rem 0 6rem;
+  border-bottom: 2px solid var(--color-ink);
+  --experience: var(--color-cobalt);
+  --volunteer: var(--color-coral);
+  --education: var(--color-leaf);
+}
+
+.body {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: start;
+}
+
+/* ---------------------------------------------------------------- the wheel */
+
+.figure {
+  position: sticky;
+  top: 5rem;
+  margin: 0;
+}
+
+.wheel {
+  position: relative;
+  width: min(100%, 34rem);
+  margin-inline: auto;
+}
+.wheel svg { display: block; width: 100%; overflow: visible; }
+
+.face { fill: var(--color-card); stroke: var(--color-ink); stroke-width: 2.5; filter: drop-shadow(4px 5px 0 var(--color-ink)); }
+.rim { fill: none; stroke: var(--color-ink); stroke-width: 1; }
+.tick { stroke: var(--color-ink); stroke-width: 1; opacity: .5; }
+.yearTick { stroke: var(--color-ink); stroke-width: 2.5; }
+.month {
+  fill: var(--color-ink-3);
+  font-family: var(--font-label);
+  font-size: 7.5px;
+  font-weight: 600;
+}
+.year {
+  fill: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 15px;
+}
+.guide { fill: none; stroke: var(--color-ink); stroke-width: .6; stroke-dasharray: 1.5 3.5; opacity: .35; }
+
+.ring { cursor: pointer; transition: opacity .3s ease; }
+.ring path { fill: none; stroke-linecap: round; }
+.hit { stroke: transparent; stroke-width: 11; }
+.ink { stroke: var(--color-ink); stroke-width: 10; }
+.paint { stroke: var(--c); stroke-width: 6.2; transition: stroke-width .3s var(--ease-spring); }
+.glow { stroke: var(--color-sun); stroke-width: 0; transition: stroke-width .35s var(--ease-spring); }
+.arrow { fill: var(--c); stroke: var(--color-ink); stroke-width: 1.6; stroke-linejoin: round; }
+.ring[data-category='experience'] { --c: var(--experience); }
+.ring[data-category='volunteer'] { --c: var(--volunteer); }
+.ring[data-category='education'] { --c: var(--education); }
+.ring[data-lit='true'] .glow { stroke-width: 15; }
+.ring[data-lit='true'] .paint { stroke-width: 7; }
+.ring[data-dim='true'] { opacity: .4; }
+
+.now path { stroke: var(--color-coral); stroke-width: 2.5; stroke-linecap: round; }
+.now circle { fill: var(--color-coral); stroke: var(--color-ink); stroke-width: 1.6; }
+
+.sun path { stroke: var(--color-ink); stroke-width: 2.4; stroke-linecap: round; }
+.sun circle { fill: var(--color-sun); stroke: var(--color-ink); stroke-width: 2.5; }
+.sun { animation: turn 80s linear infinite; transform-origin: 0 0; transform-box: view-box; }
+@keyframes turn { to { transform: rotate(360deg); } }
+
+.centre {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: .1rem;
+  width: 22%;
+  margin: auto;
+  text-align: center;
+  pointer-events: none;
+}
+.centre b {
+  font-family: var(--font-round);
+  font-size: clamp(.8rem, 1.3vw, 1.05rem);
+  font-weight: 700;
+  line-height: 1.05;
+}
+.centre :global(.label) { font-size: .48rem; letter-spacing: .1em; }
+
+.caption {
+  display: grid;
+  gap: .7rem;
+  max-width: 34rem;
+  margin: 1.6rem auto 0;
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-style: italic;
+  line-height: 1.35;
+  color: var(--color-ink-2);
+}
+.key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.1rem;
+  font-family: var(--font-label);
+  font-size: .62rem;
+  font-style: normal;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.key span { display: inline-flex; align-items: center; gap: .45em; }
+.key i { width: 1.4rem; height: .5rem; border: 1.5px solid var(--color-ink); border-radius: 999px; background: var(--c); }
+.key [data-category='experience'] { --c: var(--experience); }
+.key [data-category='volunteer'] { --c: var(--volunteer); }
+.key [data-category='education'] { --c: var(--education); }
+
+/* ---------------------------------------------------------------- the notes */
+
+.tabs button[data-category='experience'] { --tab: color-mix(in srgb, var(--experience) 22%, var(--color-card)); }
+.tabs button[data-category='volunteer'] { --tab: color-mix(in srgb, var(--volunteer) 25%, var(--color-card)); }
+.tabs button[data-category='education'] { --tab: color-mix(in srgb, var(--education) 25%, var(--color-card)); }
+
+.entries {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.entry {
+  position: relative;
+  display: grid;
+  grid-template-columns: 8.5rem minmax(0, 1fr);
+  gap: 1.4rem;
+  padding: 1.9rem 0 1.9rem;
+  border-bottom: var(--hair);
+  --c: var(--experience);
+}
+.entry[data-category='volunteer'] { --c: var(--volunteer); }
+.entry[data-category='education'] { --c: var(--education); }
+/* A stroke of highlighter down the margin of the note being read. */
+.entry::before {
+  content: '';
+  position: absolute;
+  left: -1.1rem;
+  top: 1.9rem;
+  bottom: 1.9rem;
+  width: 5px;
+  border-radius: 3px;
+  background: var(--color-sun);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform .45s var(--ease-out);
+}
+.entry[data-lit='true']::before { transform: none; }
+
+.margin {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: .8rem;
+}
+.no {
+  font-family: var(--font-thin);
+  font-size: 2.6rem;
+  line-height: .8;
+  color: var(--color-ink);
+}
+.entry[data-lit='true'] .no { font-family: var(--font-display); color: var(--c); }
+.margin :global(.stamp) { --stamp: var(--c); font-size: .56rem; white-space: nowrap; line-height: 1.45; }
+
+.text h3 {
+  margin: .2rem 0 0;
+  font-family: var(--font-round);
+  font-size: clamp(1.2rem, 1.7vw, 1.45rem);
+  font-weight: 600;
+  line-height: 1.15;
+}
+.kind { display: flex; align-items: center; gap: .5em; color: var(--color-ink-3); }
+.kind i { width: .6rem; height: .6rem; border: 1.5px solid var(--color-ink); border-radius: 50%; background: var(--c); }
+.org {
+  margin: .15rem 0 .7rem;
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  font-style: italic;
+  color: var(--color-ink-2);
+}
+.text ul {
+  display: grid;
+  gap: .45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: .98rem;
+  line-height: 1.5;
+}
+.text li {
+  position: relative;
+  padding-left: 1.3rem;
+}
+/* A leaf for a bullet. */
+.text li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: .5em;
+  width: .7rem;
+  height: .42rem;
+  border: 1.5px solid var(--color-ink);
+  border-radius: 0 100% 0 100%;
+  background: color-mix(in srgb, var(--c) 55%, var(--color-card));
+  transform: rotate(-20deg);
+}
+
+@media (max-width: 1000px) {
+  .body { grid-template-columns: 1fr; }
+  .figure { position: relative; top: 0; }
+  .wheel { width: min(100%, 26rem); }
+}
+@media (max-width: 600px) {
+  .notes { padding: 3.5rem 0 4rem; }
+  .entry { grid-template-columns: 1fr; gap: .7rem; }
+  .margin { display: flex; align-items: center; justify-content: space-between; }
+  .entry::before { left: -.6rem; }
+  .no { font-size: 2rem; }
+}

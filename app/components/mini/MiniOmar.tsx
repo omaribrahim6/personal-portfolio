@@ -5,13 +5,12 @@ import { createPortal } from 'react-dom'
 import { ArrowUp, ArrowUpRight, RotateCcw, Square, X } from 'lucide-react'
 import { email } from '../../content'
 import { useMotionPreference } from '../useMotionPreference'
-import { world } from '../scroll'
-import type { Behavior, Framing, Light, MiniStage } from './stage'
-import { PodBack, PodFront } from './Pod'
+import type { Behavior, Framing, MiniStage } from './stage'
 import styles from './mini.module.css'
 
-// The small Omar. He leans out of the porthole of a little pod in the corner of every chapter and watches the
-// pointer; at the shore, where the day ends, he is standing on the beach instead, and for once facing you.
+// The small Omar. He leans out of the porthole of a little round pod in the corner of every page (the pod is
+// part of his 3D scene, inked like the drawings) and watches the pointer; on the back cover he is standing
+// in front of the island instead, and for once facing you.
 // Click him and the corner empties: a chat grows out of it, and he is standing behind the message box.
 // The chat is the one from Mamdani (its size, its layout and the way it opens), in this site's colours.
 // His answers come from /api/ask. Where WebGL or the model cannot be had, a picture of him stands in.
@@ -42,7 +41,6 @@ export default function MiniOmar() {
   const [open, setOpen] = useState(false)
   const [atShore, setAtShore] = useState(false)
   const [crowded, setCrowded] = useState(false)
-  const [hour, setHour] = useState<Light>('morning')
   const [bubble, setBubble] = useState(false)
   const [hover, setHover] = useState(false)
   const [active, setActive] = useState(false)
@@ -113,32 +111,22 @@ export default function MiniOmar() {
     return () => { cancelled = true }
   }, [present])
 
-  // Where he can stand on the shore, when the beach is in view, and when the corner is needed by the page.
+  // Where he can stand on the back cover, when it is in view, and when the corner is needed by the page.
   useEffect(() => {
-    const terrain = document.querySelector<HTMLElement>('[data-terrain="shore"]')
-    const toolkit = document.querySelector<HTMLElement>('#skills [data-ground]')
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- the slot is rendered by the shore plate, outside this component
-    setStand(terrain?.querySelector<HTMLElement>('[data-stand]') ?? null)
+    const back = document.querySelector<HTMLElement>('[data-shore]')
+    const crowding = document.querySelector<HTMLElement>('[data-crowds-mini]')
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- the slot is rendered by the back cover, outside this component
+    setStand(back?.querySelector<HTMLElement>('[data-stand]') ?? null)
     const observer = new IntersectionObserver(entries => {
       for (const entry of entries) {
-        if (entry.target === terrain) setAtShore(entry.intersectionRatio > .45)
-        // On small screens the toolkit's receipt is pinned to the bottom edge; he keeps out of its way.
+        if (entry.target === back) setAtShore(entry.intersectionRatio > .45)
+        // On small screens the seed bank's index card is pinned to the bottom edge; he keeps out of its way.
         else setCrowded(entry.isIntersecting && window.innerWidth < 1000)
       }
     }, { threshold: [0, .45, .6] })
-    if (terrain) observer.observe(terrain)
-    if (toolkit) observer.observe(toolkit)
-    // He is lit by the same sun as the page: pink and low over the terraces, high and white through the day,
-    // gold on the way down. The page works out its chapter in a frame of its own, so this reads it one frame later.
-    let frame = 0
-    const onScroll = () => { frame ||= requestAnimationFrame(() => { frame = requestAnimationFrame(() => { frame = 0; setHour(world.chapter < .6 ? 'morning' : world.chapter > 5.4 ? 'golden' : 'day') }) }) }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    onScroll()
-    return () => {
-      observer.disconnect()
-      window.removeEventListener('scroll', onScroll)
-      cancelAnimationFrame(frame)
-    }
+    if (back) observer.observe(back)
+    if (crowding) observer.observe(crowding)
+    return () => observer.disconnect()
   }, [])
 
   // Move the one canvas to wherever he is, and reframe the camera for it.
@@ -151,12 +139,13 @@ export default function MiniOmar() {
     made.resize()
     const observer = new ResizeObserver(() => made.resize())
     observer.observe(seat)
-    document.querySelector<HTMLElement>('[data-terrain="shore"]')?.toggleAttribute('data-mini', true)
+    document.querySelector<HTMLElement>('[data-shore]')?.toggleAttribute('data-mini', true)
     return () => observer.disconnect()
   }, [ready, spot, stand])
 
   useEffect(() => { stage.current?.act(behavior) }, [behavior, ready])
-  useEffect(() => { stage.current?.light(spot === 'shore' ? 'golden' : spot === 'chat' ? 'day' : hour) }, [hour, spot, ready])
+  useEffect(() => { stage.current?.live(active) }, [active, ready])
+  useEffect(() => { stage.current?.light(spot === 'shore' ? 'golden' : 'day') }, [spot, ready])
 
   // He arrives with a wave, and once per visit says what he is for.
   useEffect(() => {
@@ -212,7 +201,12 @@ export default function MiniOmar() {
     ;(atShore && ready ? beach : launcher).current?.focus({ preventScroll: true })
   }, [atShore, ready])
 
-  // Escape closes. Ctrl or Cmd + J toggles.
+  // Escape closes. Ctrl or Cmd + J toggles. The running header's button asks for him by name.
+  useEffect(() => {
+    const summon = () => setOpen(true)
+    window.addEventListener('ask-omar', summon)
+    return () => window.removeEventListener('ask-omar', summon)
+  }, [])
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
       if (event.key === 'Escape' && open) close()
@@ -324,9 +318,7 @@ export default function MiniOmar() {
           onPointerEnter={event => { if (event.pointerType === 'mouse') setHover(true) }} onPointerLeave={() => setHover(false)}
           onFocus={event => { if (event.currentTarget.matches(':focus-visible')) setHover(true) }} onBlur={() => setHover(false)}
           aria-label="Ask Omar, a small AI version of him" aria-expanded={open} aria-controls="mini-omar-chat">
-          <PodBack className={styles.pod} />
           <span ref={dockSeat} className={styles.seat}>{still(styles.canvas)}</span>
-          <PodFront className={styles.pod} />
         </button>
       </div>
 
@@ -343,7 +335,7 @@ export default function MiniOmar() {
       <div ref={panel} id="mini-omar-chat" className={styles.chat} data-open={open} role="dialog" aria-label="Ask Omar" aria-hidden={!open} inert={!open} tabIndex={-1}>
         <header className={styles.head}>
           <div className={styles.title}>
-            <b>Omar</b>
+            <b>Ask Omar</b>
             {active && <i className={styles.live} role="img" aria-label="The AI is online" title="The AI is online" />}
           </div>
           <button type="button" className={styles.icon} onClick={reset} aria-label="New conversation" title="New conversation"><RotateCcw size={16} /></button>

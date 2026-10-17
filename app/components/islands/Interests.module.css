@@ -1,4 +1,4 @@
-.ground { --accent: var(--color-moss); --on-accent: var(--color-cream); }
+.ground { padding-bottom: 6rem; border-bottom: 2px solid var(--color-ink); --accent: var(--color-moss); --on-accent: var(--color-card); }
 
 /* ------------------------------------------------------------------ the route */
 
@@ -7,7 +7,7 @@
   display: flex;
   align-items: flex-end;
   gap: 1.5rem;
-  border-bottom: 2px dashed rgba(16, 38, 28, .28);
+  border-bottom: 2px dashed rgba(22, 36, 29, .35);
 }
 
 .tabs {
@@ -35,7 +35,7 @@
   text-align: left;
   transition: color .25s ease;
 }
-.tab .label { font-family: var(--font-label); font-size: .56rem; letter-spacing: .14em; opacity: .75; }
+.tab :global(.label) { font-family: var(--font-label); font-size: .56rem; letter-spacing: .14em; opacity: .75; }
 .tab:hover { color: var(--color-ink); }
 .tab[aria-selected='true'] { color: var(--color-ink); }
 /* The stop on the line. */
@@ -48,7 +48,7 @@
   height: 14px;
   border: 2.5px solid var(--color-ink);
   border-radius: 50%;
-  background: #dfe9ec;
+  background: var(--color-card);
   transition: background-color .3s ease, box-shadow .3s ease, transform .4s var(--ease-spring);
 }
 .tab[aria-selected='true']::after { background: var(--color-sun); box-shadow: 0 0 0 4px rgba(247, 182, 56, .3), 0 0 14px rgba(247, 182, 56, .8); transform: scale(1.15); }
@@ -93,11 +93,51 @@
 
 .scene { position: relative; }
 
+/* The islands are framed as a travel poster: a sky in a rounded frame, lettered at its corners. */
 .frame {
   position: relative;
   aspect-ratio: 1 / 1;
   max-height: 62svh;
   width: 100%;
+  overflow: hidden;
+  border: 2px solid var(--color-ink);
+  border-radius: 1.2rem;
+  background:
+    radial-gradient(40% 30% at 78% 18%, rgba(255, 236, 170, .9), transparent 70%),
+    linear-gradient(#8fc8ee, #bfe2f0 45%, #dfeef0 75%);
+  box-shadow: 7px 8px 0 var(--color-ink);
+}
+.frame::after {
+  content: '';
+  position: absolute;
+  inset: .6rem;
+  border: 1.5px solid rgba(255, 255, 255, .7);
+  border-radius: .8rem;
+  pointer-events: none;
+}
+
+.stop {
+  position: absolute;
+  top: 1.1rem;
+  left: 1.3rem;
+  z-index: 1;
+  padding: .2rem .55rem;
+  border: 1.5px solid var(--color-ink);
+  border-radius: 999px;
+  background: var(--color-card);
+}
+.visit {
+  position: absolute;
+  right: 1.2rem;
+  bottom: .7rem;
+  z-index: 1;
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 6vw, 5.2rem);
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--color-card);
+  text-shadow: .04em .04em 0 var(--color-ink);
+  pointer-events: none;
 }
 
 .canvas {
@@ -107,11 +147,6 @@
   height: 100%;
   opacity: 0;
   transition: opacity 1s ease;
-  /* No edges: the islands thin out into the ground on every side, like the paintings into mist. */
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent), linear-gradient(to bottom, transparent, #000 8%, #000 76%, transparent);
-  -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent), linear-gradient(to bottom, transparent, #000 8%, #000 76%, transparent);
-  mask-composite: intersect;
 }
 .scene[data-ready='true'] .canvas { opacity: 1; }
 
@@ -223,7 +258,7 @@
 
 .panel { min-height: 15rem; }
 
-.kicker { color: var(--color-copper); font-weight: 700; }
+.kicker { color: var(--color-coral); font-weight: 700; }
 
 .figure {
   margin-top: .6rem;
@@ -255,9 +290,21 @@
   color: rgba(16, 38, 28, .85);
 }
 
-.outfits { margin-top: 1.2rem; }
+/* His outfits: three tags to swap between, the one he has on stamped in sun. */
+.outfits { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: 1.2rem; }
+.outfits button {
+  padding: .5rem .85rem;
+  border: 2px solid var(--color-ink);
+  border-radius: .5rem;
+  background: var(--color-card);
+  color: var(--color-ink);
+  box-shadow: 2px 2px 0 var(--color-ink);
+  transition: transform .2s var(--ease-spring), background-color .2s ease, box-shadow .2s ease;
+}
+.outfits button:hover { transform: translate(-1px, -2px); box-shadow: 3px 4px 0 var(--color-ink); }
+.outfits button[aria-pressed='true'] { background: var(--color-sun); transform: rotate(-2deg); }
 
-.links { display: flex; flex-wrap: wrap; gap: .4rem 1.4rem; margin-top: 1.1rem; }
+.links { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.3rem; }
 
 /* On a phone: the island, then the words, then the photos to swipe through. */
 @media (max-width: 999px) {
@@ -291,11 +338,11 @@
   }
   /* Round the edge of the scene, mostly where there is only sky, and clear of the corner the chat lives in. */
   .print { --print: clamp(7rem, 8.6vw, 9.2rem); position: absolute; pointer-events: auto; }
-  .print[data-slot='0'] { right: -1%; top: 0; }
-  .print[data-slot='1'] { left: 0; top: 2%; }
-  .print[data-slot='2'] { right: 2%; top: 40%; }
-  .print[data-slot='3'] { left: -2%; top: 44%; }
-  .more { position: absolute; left: 2%; bottom: 8%; pointer-events: auto; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+  .print[data-slot='0'] { right: -3%; top: 6%; }
+  .print[data-slot='1'] { left: -3%; top: 9%; }
+  .print[data-slot='2'] { right: -2%; top: 46%; }
+  .print[data-slot='3'] { left: -4%; top: 50%; }
+  .more { position: absolute; left: 1.4rem; bottom: 1.2rem; pointer-events: auto; }
 }
 
 /* ------------------------------------------------------------------ opened large */
@@ -309,7 +356,7 @@
   padding: clamp(1rem, 4vw, 3rem);
   border: 0;
   background: none;
-  color: var(--color-cream);
+  color: var(--color-card);
 }
 .sheet[open] { display: grid; place-items: center; }
 .sheet::backdrop { background: rgba(10, 30, 22, .88); backdrop-filter: blur(6px); }

@@ -9,15 +9,19 @@ export const links = {
   email: `mailto:${email}`,
 }
 
+// The site is laid out as an issue of a magazine: each chapter is a section, and starts on its own page.
 export const chapters = [
-  { id: 'home', numeral: 'I', hour: '06:10', place: 'the terraces', label: 'Hello' },
-  { id: 'about', numeral: 'II', hour: '08:30', place: 'the gardens', label: 'The story' },
-  { id: 'projects', numeral: 'III', hour: '10:45', place: 'the glasshouse', label: 'Selected work' },
-  { id: 'awards', numeral: 'IV', hour: '12:20', place: 'the wind farm', label: 'Wins' },
-  { id: 'skills', numeral: 'V', hour: '14:05', place: 'the sunflowers', label: 'The toolkit' },
-  { id: 'interests', numeral: 'VI', hour: '16:30', place: 'the sky islands', label: 'Off the clock' },
-  { id: 'contact', numeral: 'VII', hour: '18:40', place: 'the shore', label: 'Say hello' },
+  { id: 'home', numeral: 'I', page: 1, section: 'Cover', label: 'Hello', dek: '' },
+  { id: 'about', numeral: 'II', page: 4, section: 'Field notes', label: 'The story', dek: 'Where the time went: school, work, and the things I volunteer for.' },
+  { id: 'projects', numeral: 'III', page: 12, section: 'Features', label: 'Selected work', dek: 'Four builds, three of them hackathon winners, and something to play with in each.' },
+  { id: 'awards', numeral: 'IV', page: 30, section: 'The record', label: 'Wins', dek: 'Hackathons, CTFs, and one award I didn’t see coming.' },
+  { id: 'skills', numeral: 'V', page: 36, section: 'Seed bank', label: 'The toolkit', dek: 'Every tool I work with, and a receipt for where on these pages I used it.' },
+  { id: 'interests', numeral: 'VI', page: 42, section: 'Off the clock', label: 'Off the clock', dek: 'What I do when I’m not shipping something. Five islands, one for each.' },
+  { id: 'contact', numeral: 'VII', page: 50, section: 'Back cover', label: 'Say hello', dek: 'One more thing to build? Clip the coupon.' },
 ] as const
+
+/** The last page of the issue. */
+export const pages = 52
 
 /* ---------------------------------------------------------------- the story */
 
@@ -139,7 +143,7 @@ export type Project = {
   demo?: string
   demoLabel?: string
   devpost?: string
-  /** The painted window beside each project: what it is called and what pressing it does. */
+  /** The drawing beside each project: what it shows and what pressing its lever does. */
   window: { scene: 'signal' | 'cascade' | 'trail' | 'reflection'; caption: string; action: [string, string] }
 }
 

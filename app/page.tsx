@@ -1,25 +1,28 @@
-import Hero from './components/Hero'
+import Almanac from './components/Almanac'
+import BackCover from './components/BackCover'
+import Contents from './components/Contents'
+import Cover from './components/Cover'
+import Features from './components/Features'
+import FieldNotes from './components/FieldNotes'
 import Interests from './components/islands/Interests'
-import Shore from './components/Shore'
-import Story from './components/Story'
-import Toolkit from './components/Toolkit'
-import Wins from './components/Wins'
-import Works from './components/Works'
-import World from './components/World'
+import Record from './components/Record'
+import SeedBank from './components/SeedBank'
 
-// One day in a solar punk valley, sunrise to sunset: seven paintings under a single sky, and the portfolio written on the ground between them.
+// The portfolio as one issue of a magazine: a cover, the contents, and a section for each part of the story,
+// to a back cover with a coupon to clip. The illustrations are small 3D scenes, drawn live in ink.
 export default function Home() {
   return (
-    <World>
+    <Almanac>
       <main>
-        <Hero />
-        <Story />
-        <Works />
-        <Wins />
-        <Toolkit />
+        <Cover />
+        <Contents />
+        <FieldNotes />
+        <Features />
+        <Record />
+        <SeedBank />
         <Interests />
-        <Shore />
+        <BackCover />
       </main>
-    </World>
+    </Almanac>
   )
 }

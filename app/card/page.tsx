@@ -1,11 +1,12 @@
 import type { Metadata } from 'next'
 import { ArrowUpRight, FileText, Globe } from 'lucide-react'
-import Painting from '../components/Painting'
+import Diorama from '../components/toon/Diorama'
 import Sign from '../components/Sign'
 import { links } from '../content'
 import styles from './card.module.css'
 
-// Where the NFC card at events lands: the terraces at sunrise from the first plate, and three ways in.
+// Where the NFC card at events lands: a pocket edition of the almanac's cover, three ways in, and the island
+// from the front of it in a plate at the foot.
 // This season's events are security ones, so the résumé here is the cyber one; the main site keeps the software one.
 const RESUME = '/resumes/cyber/resume.pdf'
 
@@ -33,7 +34,7 @@ const options = [
 export default function Card() {
   return (
     <main className={styles.card}>
-      <div className={styles.sky} aria-hidden="true"><i className={styles.sun} /></div>
+      <p className={`label ${styles.dateline}`}><span><b>Pocket edition</b></span><span>The Omar Ibrahim Almanac</span></p>
 
       <div className={styles.copy}>
         <p className={styles.hello}>hi, my name is</p>
@@ -58,9 +59,9 @@ export default function Card() {
         </nav>
       </div>
 
-      <div className={styles.land} aria-hidden="true">
-        <Painting scene="terraces" className={styles.painting} />
-      </div>
+      <figure className={styles.plate} aria-hidden="true">
+        <Diorama scene="cover" className={styles.painting} />
+      </figure>
       <p className={`label ${styles.caption}`}><span>Software Engineering</span><span>Carleton University</span></p>
     </main>
   )

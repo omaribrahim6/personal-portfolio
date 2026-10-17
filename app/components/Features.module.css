@@ -1,0 +1,255 @@
+.features {
+  padding: 5rem 0 3rem;
+  border-bottom: 2px solid var(--color-ink);
+}
+
+.count { padding: .3rem .7rem; border: 2px solid currentColor; border-radius: 999px; }
+
+/* ----------------------------------------------------------------- a spread */
+
+.feature {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  grid-template-areas: 'figure copy';
+  gap: clamp(1.5rem, 4vw, 4.5rem);
+  align-items: center;
+  padding: clamp(2.5rem, 6vw, 5.5rem) 0;
+  border-top: 2px solid var(--color-ink);
+  --tint: #d3efe3;
+  --accent: var(--color-moss);
+}
+.feature:first-of-type { border-top: 0; padding-top: 1rem; }
+.feature[data-flip='true'] { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-areas: 'copy figure'; }
+.feature[data-scene='cascade'] { --tint: #fbe6ad; --accent: #c4851d; }
+.feature[data-scene='trail'] { --tint: #cfe4f4; --accent: var(--color-cobalt); }
+.feature[data-scene='reflection'] { --tint: #f7d8cf; --accent: #c3553a; }
+
+.figure { grid-area: figure; margin: 0; }
+
+/* The plate the model stands on: a tinted card with a fine grid, like a cutting mat. */
+.plate {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border: 2px solid var(--color-ink);
+  border-radius: 1.1rem;
+  background:
+    linear-gradient(color-mix(in srgb, var(--color-ink) 7%, transparent) 1px, transparent 1px) 0 0 / 2rem 2rem,
+    linear-gradient(90deg, color-mix(in srgb, var(--color-ink) 7%, transparent) 1px, transparent 1px) 0 0 / 2rem 2rem,
+    var(--tint);
+  box-shadow: 6px 7px 0 var(--color-ink);
+  overflow: hidden;
+}
+.canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.plateNo { position: absolute; top: .8rem; left: 1rem; color: color-mix(in srgb, var(--color-ink) 60%, transparent); }
+
+/* A note pinned to the drawing: a paper tag on a leader line, with a dot where it points. */
+.callout {
+  position: absolute;
+  left: -100%;
+  top: -100%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .35s ease;
+}
+.callout[data-placed='true'][data-shown='true'] { opacity: 1; }
+.callout::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: -4px;
+  width: 8px;
+  height: 8px;
+  border: 1.5px solid var(--color-ink);
+  border-radius: 50%;
+  background: var(--color-sun);
+}
+.callout::after {
+  content: '';
+  position: absolute;
+  left: -.75px;
+  bottom: 4px;
+  width: 1.5px;
+  height: 1.7rem;
+  background: var(--color-ink);
+}
+.callout > span {
+  position: absolute;
+  left: 0;
+  bottom: calc(1.7rem + 4px);
+  transform: translateX(-50%) translateY(6px) scale(.92);
+  padding: .3rem .6rem .32rem;
+  border: 1.5px solid var(--color-ink);
+  border-radius: .35rem;
+  background: var(--color-card);
+  font-family: var(--font-serif);
+  font-size: .98rem;
+  font-style: italic;
+  line-height: 1.15;
+  white-space: nowrap;
+  box-shadow: 2px 2px 0 var(--color-ink);
+  transition: transform .45s var(--ease-spring);
+}
+.callout[data-shown='true'] > span { transform: translateX(-50%); }
+.callout[data-code='true'] > span {
+  max-width: 13rem;
+  white-space: normal;
+  background: var(--color-ink);
+  color: var(--color-lime);
+  font-family: var(--font-label);
+  font-size: .62rem;
+  font-style: normal;
+  line-height: 1.5;
+  box-shadow: 2px 2px 0 var(--color-coral);
+}
+
+.caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .8rem 1.2rem;
+  margin-top: 1.2rem;
+}
+.caption > :global(.label) { color: var(--color-ink-2); }
+
+/* The lever: a slot with a knob in it that throws across when pulled. */
+.lever {
+  display: inline-flex;
+  align-items: center;
+  gap: .7rem;
+  padding: .45rem 1rem .45rem .5rem;
+  border: 2px solid var(--color-ink);
+  border-radius: 999px;
+  background: var(--color-card);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: .9rem;
+  font-weight: 650;
+  box-shadow: 3px 3px 0 var(--color-ink);
+  transition: transform .18s var(--ease-out), box-shadow .18s var(--ease-out), background-color .25s ease;
+}
+.lever:hover { transform: translate(-1px, -2px); box-shadow: 4px 5px 0 var(--color-ink); }
+.lever:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--color-ink); }
+.lever[aria-pressed='true'] { background: var(--color-sun); }
+.track {
+  position: relative;
+  width: 2.6rem;
+  height: 1.3rem;
+  border: 2px solid var(--color-ink);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-ink) 12%, var(--color-paper-2));
+  box-shadow: inset 0 2px 0 rgba(0, 0, 0, .12);
+}
+.track i {
+  position: absolute;
+  top: 50%;
+  left: .1rem;
+  width: .95rem;
+  height: .95rem;
+  border: 2px solid var(--color-ink);
+  border-radius: 50%;
+  background: var(--color-coral);
+  transform: translateY(-50%);
+  transition: left .4s var(--ease-spring), background-color .3s ease;
+}
+.lever[aria-pressed='true'] .track i { left: calc(100% - 1.05rem); background: var(--color-leaf); }
+
+/* ---------------------------------------------------------------- the words */
+
+.copy { grid-area: copy; }
+.kicker { display: flex; align-items: center; gap: .8rem; color: var(--accent); font-weight: 700; }
+.kicker i { flex: 1; height: 2px; background: currentColor; }
+
+.prize {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  margin: 1.1rem 0 .6rem;
+}
+.prize p { display: grid; margin: 0; line-height: 1.2; }
+.prize b { font-family: var(--font-round); font-size: 1rem; font-weight: 600; }
+.prize span { font-family: var(--font-serif); font-size: 1.05rem; font-style: italic; color: var(--color-ink-2); }
+
+.rosette { flex: none; width: 3.1rem; overflow: visible; transform: rotate(-8deg); }
+.rosette .tail { fill: var(--color-coral); stroke: var(--color-ink); stroke-width: 2; stroke-linejoin: round; }
+.rosette .scallops circle { fill: var(--color-sun); stroke: var(--color-ink); stroke-width: 2; }
+.rosette .disc { fill: var(--color-sun); }
+.rosette .inner { fill: var(--color-card); stroke: var(--color-ink); stroke-width: 2; }
+.rosette .star { fill: var(--color-coral); stroke: var(--color-ink); stroke-width: 1.6; stroke-linejoin: round; }
+.rosette[data-won='false'] .scallops circle, .rosette[data-won='false'] .disc { fill: var(--color-mint); }
+.rosette[data-won='false'] .tail { fill: var(--color-sea); }
+
+.title {
+  margin: .2rem 0 1rem;
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 5.6vw, 5.4rem);
+  font-weight: 400;
+  line-height: .9;
+  text-transform: uppercase;
+  --line: var(--tint);
+}
+
+.lead {
+  margin: 0 0 1rem;
+  font-family: var(--font-serif);
+  font-size: clamp(1.3rem, 1.9vw, 1.6rem);
+  font-style: italic;
+  line-height: 1.22;
+}
+.body { margin: 0; color: var(--color-ink-2); }
+.body::first-letter {
+  float: left;
+  margin: .05em .12em 0 0;
+  font-family: var(--font-display);
+  font-size: 3.1em;
+  line-height: .8;
+  color: var(--accent);
+}
+
+.builtWith { margin: 1.4rem 0 .5rem; color: var(--color-ink-3); }
+/* Tags: specimen labels, each tied on with a little string hole. */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tags li {
+  position: relative;
+  padding: .3rem .65rem .3rem 1.25rem;
+  border: 1.5px solid var(--color-ink);
+  border-radius: .25rem .9rem .9rem .25rem;
+  background: var(--color-card);
+  font-family: var(--font-label);
+  font-size: .64rem;
+  letter-spacing: .04em;
+}
+.tags li::before {
+  content: '';
+  position: absolute;
+  left: .45rem;
+  top: 50%;
+  width: .38rem;
+  height: .38rem;
+  border: 1.5px solid var(--color-ink);
+  border-radius: 50%;
+  background: var(--tint);
+  transform: translateY(-50%);
+}
+.links { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.6rem; }
+
+@media (max-width: 1000px) {
+  .feature, .feature[data-flip='true'] { grid-template-columns: 1fr; grid-template-areas: 'figure' 'copy'; }
+}
+@media (max-width: 600px) {
+  .features { padding-top: 3.5rem; }
+  .plate { border-radius: .8rem; box-shadow: 4px 5px 0 var(--color-ink); }
+  .callout > span { font-size: .8rem; padding: .2rem .45rem; }
+  .callout[data-code='true'] > span { max-width: 9rem; font-size: .52rem; }
+  .callout::after { height: 1.2rem; }
+  .callout > span { bottom: calc(1.2rem + 4px); }
+}

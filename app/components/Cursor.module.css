@@ -1,56 +1,62 @@
 /* Above everything, and never in the way of a click. */
-.trail, .sun {
+.trail, .pen {
   position: fixed;
   z-index: 200;
   pointer-events: none;
 }
 .trail { inset: 0; width: 100vw; height: 100vh; }
 
-.sun {
+/* The pen's position is its point: the nib is drawn up and to the right of it. */
+.pen {
   top: 0;
   left: 0;
-  width: 16px;
-  height: 16px;
+  width: 0;
+  height: 0;
   opacity: 0;
   will-change: transform;
-  transition: opacity .25s ease;
+  transition: opacity .2s ease;
 }
-.sun[data-here='true'] { opacity: 1; }
+.pen[data-here='true'] { opacity: 1; }
 
-/* The disc is the inner element, so it can grow without fighting the position. */
-.sun i {
+.nib {
   position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: radial-gradient(circle at 36% 32%, #fffbe8, #ffd65a 52%, #f39c1e);
-  /* A hair of ink round it, so it still reads on the pale sand and the paper. */
-  box-shadow: 0 0 0 1px rgba(16, 38, 28, .45), 0 0 14px rgba(255, 196, 70, .7);
-  transition: transform .3s cubic-bezier(.2, .8, .2, 1), box-shadow .3s ease;
+  left: -2px;
+  bottom: -2px;
+  width: 26px;
+  height: 26px;
+  overflow: visible;
+  transform-origin: 2px 24px;
+  filter: drop-shadow(1.5px 1.5px 0 rgba(22, 36, 29, .3));
+  transition: transform .35s cubic-bezier(.3, 1.5, .45, 1);
 }
-/* The rays: a ring of short spokes behind the disc, folded away until there is something to press. */
-.sun b {
+.body { fill: #fbf6ea; stroke: #16241d; stroke-width: 2; stroke-linejoin: round; }
+.band { fill: #cf9f45; stroke: #16241d; stroke-width: 2; stroke-linejoin: round; }
+.slit { stroke: #16241d; stroke-width: 1.6; stroke-linecap: round; }
+.hole { fill: #16241d; }
+
+/* Over something to press: the pen tips up, and a ring of ink spreads where its point is. */
+.blot {
   position: absolute;
-  inset: -11px;
+  left: -14px;
+  top: -14px;
+  width: 28px;
+  height: 28px;
+  border: 2px solid #16241d;
   border-radius: 50%;
-  background: repeating-conic-gradient(from 0deg, #f7b638 0 7deg, transparent 7deg 30deg);
-  -webkit-mask: radial-gradient(circle, transparent 0 54%, #000 56% 100%);
-  mask: radial-gradient(circle, transparent 0 54%, #000 56% 100%);
-  filter: drop-shadow(0 0 1px rgba(16, 38, 28, .5));
+  background: rgba(243, 198, 74, .55);
   opacity: 0;
-  transform: scale(.4) rotate(-40deg);
-  transition: transform .45s cubic-bezier(.3, 1.5, .45, 1), opacity .25s ease;
+  transform: scale(.3);
+  transition: transform .35s cubic-bezier(.3, 1.5, .45, 1), opacity .2s ease;
 }
-.sun[data-over='true'] b { opacity: 1; transform: none; animation: turn 6s linear infinite; }
-.sun[data-over='true'] i { transform: scale(1.25); box-shadow: 0 0 0 1.5px rgba(16, 38, 28, .55), 0 0 22px rgba(255, 196, 70, .85); }
-.sun[data-down='true'] i { transform: scale(.75); }
-.sun[data-over='true'][data-down='true'] i { transform: scale(1); }
+.pen[data-over='true'] .blot { opacity: 1; transform: none; }
+.pen[data-over='true'] .nib { transform: rotate(-14deg) translate(3px, -3px); }
+.pen[data-down='true'] .nib { transform: translate(-1px, 1px) scale(.92); }
+.pen[data-down='true'] .blot { transform: scale(.8); background: rgba(236, 123, 96, .6); }
 
-@keyframes turn { to { transform: rotate(360deg); } }
+/* The real cursor goes only while the pen is standing in for it. Text boxes keep theirs. */
+:global(html[data-pen='on']) :where(*:not(textarea):not(input):not(select)) { cursor: none !important; }
 
-/* The real cursor goes only while the sun is standing in for it. Text boxes keep theirs. */
-:global(html[data-sun='on']) :where(*:not(textarea):not(input):not(select)) { cursor: none !important; }
-
-/* A photo viewer is a modal dialog, which sits above the sun. While one is open the real cursor comes back. */
-:global(html[data-sun='on']:has(dialog[open])) .sun { opacity: 0; }
-:global(html[data-sun='on']:has(dialog[open])) :where(*:not(textarea):not(input):not(select)) { cursor: auto !important; }
-:global(html[data-sun='on']:has(dialog[open])) dialog :where(button) { cursor: pointer !important; }
+/* A photo viewer is a modal dialog, which sits above the pen. While one is open the real cursor comes back. */
+:global(html[data-pen='on']:has(dialog[open])) .pen { opacity: 0; }
+:global(html[data-pen='on']:has(dialog[open])) :where(*:not(textarea):not(input):not(select)) { cursor: auto !important; }
+:global(html[data-pen='on']:has(dialog[open])) dialog :where(button) { cursor: pointer !important; }
