@@ -20,7 +20,38 @@ export default function Models() {
     const key = new THREE.DirectionalLight('#ffffff', 1.6)
     key.position.set(2, 3, 4)
     scene.add(key)
-    const side = new URLSearchParams(location.search).get('side')
+    const params = new URLSearchParams(location.search)
+    const side = params.get('side')
+    // `?one=<name>` shows one model, front and side, on a grid a tenth of a unit apart, for measuring.
+    const one = params.get('one')
+    if (one) {
+      const front = new THREE.OrthographicCamera(-.65, .65, 1.2, -.1, .1, 50)
+      front.position.set(0, 0, 10)
+      const flank = front.clone()
+      flank.position.set(10, 0, 0)
+      flank.lookAt(0, 0, 0)
+      for (const axis of ['z', 'x'] as const) {
+        const grid = new THREE.GridHelper(2.4, 24, '#c0392b', '#9b9384')
+        if (axis === 'z') grid.rotation.x = Math.PI / 2
+        else grid.rotation.z = Math.PI / 2
+        grid.layers.set(axis === 'z' ? 1 : 2)
+        scene.add(grid)
+      }
+      front.layers.enable(1)
+      flank.layers.enable(2)
+      new GLTFLoader().load(`/models/interests/${one}.glb`, gltf => {
+        scene.add(gltf.scene)
+        const w = el.width / 2
+        renderer.setScissorTest(true)
+        for (const [i, camera] of [front, flank].entries()) {
+          renderer.setViewport(i * w, 0, w, el.height)
+          renderer.setScissor(i * w, 0, w, el.height)
+          renderer.render(scene, camera)
+        }
+        el.dataset.ready = 'true'
+      })
+      return () => renderer.dispose()
+    }
     const camera = new THREE.OrthographicCamera(-4.2, 4.2, 1.35, -.25, .1, 50)
     camera.position.set(0, .55, 10)
     const loader = new GLTFLoader()

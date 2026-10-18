@@ -224,3 +224,29 @@ export function robot(size: number, seed: number) {
   group.traverse(node => { if (node instanceof THREE.Mesh && node !== eye) { node.castShadow = true; node.receiveShadow = true } })
   return { group, eye }
 }
+
+/**
+ * Parts gathered by colour and merged into one mesh per colour, so a plant of thirty leaves and petals is
+ * three draw calls, not thirty.
+ */
+export class Bundle {
+  private parts = new Map<string, THREE.BufferGeometry[]>()
+  add(color: string, geometry: THREE.BufferGeometry, matrix: THREE.Matrix4) {
+    const g = (geometry.index ? geometry.toNonIndexed() : geometry.clone()).applyMatrix4(matrix)
+    for (const name of Object.keys(g.attributes)) if (name !== 'position' && name !== 'normal' && name !== 'uv') g.deleteAttribute(name)
+    const list = this.parts.get(color) ?? []
+    list.push(g)
+    this.parts.set(color, list)
+  }
+  build(shadows = true) {
+    const group = new THREE.Group()
+    for (const [color, list] of this.parts) {
+      const merged = new THREE.Mesh(mergeGeometries(list), toon(color))
+      merged.castShadow = merged.receiveShadow = shadows
+      group.add(merged)
+      list.forEach(g => g.dispose())
+    }
+    this.parts.clear()
+    return group
+  }
+}

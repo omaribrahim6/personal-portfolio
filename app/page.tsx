@@ -1,6 +1,9 @@
 import About from './components/voyage/stops/About'
+import Awards from './components/voyage/stops/Awards'
 import Home from './components/voyage/stops/Home'
+import Interests from './components/voyage/stops/Interests'
 import Projects from './components/voyage/stops/Projects'
+import Skills from './components/voyage/stops/Skills'
 import Voyage, { Beat, Stop, StopHead } from './components/voyage/Voyage'
 
 // The portfolio as a voyage across a solar punk archipelago, sunrise to sunset: seven stops, drawn live in
@@ -11,7 +14,10 @@ export default function Page() {
       <Home />
       <About />
       <Projects />
-      {(['awards', 'skills', 'interests', 'contact'] as const).map(id => (
+      <Awards />
+      <Skills />
+      <Interests />
+      {(['contact'] as const).map(id => (
         <Stop key={id} id={id}>
           <Beat><StopHead id={id} title={id} /></Beat>
           <Beat side="right"><p>…</p></Beat>

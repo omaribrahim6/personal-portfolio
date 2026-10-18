@@ -15,6 +15,9 @@ const STOPS: [string, () => Promise<{ default: Builder }>][] = [
   ['home', () => import('../world/stations/arrival')],
   ['about', () => import('../world/stations/garden')],
   ['projects', () => import('../world/stations/workshops')],
+  ['awards', () => import('../world/stations/station')],
+  ['skills', () => import('../world/stations/glasshouse')],
+  ['interests', () => import('../world/stations/islands')],
 ]
 
 type Bus = {

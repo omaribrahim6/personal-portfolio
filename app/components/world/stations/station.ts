@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js'
 import { awards, modes, type Mode } from '../../../content'
-import { C, cypress, flowers, light, plain, rng, scatter, solarPanel, tier, toon, tree, turbine } from '../../toon/kit'
+import { C, cypress, flowers, light, plain, pod, rng, scatter, solarPanel, tier, toon, tree, turbine } from '../../toon/kit'
 import type { Key, Station } from '../engine'
 import { cheer } from '../motion'
 import { FONTS } from '../props'
@@ -23,11 +23,11 @@ export const AFTERNOON = {
 
 export const ORIGIN = new THREE.Vector3(-22, 0, -262)
 const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-const COLUMNS = [8, 26, 18, 9]
+const COLUMNS = [8, 22, 20, 8]
 
 /** The departures board, drawn on a canvas: every row a run of split flaps, riffling when it changes. */
 function departures() {
-  const W = 1280, H = 720, rows = awards.length
+  const W = 1600, H = 900, rows = awards.length
   const canvas = document.createElement('canvas')
   canvas.width = W
   canvas.height = H
@@ -35,7 +35,7 @@ function departures() {
   const texture = new THREE.CanvasTexture(canvas)
   texture.colorSpace = THREE.SRGBColorSpace
   texture.anisotropy = 8
-  const cell = 27, gap = 3, top = 132, rowH = 64
+  const cell = 23, gap = 2.5, top = 168, rowH = 86
   type Row = { text: string; was: string; since: number; mode?: Mode; chosen: boolean }
   const state: Row[] = Array.from({ length: rows }, () => ({ text: '', was: '', since: -10, chosen: false }))
   const line = (a: typeof awards[number] | undefined) => !a ? '' : [a.date, a.event, a.result, modes[a.mode]].map((s, i) => s.toUpperCase().padEnd(COLUMNS[i]).slice(0, COLUMNS[i])).join('')
@@ -44,17 +44,22 @@ function departures() {
     ctx.fillStyle = '#101a15'
     ctx.fillRect(0, 0, W, H)
     ctx.fillStyle = '#f3c64a'
-    ctx.font = `64px ${FONTS.display}`
+    ctx.font = `78px ${FONTS.display}`
     ctx.textBaseline = 'middle'
-    ctx.fillText('ARRIVALS · WINS', 40, 62)
-    ctx.font = `600 22px ${FONTS.mono}`
+    ctx.fillText('ARRIVALS · WINS', 44, 74)
+    ctx.font = `600 24px ${FONTS.mono}`
     ctx.fillStyle = '#8aa597'
     let x = 40
-    for (const [i, head] of ['DATE', 'EVENT', 'RESULT', 'KIND'].entries()) { ctx.fillText(head, x, 112); x += COLUMNS[i] * (cell + gap) + 12 }
+    for (const [i, head] of ['DATE', 'EVENT', 'RESULT', 'KIND'].entries()) { ctx.fillText(head, x, 140); x += COLUMNS[i] * (cell + gap) + 12 }
     busy = false
     state.forEach((row, r) => {
       const y = top + r * rowH
-      if (row.chosen) { ctx.fillStyle = 'rgba(243, 198, 74, .18)'; ctx.fillRect(28, y - 6, W - 56, rowH - 4) }
+      if (row.chosen) {
+        ctx.fillStyle = 'rgba(243, 198, 74, .3)'
+        ctx.fillRect(24, y - 7, W - 48, rowH - 2)
+        ctx.fillStyle = '#f3c64a'
+        ctx.beginPath(); ctx.moveTo(8, y + 14); ctx.lineTo(22, y + 32); ctx.lineTo(8, y + 50); ctx.fill()
+      }
       let cx = 40
       for (let col = 0, c = 0; col < COLUMNS.length; col++) {
         for (let k = 0; k < COLUMNS[col]; k++, c++) {
@@ -67,7 +72,7 @@ function departures() {
           ctx.fillStyle = '#24322b'
           ctx.fillRect(cx, y + (rowH - 14) / 2, cell, (rowH - 14) / 2)
           ctx.fillStyle = col === 3 ? (row.mode === 'built' ? '#f3c64a' : row.mode === 'broke' ? '#ec7b60' : '#8fd3f0') : '#f4ecd8'
-          ctx.font = `600 26px ${FONTS.mono}`
+          ctx.font = `600 31px ${FONTS.mono}`
           ctx.textAlign = 'center'
           if (char.trim()) ctx.fillText(char, cx + cell / 2, y + (rowH - 14) / 2 + 1)
           ctx.textAlign = 'left'
@@ -162,72 +167,119 @@ export default async function station(): Promise<Station> {
   const hill = tier(6.5, 2.2, 203, C.meadow, C.stone, .12)
   hill.mesh.position.set(-2, 1.6, -6)
   group.add(sand.mesh, land.mesh, hill.mesh)
-  const G = .7
-  const platform = new THREE.Mesh(new RoundedBoxGeometry(18, .6, 3.6, 2, .08), toon(C.stone))
-  platform.position.set(0, G + .3, 3)
+  const G = .7, P = G + .6
+  // The platform: the camera stands in front of it, the rails run behind it.
+  const platform = new THREE.Mesh(new RoundedBoxGeometry(19, .6, 3.8, 2, .08), toon(C.stone))
+  platform.position.set(0, G + .3, 3.4)
   platform.receiveShadow = platform.castShadow = true
-  const edge = new THREE.Mesh(new THREE.BoxGeometry(18, .02, .18), toon(C.yellow))
-  edge.position.set(0, G + .61, 4.7)
-  group.add(platform, edge)
+  const edge = new THREE.Mesh(new THREE.BoxGeometry(19, .02, .2), toon(C.yellow))
+  edge.position.set(0, P + .01, 1.72)
+  const stair = new THREE.Mesh(new RoundedBoxGeometry(3, .3, 1.2, 2, .05), toon(C.stone2))
+  stair.position.set(-2.2, G + .15, 5.8)
+  group.add(platform, edge, stair)
 
-  // The rails, running the length of the island and out over the sea on arches either side.
-  const railY = G + .05
-  for (const z of [5.7, 6.5]) {
-    const rail = new THREE.Mesh(new THREE.BoxGeometry(80, .08, .08), toon('#5b6762'))
+  // The rails, behind the platform, running the length of the island and out over the sea on piers.
+  const railY = G + .05, RZ = .3
+  for (const z of [RZ - .4, RZ + .4]) {
+    const rail = new THREE.Mesh(new THREE.BoxGeometry(90, .08, .08), toon('#5b6762'))
     rail.position.set(0, railY + .35, z)
     group.add(rail)
   }
-  const bed = new THREE.Mesh(new THREE.BoxGeometry(80, .3, 1.8), toon(C.stone2))
-  bed.position.set(0, railY + .15, 6.1)
+  const bed = new THREE.Mesh(new THREE.BoxGeometry(90, .3, 1.8), toon(C.stone2))
+  bed.position.set(0, railY + .15, RZ)
   bed.receiveShadow = true
   group.add(bed)
-  for (let i = -6; i <= 6; i++) {
+  for (let i = -7; i <= 7; i++) {
     if (Math.abs(i) < 3) continue
-    const pier = new THREE.Mesh(new THREE.CylinderGeometry(.35, .5, railY + 1, 10), toon(C.ivory))
-    pier.position.set(i * 6, (railY - 1) / 2 + .2, 6.1)
+    const pier = new THREE.Mesh(new THREE.CylinderGeometry(.35, .5, railY + 1.2, 10), toon(C.ivory))
+    pier.position.set(i * 6, (railY - 1.2) / 2 + .3, RZ)
     pier.castShadow = true
     group.add(pier)
   }
 
-  // The roof: ribs curving over the platform, panels laid along them.
-  for (let i = 0; i < 7; i++) {
-    const x = -7.5 + i * 2.5
-    const rib = new THREE.Mesh(new THREE.TorusGeometry(2.2, .07, 8, 24, Math.PI), toon(C.ivory))
-    rib.position.set(x, G + .6 + 1.6, 3)
-    rib.rotation.y = Math.PI / 2
-    rib.castShadow = true
-    group.add(rib)
-  }
-  for (let k = 0; k < 5; k++) {
-    const a = .35 + k * .6
-    for (let i = 0; i < 6; i++) {
-      const p = solarPanel(2.3, 1.15)
-      p.position.set(-6.25 + i * 2.5, G + .6 + 1.6 + Math.sin(a) * 2.25, 3 + Math.cos(a) * 2.25)
-      p.rotation.set(-(Math.PI / 2 - a), 0, 0)
-      group.add(p)
+  // Solar trees along the back of the platform, for shade: a stem, a brass collar, a hexagon of panels.
+  for (const [x, z, h, r] of [[-7.6, 2.6, 3.6, 1.7], [-4.4, 2.2, 4.3, 1.9], [5.4, 2.2, 4.4, 1.7], [8.4, 2.8, 3.5, 1.4]]) {
+    const shade = new THREE.Group()
+    const stem = new THREE.Mesh(new THREE.CylinderGeometry(.09, .16, h, 10), toon(C.ivory))
+    stem.position.y = h / 2
+    const collar = new THREE.Mesh(new THREE.CylinderGeometry(.2, .14, .26, 10), toon(C.brass))
+    collar.position.y = h - .05
+    const crown = new THREE.Group()
+    crown.position.y = h + .1
+    crown.rotation.x = .28
+    const top = new THREE.Mesh(new THREE.CylinderGeometry(r, r * .96, .1, 6), [toon(C.steel), toon(C.panel), toon(C.steel)])
+    const rim = new THREE.Mesh(new THREE.TorusGeometry(r * .99, .045, 6, 6), toon(C.ivory))
+    rim.rotation.x = Math.PI / 2
+    rim.position.y = .05
+    crown.add(top, rim)
+    for (let k = 0; k < 6; k++) {
+      const strut = new THREE.Mesh(new THREE.CylinderGeometry(.03, .03, r * .9, 5), toon(C.ivory))
+      strut.position.set(Math.cos(k * Math.PI / 3) * r * .42, -.18, Math.sin(k * Math.PI / 3) * r * .42)
+      strut.rotation.set(0, -k * Math.PI / 3, Math.PI / 2 - .35)
+      crown.add(strut)
     }
+    // Cells on the face: a grid of lines, drawn as thin dark bars.
+    for (let k = -2; k <= 2; k++) {
+      const bar = new THREE.Mesh(new THREE.BoxGeometry(.03, .02, r * 1.6 * Math.cos(k * .3)), toon('#1d3a7a'))
+      bar.position.set(k * r * .33, .06, 0)
+      crown.add(bar)
+    }
+    shade.add(stem, collar, crown)
+    shade.position.set(x, P, z)
+    shade.traverse(node => { if (node instanceof THREE.Mesh) node.castShadow = true })
+    group.add(shade)
   }
 
-  // The board, hung from the roof on two rods.
+  // The board, standing in the middle of the platform on two posts, under its own strip of panels.
   const board = departures()
   const face = new THREE.MeshBasicMaterial({ map: board.texture })
   const frame = toon(C.brass)
-  const sign = new THREE.Mesh(new RoundedBoxGeometry(5.6, 3.15, .3, 2, .06), [frame, frame, frame, frame, face, frame])
-  sign.position.set(1, G + .6 + 2.35, 3.6)
+  const BW = 6.2, BH = 3.5, BY = P + 1.75 + BH / 2
+  const sign = new THREE.Mesh(new RoundedBoxGeometry(BW + .3, BH + .3, .32, 2, .07), [frame, frame, frame, frame, frame, frame])
+  sign.position.set(.4, BY, 3.1)
   sign.castShadow = true
-  group.add(plain(sign))
-  for (const x of [-1.6, 3.6]) {
-    const rod = new THREE.Mesh(new THREE.CylinderGeometry(.03, .03, 1.2, 6), toon(C.ink))
-    rod.position.set(x, G + .6 + 4.4, 3.6)
-    group.add(rod)
+  const screen = new THREE.Mesh(new THREE.PlaneGeometry(BW, BH), face)
+  screen.position.set(.4, BY, 3.27)
+  group.add(sign, plain(screen))
+  for (const x of [-2.6, 3.4]) {
+    const post = new THREE.Mesh(new THREE.CylinderGeometry(.11, .14, BY + BH / 2 - P + .2, 10), toon(C.ivory))
+    post.position.set(x, P + (BY + BH / 2 - P + .2) / 2, 2.9)
+    post.castShadow = true
+    const cap = new THREE.Mesh(new THREE.SphereGeometry(.17, 12, 8), toon(C.brass))
+    cap.position.set(x, BY + BH / 2 + .32, 2.9)
+    group.add(post, cap)
   }
+  const awning = solarPanel(BW + .9, 1.1)
+  awning.rotation.y = Math.PI
+  awning.position.set(.4, BY + BH / 2 + .12, 3)
+  group.add(awning)
+  // A clock on a bracket at the end of the board, as stations have.
+  const clock = new THREE.Group()
+  const dial = new THREE.Mesh(new THREE.CylinderGeometry(.42, .42, .14, 28), toon(C.ivory))
+  dial.rotation.x = Math.PI / 2
+  const bezel = new THREE.Mesh(new THREE.TorusGeometry(.43, .06, 8, 28), toon(C.coral))
+  const hands = [.28, .36].map(len => {
+    const hand = new THREE.Mesh(new THREE.BoxGeometry(.035, len, .02), toon(C.ink))
+    hand.geometry.translate(0, len / 2, 0)
+    hand.position.z = .09
+    clock.add(hand)
+    return hand
+  })
+  clock.add(dial, bezel)
+  clock.position.set(-3.25, BY + BH / 2 - .3, 3.1)
+  group.add(clock)
+
+  // A ticket kiosk at the far end: a little pod with a porthole and a roof of panels.
+  const kiosk = pod({ R: 1.15, H: 2, color: C.shell, bands: [[.06, .16, C.coral]], windows: [[.25, .5, .3]], lit: true, door: -.35, panels: 2, antenna: true })
+  kiosk.position.set(-8, P, 4)
+  group.add(kiosk)
 
   // Benches and planters along the platform.
-  for (const x of [-6.5, -3.2, 5.2]) {
+  for (const x of [-5.6, -1.2, 4.4]) {
     const planter = new THREE.Mesh(new RoundedBoxGeometry(1, .5, .6, 2, .05), toon(C.coral))
-    planter.position.set(x, G + .85, 1.8)
+    planter.position.set(x, P + .25, 4.7)
     const shrub = tree(.45, Math.round(x * 3) + 50)
-    shrub.position.set(x, G + 1, 1.8)
+    shrub.position.set(x, P + .4, 4.7)
     group.add(planter, shrub)
   }
 
@@ -240,15 +292,16 @@ export default async function station(): Promise<Station> {
     step.castShadow = step.receiveShadow = true
     podium.add(step)
   }
-  podium.position.set(7.2, G + .6, 2.6)
-  podium.rotation.y = -.35
+  podium.position.set(7, P, 3.7)
+  podium.rotation.y = -.3
+  podium.scale.setScalar(1.25)
   group.add(podium)
   const omar = await puppet()
-  omar.root.scale.setScalar(.95)
-  omar.root.position.set(7.2, G + .6 + .85, 2.6)
-  omar.root.rotation.y = -.35
+  omar.root.scale.setScalar(1.2)
+  omar.root.position.set(7, P + .85 * 1.25, 3.7)
+  omar.root.rotation.y = -.3
   group.add(omar.root)
-  const cup = trophy(.32)
+  const cup = trophy(.4)
   group.add(cup)
 
   // Confetti, thrown up over the podium every few seconds.
@@ -316,8 +369,8 @@ export default async function station(): Promise<Station> {
 
   const w = (x: number, y: number, z: number) => [ORIGIN.x + x, ORIGIN.y + y, ORIGIN.z + z] as [number, number, number]
   const keys: Key[] = [
-    { beat: 0, eye: w(-9, 6.5, 17), look: w(1, 2.4, 1), fov: 36, hold: .45, card: 'left' },
-    { beat: 1, eye: w(10, 4.6, 12.5), look: w(3.6, 2.6, 2.6), fov: 34, hold: .9, card: 'left' },
+    { beat: 0, eye: w(-7, 8, 21), look: w(1, 2.8, 0), fov: 36, hold: .45, card: 'left' },
+    { beat: 1, eye: w(9.5, 5, 16.5), look: w(4, 3.4, 3), fov: 34, hold: .9, card: 'left' },
   ]
 
   let burst = 0
@@ -341,7 +394,11 @@ export default async function station(): Promise<Station> {
       // The tram comes in from the left as you arrive, waits, and goes on to the right as you leave.
       const arrive = Math.min(1, local / .35), leave = Math.max(0, (local - .75) / .25)
       const x = -34 * Math.pow(1 - arrive, 2) + 40 * Math.pow(leave, 2)
-      train.position.set(x - 1.5, railY + .3, 6.1)
+      train.position.set(x - 1.5, railY + .3, RZ)
+      // The station clock keeps the visitor's time.
+      const day = new Date(), minutes = day.getHours() * 60 + day.getMinutes() + day.getSeconds() / 60
+      hands[0].rotation.z = -minutes / 720 * Math.PI * 2
+      hands[1].rotation.z = -minutes / 60 * Math.PI * 2
       for (const mark of marks) {
         const lit = filter === 'all' || filter === mark.mode
         if (mark.rotor) mark.rotor.rotation.z += dt * (lit ? 2.2 : .3)
@@ -359,8 +416,8 @@ export default async function station(): Promise<Station> {
       const age = (burst % 4)
       seeds.forEach((s, i) => {
         const a = Math.max(0, age - s.delay)
-        pos.set(7.2 + s.vx * a, G + 3.2 + s.vy * a - 3.2 * a * a, 2.6 + s.vz * a)
-        if (pos.y < G + .6) pos.y = -50
+        pos.set(7 + s.vx * a, P + 2.6 + s.vy * a - 3.2 * a * a, 3.7 + s.vz * a)
+        if (pos.y < P) pos.y = -50
         m.compose(pos, q.setFromEuler(e.set(s.spin + a * 6, s.spin * 2 + a * 4, a * 3)), one)
         bits.setMatrixAt(i, m)
       })
