@@ -6,7 +6,7 @@ import { clone as cloneSkinned } from 'three/addons/utils/SkeletonUtils.js'
 // models (hiking, biking, paddling, the football kit...) came out of Tripo as single statues with no
 // skeleton, so each is given this one: every vertex of the statue takes the skin weights of the nearest
 // points on the rigged model, stood in the same place and at the same size. After that the statue bends
-// at the same joints. Poses are given as angles in his own space (he faces +Z, up is +Y), whatever axes
+// at the same joints. Poses are given as angles in the puppet's own space (facing +Z, up is +Y), whatever axes
 // the rigger gave each bone.
 
 export type Joint =
@@ -24,7 +24,7 @@ const BONES: Record<string, Joint> = {
 }
 
 const RIGGED = '/models/omar-rigged.glb'
-/** Where his face is across the rigged model; it is moved so his face is over the origin. */
+/** Where the face is across the rigged model; it is moved so the face is over the origin. */
 const CENTRE = .0745
 
 const loader = new GLTFLoader()
@@ -67,7 +67,7 @@ function grid(points: Float32Array, cell: number) {
 }
 
 export class Puppet {
-  /** Add this to the scene. He faces +Z with his feet on y = 0. */
+  /** Add this to the scene. It faces +Z with its feet on y = 0. */
   readonly root = new THREE.Group()
   readonly mesh: THREE.SkinnedMesh
   private joints: Partial<Record<Joint, Rest>> = {}
@@ -76,7 +76,7 @@ export class Puppet {
   private e = new THREE.Euler()
 
   /**
-   * `rigged` is the rigged model. `outfit`, if given, is a statue to dress him in: `fit` says how to stand
+   * `rigged` is the rigged model. `outfit`, if given, is a statue to dress it in: `fit` says how to stand
    * it on the rigged model before the weights are taken (a scale, and an offset after scaling).
    */
   constructor(rigged: GLTF, outfit?: { gltf: GLTF; scale?: number; offset?: [number, number, number] }) {
@@ -171,13 +171,13 @@ export class Puppet {
     return dressed
   }
 
-  /** Where one of his joints is in the world now, for putting something in his hand. */
+  /** Where one of the joints is in the world now, for putting something in a hand. */
   where(joint: Joint, out = new THREE.Vector3()) {
     const bone = this.joints[joint]?.bone
     return bone ? bone.getWorldPosition(out) : this.root.getWorldPosition(out)
   }
 
-  /** Stand him in a pose. Joints not named go back to rest. */
+  /** Stand it in a pose. Joints not named go back to rest. */
   pose(pose: Pose) {
     for (const name of Object.keys(this.joints) as Joint[]) {
       const joint = this.joints[name]!
@@ -190,7 +190,7 @@ export class Puppet {
     const hips = this.joints.hips!.bone
     hips.position.copy(this.hipsRest)
     if (pose.lift || pose.shift) {
-      // From his own space, through the world, into the space the hips are moved in.
+      // From the puppet's own space, through the world, into the space the hips are moved in.
       const d = new THREE.Vector3(pose.shift?.[0] ?? 0, pose.lift ?? 0, pose.shift?.[2] ?? 0)
       d.applyMatrix3(new THREE.Matrix3().setFromMatrix4(this.root.matrixWorld))
       d.applyMatrix3(new THREE.Matrix3().setFromMatrix4(hips.parent!.matrixWorld.clone().invert()))

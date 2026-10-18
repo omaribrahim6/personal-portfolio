@@ -1,17 +1,18 @@
 import * as THREE from 'three'
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js'
-import { C, toon } from '../../toon/kit'
+import { C, tier, toon } from '../../toon/kit'
 import { model as cascade } from '../../toon/scenes/cascade'
 import { model as reflection } from '../../toon/scenes/reflection'
 import { model as signal } from '../../toon/scenes/signal'
 import { model as trail } from '../../toon/scenes/trail'
 import type { Engine, Key, Station } from '../engine'
 import { blend, idle, point } from '../motion'
+import { treetops } from '../props'
 import { puppet, type Pose } from '../puppet'
 
 // The workshops: four small islands in a channel, one for each project, each with its working model on it.
 // Omar waits on a jetty at the front of each, beside a brass lever; pull it (on the card, or the lever
-// itself) and he throws it, and the model runs: the street files its report, the lesson unfolds, the
+// itself) and Omar throws it, and the model runs: the street files its report, the lesson unfolds, the
 // lighthouse finds the bottle, the forge turns words into a query.
 
 export const NOON = {
@@ -74,7 +75,7 @@ export default async function workshops(engine: Engine): Promise<Station> {
     made.group.position.copy(isle.centre)
     group.add(made.group)
     for (const [name, anchor] of Object.entries(made.anchors)) anchors[`${i}:${name}`] = anchor
-    // The jetty at the front, and on it the lever and him.
+    // The jetty at the front, and on it the lever and Omar.
     const dock = jetty()
     dock.position.copy(isle.centre).add(new THREE.Vector3(0, .12, 6.1))
     group.add(dock)
@@ -90,6 +91,14 @@ export default async function workshops(engine: Engine): Promise<Station> {
     group.add(omar.root)
     return { ...isle, made, lever, omar, open: false, pull: 0 }
   }))
+
+  // Across the channel, a village up in the trees, on an island of its own.
+  const wood = tier(9, 1.2, 140, C.grass, C.stone, .06)
+  wood.mesh.position.set(57, 0, -156)
+  const village = treetops(141)
+  village.position.set(57, .6, -156)
+  village.rotation.y = -.6
+  group.add(wood.mesh, village)
 
   // The camera: the channel from above, then each island in turn, the card on the side away from it.
   const keys: Key[] = [{ beat: 0, eye: [52, 17, -104], look: [27, 0, -158], fov: 36, hold: .35, card: 'left' }]
@@ -127,7 +136,7 @@ export default async function workshops(engine: Engine): Promise<Station> {
         isle.made.update(t, dt)
         isle.pull += ((isle.open ? 1 : 0) - isle.pull) * Math.min(1, dt * 5)
         isle.lever.handle.rotation.x = -.6 + 1.2 * isle.pull
-        // He throws the lever with his near hand, then points at what it set going.
+        // The lever thrown with the near hand, then points at what it set going.
         const reach: Pose = isle.side > 0
           ? { ...idle(t), armR: [-1.1 + .5 * isle.pull, 0, -.15], foreR: [-.3, 0, 0], spine: [.12, 0, 0] }
           : { ...idle(t), armL: [-1.1 + .5 * isle.pull, 0, .15], foreL: [-.3, 0, 0], spine: [.12, 0, 0] }

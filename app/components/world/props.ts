@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js'
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js'
-import { C, light, plain, rng, toon } from '../toon/kit'
+import { C, glassMaterial, light, plain, pod, rng, tether, toon } from '../toon/kit'
 
 // Things the stops have in common: signs with words painted on them in the site's own type, benches,
 // arches of vines, an old windmill, and the giant robot asleep in the meadow under its moss.
@@ -249,4 +249,126 @@ export class Bundle {
     this.parts.clear()
     return group
   }
+}
+
+/** The mail drone: a glass globe with a lamp in it, brass arms in whiplash curves out to four rotors. */
+export function drone() {
+  const group = new THREE.Group()
+  const globe = plain(new THREE.Mesh(new THREE.SphereGeometry(.42, 24, 16), glassMaterial('#bfeee6', .35)))
+  const lamp = new THREE.Mesh(new THREE.SphereGeometry(.18, 14, 10), light('#ffd27a'))
+  const belt = new THREE.Mesh(new THREE.TorusGeometry(.43, .045, 8, 32), toon(C.brass))
+  belt.rotation.x = Math.PI / 2
+  const crown = new THREE.Mesh(new THREE.ConeGeometry(.16, .3, 12), toon(C.brass))
+  crown.position.y = .5
+  const finial = new THREE.Mesh(new THREE.SphereGeometry(.06, 10, 8), toon(C.coral))
+  finial.position.y = .68
+  group.add(globe, lamp, belt, crown, finial)
+  const rotors: THREE.Object3D[] = []
+  for (let k = 0; k < 4; k++) {
+    const a = k / 4 * Math.PI * 2 + Math.PI / 4
+    const out = new THREE.Vector3(Math.cos(a), 0, Math.sin(a))
+    // The arm: out from the belt, curling up and over, the way a stem does in an old poster.
+    const arm = new THREE.CatmullRomCurve3([
+      out.clone().multiplyScalar(.42),
+      out.clone().multiplyScalar(.75).setY(-.12),
+      out.clone().multiplyScalar(1.05).setY(.08),
+      out.clone().multiplyScalar(1.12).setY(.3),
+    ])
+    group.add(new THREE.Mesh(new THREE.TubeGeometry(arm, 20, .035, 6), toon(C.brass)))
+    // A leaf on each arm.
+    const leaf = new THREE.Mesh(new THREE.SphereGeometry(.09, 10, 6), toon(C.leaf))
+    leaf.scale.set(.5, .2, 1.6)
+    leaf.position.copy(out.clone().multiplyScalar(.7)).setY(-.16)
+    leaf.rotation.y = -a + Math.PI / 2
+    group.add(leaf)
+    const hub = new THREE.Group()
+    hub.position.copy(out.clone().multiplyScalar(1.12)).setY(.34)
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(.32, .03, 6, 24), toon(C.brass))
+    ring.rotation.x = Math.PI / 2
+    const blades = new THREE.Group()
+    for (const turn of [0, Math.PI / 2]) {
+      const blade = new THREE.Mesh(new THREE.BoxGeometry(.56, .01, .07), toon(C.ivory))
+      blade.rotation.y = turn
+      blades.add(blade)
+    }
+    hub.add(ring, blades)
+    group.add(hub)
+    rotors.push(blades)
+  }
+  // The letter, hanging under it on a cord.
+  const cord = new THREE.Mesh(new THREE.CylinderGeometry(.008, .008, .5, 4), toon(C.ink))
+  cord.position.y = -.65
+  const letter = new THREE.Group()
+  const paper = new THREE.Mesh(new THREE.BoxGeometry(.5, .32, .03), toon(C.ivory))
+  const seal = new THREE.Mesh(new THREE.CylinderGeometry(.05, .05, .02, 12), toon(C.coral))
+  seal.rotation.x = Math.PI / 2
+  seal.position.z = .025
+  letter.add(paper, seal)
+  letter.position.y = -1.02
+  group.add(cord, letter)
+  group.traverse(node => { if (node instanceof THREE.Mesh) node.castShadow = true })
+  return { group, rotors, letter }
+}
+
+
+/**
+ * A village in the treetops: giant trees with decks round their trunks, pods on the decks, rope bridges
+ * from tree to tree, and lanterns. About 14 tall.
+ */
+export function treetops(seed: number) {
+  const rand = rng(seed)
+  const group = new THREE.Group()
+  const trunks = [[0, 0, 13], [-7, 3, 11], [6.5, 4, 10.5]] as const
+  const decks: THREE.Vector3[] = []
+  const leaves = new Bundle(), wood = new Bundle()
+  const ball = new THREE.IcosahedronGeometry(1, 1)
+  for (const [x, z, h] of trunks) {
+    wood.add(C.bark, new THREE.CylinderGeometry(.55, 1.1, h, 12), new THREE.Matrix4().makeTranslation(x, h / 2, z))
+    for (let k = 0; k < 5; k++) {
+      const a = k / 5 * Math.PI * 2 + rand()
+      wood.add(C.bark, new THREE.ConeGeometry(.45, 2.2, 6), new THREE.Matrix4().compose(new THREE.Vector3(x + Math.cos(a) * 1.1, .6, z + Math.sin(a) * 1.1), new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.sin(a) * .6, 0, -Math.cos(a) * .6)), new THREE.Vector3(1, 1, 1)))
+    }
+    for (let k = 0; k < 9; k++) {
+      const a = rand() * Math.PI * 2, d = rand() * 3, r = 1.8 + rand() * 1.6
+      leaves.add([C.leaf, C.grass2, C.leafLight, C.leafDark][k % 4], ball, new THREE.Matrix4().compose(new THREE.Vector3(x + Math.cos(a) * d, h + rand() * 1.5 - .5, z + Math.sin(a) * d), new THREE.Quaternion(), new THREE.Vector3(r, r * .8, r)))
+    }
+    const y = h * .55
+    wood.add(C.wood, new THREE.CylinderGeometry(2.4, 2.4, .2, 24), new THREE.Matrix4().makeTranslation(x, y, z))
+    wood.add(C.brass, new THREE.TorusGeometry(2.4, .06, 6, 32), new THREE.Matrix4().compose(new THREE.Vector3(x, y + .35, z), new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.PI / 2, 0, 0)), new THREE.Vector3(1, 1, 1)))
+    decks.push(new THREE.Vector3(x, y, z))
+  }
+  group.add(wood.build(), leaves.build())
+  decks.forEach((deck, i) => {
+    const home = pod({ R: .85, H: 1.4, bands: [[.06, .16, [C.coral, C.teal, C.yellow][i]]], windows: [[0, .5, .22], [1.2, .5, .2]], lit: true, door: .6, antenna: i === 0 })
+    home.position.copy(deck).add(new THREE.Vector3(1.3, .1, 1))
+    home.rotation.y = rand() * Math.PI * 2
+    group.add(home)
+  })
+  // Rope bridges between the decks.
+  for (const [a, b] of [[0, 1], [0, 2]]) {
+    const from = decks[a].clone().add(new THREE.Vector3(0, .15, 0)), to = decks[b].clone().add(new THREE.Vector3(0, .15, 0))
+    const dir = to.clone().sub(from).setY(0).normalize()
+    from.addScaledVector(dir, 2.3)
+    to.addScaledVector(dir, -2.3)
+    const side = new THREE.Vector3(-dir.z, 0, dir.x).multiplyScalar(.4)
+    group.add(tether(from.clone().add(side), to.clone().add(side), .6, .04), tether(from.clone().sub(side), to.clone().sub(side), .6, .04))
+    group.add(tether(from.clone().add(side).setY(from.y + .7), to.clone().add(side).setY(to.y + .7), .4, .03), tether(from.clone().sub(side).setY(from.y + .7), to.clone().sub(side).setY(to.y + .7), .4, .03))
+    for (let k = 1; k < 12; k++) {
+      const f = k / 12
+      const p = from.clone().lerp(to, f)
+      p.y -= Math.sin(f * Math.PI) * .6
+      const plank = new THREE.Mesh(new THREE.BoxGeometry(.9, .06, .25), toon(C.wood))
+      plank.position.copy(p)
+      plank.rotation.y = Math.atan2(dir.x, dir.z)
+      group.add(plank)
+    }
+  }
+  for (const deck of decks) for (let k = 0; k < 3; k++) {
+    const a = k / 3 * Math.PI * 2
+    const glow = new THREE.Mesh(new THREE.SphereGeometry(.14, 8, 6), light('#ffd27a'))
+    glow.position.copy(deck).add(new THREE.Vector3(Math.cos(a) * 2.3, .55, Math.sin(a) * 2.3))
+    group.add(glow)
+  }
+  group.traverse(node => { if (node instanceof THREE.Mesh && !node.castShadow) node.castShadow = true })
+  return group
 }

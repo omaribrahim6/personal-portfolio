@@ -17,14 +17,14 @@ Then start Claude Code in the repo and tell it: *"Read handoff.md and continue f
 ## 1. Where things stand
 
 - **Branch:** `solar-punk`. Commit and push only to this branch. Do not open a PR unless the user asks for one.
-- **Last finished commit:** `72c7d0a` (v2, the magazine edition, now at `/almanac`).
-- **WIP commit on top of it:** the 3D voyage, partly built (stops 1–3 work, stop 4 is written but not yet checked, stops 5–7 are placeholders). It was committed half-done so it could move to a local session. **`npm run build` has not been run on it yet**, but `npx tsc --noEmit -p .` passes.
+- **v2** (`72c7d0a`) is the magazine edition, now at `/almanac`.
+- **v3** (the commits after it) is the 3D voyage at `/`. All seven stops are built, have their cards, and have been checked in desktop and phone screenshots. Lint, `tsc` and `next build` pass. See `docs/voyage.md` for what each stop holds.
 
 | Route | What it is | State |
 | --- | --- | --- |
-| `/` | **The voyage**: the portfolio as one trip across a solar punk archipelago, sunrise to sunset. A full-screen 3D world, a camera that moves on a rail as you scroll, and the content on cards that pass over it. | stops 1–3 done, 4 in progress, 5–7 placeholders |
+| `/` | **The voyage**: the portfolio as one trip across a solar punk archipelago, sunrise to sunset. A full-screen 3D world, a camera that moves on a rail as you scroll, and the content on cards that pass over it. | all 7 stops done |
 | `/almanac` | The v2 magazine edition (cover, contents, field notes, features, record, seed bank, interests, back cover). | done, keep as is |
-| `/lab/models` | Viewer for the outfit statues in `public/models/interests/*.glb`. | dev tool |
+| `/lab/models` | Viewer for the outfit statues in `public/models/interests/*.glb`; `?one=<name>` shows one statue front and side on a 0.1 grid, for measuring part pivots. | dev tool |
 | `/lab/rig` | Rig test bench: the rigged Omar and the outfit statues with skin weights transferred, run through every pose in `motion.ts`, plus the `FIT` table of scales/offsets per outfit. | dev tool |
 | `/lab/toon` | Toon/ink renderer test page. | dev tool |
 | `/card` | NFC landing page (older, unchanged). | done |
@@ -64,12 +64,16 @@ What that means in practice: every section is a **place you travel to**, with Om
   - **Outfits tear at big arm raises.** With an outfit, keep arm motion moderate (walk and kick are fine; a full overhead cheer is not).
   - The fits per outfit (scale, offset) are in `app/lab/rig` `FIT`: hike 1/.92, soccer 1/(1.17·1.04), paddle 1/1.15, bike 1/1.15, podium 1, games 1, security 1/1.02.
 - `letters.ts`: `word(text, { size, depth, color, line, tracking })` → `{ group, width }`. These are 3D extruded Heliotrope letters with the inline hairline, built from `glyphs.json`, which `node scripts/glyphs.mjs` exports from the font.
-- `props.ts`: `FONTS`; `board({...})`, a canvas texture for signs; `plaque`; `signpost`; `bench`; `arch`; `windmill(h)` → `{ group, sails }`; `robot(size, seed)` → `{ group, eye }`.
+- `props.ts`: `FONTS`; `board({...})`, a canvas texture for signs; `plaque`; `signpost`; `bench`; `arch`; `windmill(h)` → `{ group, sails }`; `robot(size, seed)` → `{ group, eye }`; `Bundle` (merges parts into one mesh per colour); `drone()`, the art nouveau mail drone; `treetops(seed)`, the treetop village.
+- `statue.ts`: `statue(url, parts)` loads a seated or crouched outfit statue (which cannot be skinned) and splits it into parts by where each triangle sits. `ball(name, centre, radius, pivot)` makes a part. Each part is a group at its pivot, so turning the group turns the part (heads, the vault dial, the bike wheels). `lift(material)` brightens the statues' dark textures to sit with the toon colours.
 - `stations/`:
   - `arrival.ts` (home, MORNING): the cover town, the 3D name on a ridge, Omar waving.
   - `garden.ts` (about, DAY): a garden path with a signpost per role, colour-coded by category. Omar **walks** along it as you scroll, driven by the beat cursor (the stride phase advances with distance walked). There is a robot, a windmill and pods.
   - `workshops.ts` (projects, NOON): four islets in a channel, each with its project's working model (`toon/scenes/{signal,cascade,trail,reflection}.ts` → `model()`), a jetty, a brass lever and an Omar who throws it. The levers are pickable in the world and on the cards; `set('project-i', 'open'|'closed')`.
-  - `station.ts` (awards, AFTERNOON): **written, not yet registered or checked; see "What is left".**
+  - `station.ts` (awards, AFTERNOON): the solar tram stop. It has a split-flap board on a canvas (`set('filter')`, `set('chosen')`), a tram, a podium with a trophy and confetti, a wind farm with one mark per win, and mail drones.
+  - `glasshouse.ts` (skills, GOLDEN): a geodesic dome with beds and plants. Each skill is one plant (it blooms once per receipt, and is pickable). `set('skill', name)` shows its seed tag. Omar walks the beds with a watering can. There is also a gardener robot, butterflies, and a sunken giant robot offshore.
+  - `islands.ts` (interests, GOLDEN_HOUR): five islands. Hike (outfit puppet on a trail, out and back), bike (statue, spinning wheel parts), paddle (statue on a lagoon loop), competing (podium statue, scoreboard canvas, spotlights), games (statue on bricks, and the plain puppet longboarding a hairpin road), security (vault statue, dial part, `set('vault', 'open')` spills gold), soccer (outfit puppet with a run-up, kick, goal and net bulge). Cable cars join the islands.
+  - `pier.ts` (contact, SUNSET): the pier, lanterns, the post office pod, and Omar perched on the end (up and waving on the last card). The drone flies the letter off when `set('send', n)`. A domed city stands on the horizon.
 
 ### Shared drawing kit: `app/components/toon/`
 
@@ -110,51 +114,20 @@ FIRST=40000 WAIT=7000 node scripts/walk.mjs m 390 844 home-title project-0     #
 
 Look at every stop on a desktop and a phone screenshot. Judge the ink lines, the framing beside the card, and Omar actually being visible and doing something.
 
-## 6. What is left, in order
+## 6. What is left
 
-### A. Stop 4, "The station" (awards): finish
+Everything the user asked for is built. What remains is polish, roughly in order of value:
 
-`app/components/world/stations/station.ts` exists. It has the AFTERNOON palette; ORIGIN (-22, 0, -262); a split-flap departures board drawn on a canvas (`show(list, chosen)`, `tick(t)`, rows riffle when they change); a solar tram that pulls in and out with scroll progress; a platform under a curved roof of solar ribs and panels; rails on piers out over the sea; planters; a podium where Omar `cheer`s with a trophy that follows `where('handR')`; InstancedMesh confetti every 4 s; and behind the station a "farm" with one mark per award (a turbine for *built*, a flag for *broke*, a sun for *named*), lit by the active filter. `set('filter', mode | 'all')`, `set('chosen', index)`. Keys: beat 0 is an overview, beat 1 is close on the board and podium (hold .9).
-
-1. Register it in `World.tsx` `STOPS`: `['awards', () => import('../world/stations/station')]`. It is `export default async function station(): Promise<Station>` and takes no engine argument.
-2. Write `stops/Awards.tsx`: `StopHead` "The station" (id `awards-title`); filter switches → `tell('awards', 'filter', mode)` using `awardFilters`; the list of wins as buttons → `tell('awards', 'chosen', String(awards.indexOf(win)))`; a ticket card for the selected win (result, event, date, mode, link).
-3. Replace the `awards` placeholder in `app/page.tsx`, then screenshot and iterate. Things to check: tram timing, the board is readable, Omar and the trophy are framed beside the card, confetti, filter lighting.
-
-### B. Stop 5, "The glasshouse" (skills)
-
-A geodesic glasshouse (`kit.ts` has the dome builder) with a raised bed per `skillGroups` group and a plant per skill. A skill with `receipts` gets blooms, one per receipt. Omar walks between the beds watering (the `water()` pose plus a can in `handR`). Selecting a skill on the card highlights its plant (it glows or grows a little) and the camera favours that bed. Cards: seed packets per group and a library index card for the selected skill listing its receipts (links). `tell('skills', 'skill', name)`. Give the palette a late-afternoon tint.
-
-### C. Stop 6, "Five islands" (interests): Omar doing each activity
-
-The centrepiece of the request. Five floating or sea islands, one per `interests` id, each with an outfit puppet (`puppet({ url: '/models/interests/<id>.glb', ...FIT })`) doing the activity:
-
-- **outdoors:** three small scenes on one island, or the camera moving through all three:
-  - *hiking* up a switchback trail (hike outfit, `walk`, the puppet moved along the trail);
-  - *biking* downhill (the bike statue is rigid; add spinning overlay wheels and a bob);
-  - *paddleboarding* on a toon board in a lagoon (paddle outfit, strokes from chest and arms, the board rocking).
-- **competing:** a hackathon stage (podium statue, `type` at a laptop, head turns, banners, confetti on a win).
-- **games:** the games statue, plus a "Downhill" road where the rigged Omar longboards (`skate`).
-- **security:** crouched at a vault (security statue), the dial turning, then the door opens to gold light.
-- **soccer:** soccer outfit, `kick(u)`, the ball arcing into a goal net that ripples.
-
-Each island's activity should run while its beat is near (as in workshops, where only islands within 1.5 beats move). Cards: kicker, title, body, links and photos from `interests[i].photos`, with a photo viewer dialog. Existing reference: `app/components/islands/` (the magazine's interests islands) and `public/interests/*` (the photos).
-
-### D. Stop 7, "The pier" (contact), at sunset
-
-A sunset palette with domes on the skyline (from the references). Omar `perch`es on the end of the pier with lanterns coming on. An art nouveau mail drone flies in to take the message. Card: a reply coupon (subject builder → `mailto:` with the subject filled in, a copy-email button, links), and a colophon.
-
-### E. Between the stops, and shipping
-
-- **Scenery along the route** from the references: a treetop village, art nouveau drones crossing, an overgrown robot half in the sea, airborne turbines on tethers, sunset domes. These should be cheap (instanced, low detail) and placed between station centres.
-- Remove all placeholders in `page.tsx`.
-- Check the mini Omar dock still works over the voyage. Check reduced motion (the camera should jump, not glide) and the no-WebGL `Fallback` (the cards must still read).
-- Docs: add the voyage to `README.md` and `docs/solarpunk.md` (the voyage at `/`, the magazine at `/almanac`).
-- `npm run lint`, `npx tsc --noEmit -p .`, `npm run build`; screenshots at desktop and phone sizes.
-- Commit and push to `origin solar-punk`, then report to the user with screenshots.
+1. **Get the user's reaction** to the voyage and act on it. They have given direct feedback twice before (v1 "copied the original too much", v2 "this is really sick").
+2. **Performance on real phones.** Each stop is only drawn when the camera is near it, but the interests stop (`islands.ts`) holds five islands and six models at once. If it stutters, split it into two stations, or hide islands more than about 1.6 beats away (each `update` already skips them).
+3. **The vault cliff** (`islands.ts`, security) is stacked `tier`s with boulders and pines. It still reads a little like a layer cake and could be a proper rock face.
+4. **Between stops:** the treetop village (workshops), the mail drones (station, pier), the sunken robot (glasshouse) and the cable cars (interests) are there. Airborne turbines and boats could also be placed in the empty sea the camera crosses between stations.
+5. **Mobile cards** sit along the bottom and cover the lower part of the world. The camera keys could take a phone-specific `look` offset if a subject ends up under a card.
+6. **`docs/solarpunk.md`** still describes the magazine; `docs/voyage.md` describes the voyage. Keep both current.
 
 ## 7. Conventions
 
-- **Code style:** comments are short prose in plain English that say what a thing *is* in the world ("The jetty at the front, and on it the lever and him."), not what the code does line by line. Names are short words (`isle`, `made`, `reach`, `shown`). There are no semicolons, single quotes, and two-space indent. Match the files around you.
+- **Code style:** comments are short prose in plain English that say what a thing *is* in the world ("The jetty at the front, and on it the lever and Omar."), not what the code does line by line. Names are short words (`isle`, `made`, `reach`, `shown`). There are no semicolons, single quotes, and two-space indent. Match the files around you.
 - **Commit messages** end with:
   ```
   Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>

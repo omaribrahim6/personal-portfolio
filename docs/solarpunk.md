@@ -1,6 +1,6 @@
 # Solar punk
 
-Branch: `solar-punk`
+Branch: `solar-punk` · at `/almanac` (the site itself, at `/`, is [the voyage](voyage.md))
 
 The portfolio is one issue of a magazine: **The Omar Ibrahim Almanac**. It has a cover with his name as the masthead, a contents page with a letter from the editor, a section for each part of the story, and a back cover with a coupon to clip. It is printed on cream stock in green-black ink, with spot colours from solar punk (sun yellow, coral, sea, cobalt, leaf, brass).
 

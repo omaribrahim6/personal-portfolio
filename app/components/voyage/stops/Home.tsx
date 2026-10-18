@@ -5,7 +5,7 @@ import { STOPS } from '../itinerary'
 import { Beat, Onward, Stop } from '../Voyage'
 import styles from './stops.module.css'
 
-// Arrival: a boarding pass for the voyage, with his name on it, and the route for the day.
+// Arrival: a boarding pass for the voyage, with Omar's name on it, and the route for the day.
 export default function Home() {
   return (
     <Stop id="home">

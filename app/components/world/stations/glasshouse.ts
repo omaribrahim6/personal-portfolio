@@ -5,13 +5,13 @@ import { skillGroups } from '../../../content'
 import { C, aerostat, cypress, glassMaterial, ivy, light, plain, pod, rng, tether, tier, toon } from '../../toon/kit'
 import type { Engine, Key, Station } from '../engine'
 import { STRIDE, blend, idle, walk, water } from '../motion'
-import { Bundle, FONTS, board, plaque } from '../props'
+import { Bundle, FONTS, board, plaque, robot } from '../props'
 import { puppet } from '../puppet'
 
-// The glasshouse: everything he works with, grown. A geodesic dome on its own island, an airborne turbine
+// The glasshouse: everything Omar works with, grown. A geodesic dome on its own island, an airborne turbine
 // tethered to its crown, and inside it a bed for each kind of skill, curved round the walls. Every skill is
 // a plant, and it blooms once for every place on this page where you can see it used, so the ones with the
-// most receipts are the ones in flower. He walks from bed to bed with a watering can as you read; pick a
+// most receipts are the ones in flower. Omar walks from bed to bed with a watering can as you read; pick a
 // skill (on the card, or the plant itself) and its plant stands up straight and its seed tag swings down.
 
 export const GOLDEN = {
@@ -410,6 +410,12 @@ export default async function glasshouse(engine: Engine): Promise<Station> {
   kite.group.rotation.y = .6
   group.add(kite.group, tether(new THREE.Vector3(0, G + R + .3, 0), new THREE.Vector3(-9, G + 22.5, -14), 2.2, .03))
 
+  // Offshore, an old giant robot, sunk to the chin, a garden grown over its head.
+  const giant = robot(3.2, 54)
+  giant.group.position.set(17, -1.4, -9)
+  giant.group.rotation.y = -1.9
+  group.add(giant.group)
+
   // The gardener robot, trimming the far bed.
   const bot = gardener()
   bot.group.position.set(Math.sin(1.9) * 4.8, G, -Math.cos(1.9) * 4.8)
@@ -433,7 +439,7 @@ export default async function glasshouse(engine: Engine): Promise<Station> {
     return { fly, wings, home: angleOf(k % skillGroups.length), seed: k * 1.7 }
   })
 
-  // Him, and his can.
+  // Omar, and the watering can.
   const omar = await puppet()
   const SIZE = 1.4
   omar.root.scale.setScalar(SIZE)
@@ -489,7 +495,7 @@ export default async function glasshouse(engine: Engine): Promise<Station> {
     },
     update(t, dt, _local, near, beat) {
       if (!near) return
-      // He walks round the beds with the cards: at a bed while its card is up, between them as you scroll.
+      // Round the beds with the cards: at a bed while its card is up, between them as you scroll.
       const u = Math.min(skillGroups.length - 1, Math.max(0, beat - 1))
       const k = Math.floor(u), f = u - k
       const go = THREE.MathUtils.smoothstep(f, .3, .7)
@@ -501,7 +507,7 @@ export default async function glasshouse(engine: Engine): Promise<Station> {
       const travelling = moved > dt * .25 && moved < 2
       state.walking += ((travelling ? 1 : 0) - state.walking) * Math.min(1, dt * 6)
       if (moved < 2) state.phase += moved / (STRIDE * SIZE)
-      // Facing: along the way when walking, at his bed's plants when not.
+      // Facing: along the way when walking, at the bed's plants when not.
       const bedAngle = angleOf(Math.round(u))
       const bed = new THREE.Vector3(Math.sin(bedAngle) * RING, G, -Math.cos(bedAngle) * RING)
       const want = state.walking > .5 && moved > 0
@@ -516,7 +522,7 @@ export default async function glasshouse(engine: Engine): Promise<Station> {
       omar.root.rotation.y = state.facing
       omar.root.updateMatrixWorld()
       omar.pose(blend(water(t), walk(state.phase, .5), state.walking))
-      // The can rides in his right hand, tipped while he waters.
+      // The can rides in the right hand, tipped while watering.
       omar.where('handR', hand)
       pot.group.position.copy(group.worldToLocal(hand)).add(new THREE.Vector3(0, -.12, 0))
       pot.group.rotation.set(.75 * (1 - state.walking), state.facing, 0, 'YXZ')

@@ -1,8 +1,8 @@
 import type { Angles, Joint, Pose } from './puppet'
 
-// How Omar moves: each clip is a pose worked out from a time or a phase, in his own space (he faces +Z).
+// How Omar moves: each clip is a pose worked out from a time or a phase, in the puppet's own space (facing +Z).
 // Signs, as the rig has them: a limb swings forward with a negative x, a knee or an elbow bends with a
-// positive x on the lower bone, his right arm lifts out to the side with a negative z and his left with a
+// positive x on the lower bone, the right arm lifts out to the side with a negative z and the left with a
 // positive one, and the spine leans forward with a positive x. `lift` lowers or raises the whole body.
 
 const s = Math.sin, c = Math.cos
@@ -21,8 +21,8 @@ export function idle(t: number): Pose {
 }
 
 /**
- * Walking. `phase` runs 2π a stride (a step with each foot); one stride covers about .78 of his height.
- * `arms` scales how much his arms swing, for outfits that do not like it.
+ * Walking. `phase` runs 2π a stride (a step with each foot); one stride covers about .78 of the body's height.
+ * `arms` scales how much the arms swing, for outfits that do not like it.
  */
 export function walk(phase: number, arms = 1): Pose {
   const sp = s(phase), cp = c(phase)
@@ -39,7 +39,7 @@ export function walk(phase: number, arms = 1): Pose {
     foreL: [-.25 - .15 * Math.max(0, -sp) * arms, 0, 0], foreR: [-.25 - .15 * Math.max(0, sp) * arms, 0, 0],
   }
 }
-/** How far one radian of the walk carries him, for his height of 1. */
+/** How far one radian of the walk goes, for a body 1 tall. */
 export const STRIDE = .78 / (Math.PI * 2)
 
 /** Waving with the right hand, high. */
@@ -49,7 +49,7 @@ export function wave(t: number): Pose {
   return { ...base, armR: [-.2, 0, -2.25], foreR: [0, 0, -.55 + swing * .5], handR: [0, 0, swing * .3], head: [-.06, -.15, .06] }
 }
 
-/** Pointing ahead with the right arm, at something to his right. */
+/** Pointing ahead with the right arm, at something off to the right. */
 export function point(t: number, aim = .4): Pose {
   const base = idle(t)
   return { ...base, armR: [-1.25, -aim, -.25], foreR: [-.15, 0, 0], head: [-.04, -aim * .8, 0], chest: [0, -aim * .25, 0] }
@@ -68,7 +68,7 @@ export function cheer(t: number): Pose {
   }
 }
 
-/** Sitting on something about knee high, hands on his knees. */
+/** Sitting on something about knee high, hands on the knees. */
 export function sit(t: number, drop = .3): Pose {
   const breath = s(t * 1.7)
   return {
@@ -81,7 +81,7 @@ export function sit(t: number, drop = .3): Pose {
   }
 }
 
-/** Sitting on an edge with his legs over it, swinging them. */
+/** Sitting on an edge with the legs over it, swinging them. */
 export function perch(t: number, drop = .3): Pose {
   const base = sit(t, drop)
   return { ...base, shinL: [.9 + s(t * 1.6) * .25, 0, 0], shinR: [.9 + s(t * 1.6 + 1.7) * .25, 0, 0], armL: [.3, 0, .3], armR: [.3, 0, -.3], foreL: [-.2, 0, 0], foreR: [-.2, 0, 0], spine: [-.05, 0, 0] }

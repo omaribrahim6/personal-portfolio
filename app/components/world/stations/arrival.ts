@@ -6,8 +6,8 @@ import { word } from '../letters'
 import { idle, wave } from '../motion'
 import { puppet } from '../puppet'
 
-// The first stop: the island town at sunrise, and in front of it, on a long green ridge out of the sea, his
-// name in letters three times his height, the way a town spells its name on a hill. He is standing at the
+// The first stop: the island town at sunrise, and in front of it, on a long green ridge out of the sea, the
+// name in letters three times Omar's height, the way a town spells its name on a hill. Omar stands at the
 // end of it, waving you in. Scrolling lifts the camera up over the letters and the town, toward the gardens.
 
 export const MORNING = {
@@ -67,7 +67,7 @@ export default async function arrival(): Promise<Station> {
     ridge.add(b.group)
     perched.push(b.group)
   }
-  // A path of stepping stones from the beach up onto the ridge, where he stands.
+  // A path of stepping stones from the beach up onto the ridge, where Omar stands.
   for (let i = 0; i < 6; i++) {
     const stone = new THREE.Mesh(new THREE.CylinderGeometry(.32, .36, .12, 12), toon(C.stone))
     stone.position.set(name.width / 2 + 1.2 + i * .15, .82 - i * .1, 1.6 + i * .55)
@@ -76,7 +76,7 @@ export default async function arrival(): Promise<Station> {
   }
   group.add(ridge)
 
-  // Omar, at the end of his name, waving.
+  // Omar, at the end of the name, waving.
   const omar = await puppet()
   omar.root.scale.setScalar(.95)
   omar.root.position.set(4.6, .85, 20.2)
@@ -101,7 +101,7 @@ export default async function arrival(): Promise<Station> {
     update(t, dt, local, near) {
       if (!near) return
       place.update(t, dt)
-      // He waves while you arrive, then stands and watches you go.
+      // Waving while you arrive, then standing and watching you go.
       omar.root.updateMatrixWorld()
       omar.pose(local < .35 ? wave(t) : idle(t))
       perched.forEach((b, i) => { b.rotation.y = Math.sin(t * .7 + i * 2) * .5 })

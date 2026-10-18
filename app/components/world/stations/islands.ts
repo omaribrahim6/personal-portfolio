@@ -8,11 +8,11 @@ import { Bundle, FONTS } from '../props'
 import { puppet, type Pose } from '../puppet'
 import { ball, lift, statue } from '../statue'
 
-// Off the clock: five islands in the golden hour, and on each of them he is doing the thing. Up a mountain
-// on a switchback trail, then down the other side of it on a mountain bike, then round the lagoon at its
-// foot on a paddleboard. Cross-legged on the top step of a hackathon stage with the final standings behind
-// him. On a throne of toy bricks building a game, while in the game, on the hill behind, he longboards down
-// a mountain road. Crouched at a vault with a stethoscope on the dial. And on a pitch, putting one in the
+// Off the clock: five islands in the golden hour, and on each of them Omar is doing the thing. Up a
+// mountain on a switchback trail, then down the other side of it on a mountain bike, then round the lagoon
+// at its foot on a paddleboard. Cross-legged on the top step of a hackathon stage, the final standings
+// behind. On a throne of toy bricks building a game, while in the game, on the hill behind, Omar
+// longboards down a mountain road. Crouched at a vault with a stethoscope on the dial. And on a pitch, putting one in the
 // top corner. The rigged model does the walking and the kicking; the statues that cannot bend are taken
 // apart at the neck, the dial and the wheels.
 
@@ -164,7 +164,8 @@ function standings(ctx: CanvasRenderingContext2D, W: number, H: number, t: numbe
   ctx.lineWidth = 2
   for (let k = 0; k <= 4; k++) { const y = top + (bottom - top) * k / 4; ctx.beginPath(); ctx.moveTo(left, y); ctx.lineTo(right, y); ctx.stroke() }
   const teams = [['ASTRALIS', '#f3c64a', 1], ['0XDEADBEEF', '#6ccabd', .78], ['ROOT_ROOT', '#ec7b60', .66], ['NULLBYTES', '#8fd3f0', .52]] as const
-  const grow = Math.min(1, (t % 12) / 7)
+  // (The clock stands at 0 when motion is reduced: then the race is shown already run.)
+  const grow = t === 0 ? 1 : Math.min(1, (t % 12) / 7)
   teams.forEach(([name, color, end], k) => {
     ctx.strokeStyle = color
     ctx.lineWidth = k === 0 ? 7 : 4
@@ -189,7 +190,7 @@ function terminal(ctx: CanvasRenderingContext2D, W: number, H: number, t: number
   ctx.fillRect(0, 0, W, H)
   ctx.font = `600 34px ${FONTS.mono}`
   ctx.textBaseline = 'top'
-  const shown = Math.floor(t * 1.6) % (lines.length + 4)
+  const shown = t === 0 ? lines.length : Math.floor(t * 1.6) % (lines.length + 4)
   const from = Math.max(0, shown - 9)
   for (let i = from; i < Math.min(shown, lines.length); i++) {
     ctx.fillStyle = lines[i].startsWith('$') ? '#c6e26c' : lines[i].startsWith('CTF') ? '#f3c64a' : '#7fd6a8'
@@ -503,18 +504,21 @@ export default async function islands(engine: Engine): Promise<Station> {
     made.rotation.y = turn
     place(Gm, made)
   }
-  // The game: a hill with a mountain road wound round it, and him on a longboard, down and round again.
+  // The game: a hill with a mountain road wound round it, and Omar on a longboard, down and round again.
   const HILL = 5.6, hillR = 7.2
   const hill = new THREE.Mesh(new THREE.ConeGeometry(hillR, HILL, 48, 6), toon(C.grass2))
   hill.position.set(3, G + HILL / 2, -3)
   hill.castShadow = hill.receiveShadow = true
   place(Gm, hill)
-  const turns = 1.6, roadPoints: THREE.Vector3[] = []
-  for (let i = 0; i <= 120; i++) {
-    const s = i / 120
-    const r = hillR * (.18 + .8 * s), a = Math.PI * .8 + s * Math.PI * 2 * turns
-    const y = HILL * (1 - (.18 + .8 * s)) + .06
-    roadPoints.push(new THREE.Vector3(3 + Math.sin(a) * r * 1.02, G + y, -3 + Math.cos(a) * r * 1.02))
+  // A mountain pass down the face of the hill toward the camera: four legs, three hairpins.
+  const facing = -.64, roadPoints: THREE.Vector3[] = []
+  const legs = [[facing + 1.3, .16], [facing - 1.35, .4], [facing + 1.35, .64], [facing - 1.3, .9]]
+  for (let leg = 0; leg < legs.length - 1; leg++) {
+    const [a0, r0] = legs[leg], [a1, r1] = legs[leg + 1]
+    for (let i = leg ? 1 : 0; i <= 14; i++) {
+      const f = i / 14, a = a0 + (a1 - a0) * f, k = r0 + (r1 - r0) * f
+      roadPoints.push(new THREE.Vector3(3 + Math.sin(a) * hillR * k * 1.02, G + HILL * (1 - k) + .06, -3 + Math.cos(a) * hillR * k * 1.02))
+    }
   }
   const road = new THREE.CatmullRomCurve3(roadPoints)
   // The road, laid as short flat slabs along the curve, a dash down the middle of every fourth.
@@ -541,7 +545,7 @@ export default async function islands(engine: Engine): Promise<Station> {
   }
   const title = word('Downhill', { size: 1.1, depth: .3, color: C.ivory, line: C.coral, tracking: 60 })
   title.group.position.set(3, G + HILL + 1.2, -3)
-  title.group.rotation.y = .5
+  title.group.rotation.y = facing
   place(Gm, title.group)
   const skater = await puppet()
   const K = 1.6
@@ -563,6 +567,19 @@ export default async function islands(engine: Engine): Promise<Station> {
     rock.mesh.position.set(x, y + h / 2, z)
     rock.mesh.scale.set(1.5, 1, .7)
     place(Sc, rock.mesh)
+  }
+  for (let k = 0; k < 9; k++) {
+    const boulder = new THREE.Mesh(new THREE.IcosahedronGeometry(.5 + rand() * .7, 0), toon(k % 2 ? C.rock : C.rock2))
+    boulder.position.set(-6 + k * 1.5 + rand() * .6, G + .2, -5.4 + Math.abs(k - 4) * -.25 + rand() * .4)
+    boulder.rotation.set(rand() * 3, rand() * 3, 0)
+    if (Math.abs(boulder.position.x) < 1.6) continue
+    boulder.castShadow = true
+    place(Sc, boulder)
+  }
+  for (const [x, y, z, h] of [[-3.8, G + 3.3, -8, 1.4], [2.9, G + 3.3, -7.6, 1.1], [-1.4, G + 6.1, -8.6, 1]] as const) {
+    const tree = pine(h, 776 + x)
+    tree.position.set(x, y, z)
+    place(Sc, tree)
   }
   for (const [x, y, z] of [[-4.6, G + 3.3, -6.6], [-1.5, G + 3.3, -5.4], [3.6, G + 3.3, -6.3], [.8, G + 6.1, -7.6]] as const) {
     const creeper = ivy(() => .2, 0, 1.8, [0, 1.2, 2.4, 3.6, 4.8], 775 + x)
@@ -777,7 +794,7 @@ export default async function islands(engine: Engine): Promise<Station> {
         })
       }
 
-      // The stage: the board's lines climb, the lights sweep, he looks up from the laptop now and then.
+      // The stage: the board's lines climb, the lights sweep, Omar looks up from the laptop now and then.
       if (close(4)) {
         if (++draws % 3 === 0) scoreboard.draw(t)
         spots.forEach((spot, i) => { spot.rotation.set(.75 + Math.sin(t * .7 + i) * .2, Math.sin(t * .5 + i * 1.3) * .5, 0) })
@@ -792,9 +809,9 @@ export default async function islands(engine: Engine): Promise<Station> {
         confetti.instanceMatrix.needsUpdate = true
       }
 
-      // The game: he longboards down the road round the hill, and then he's at the top again.
+      // The game: down the road round the hill on the longboard, and then back at the top again.
       if (close(5)) {
-        const u = (t * .045) % 1
+        const u = (t * .07) % 1
         road.getPointAt(u, tp)
         road.getTangentAt(u, tt)
         const turn = Math.atan2(tt.x, tt.z)
@@ -814,7 +831,7 @@ export default async function islands(engine: Engine): Promise<Station> {
         sparks.instanceMatrix.needsUpdate = true
       }
 
-      // The vault: the dial turns as he listens; asked to, it gives, and the gold comes out.
+      // The vault: the dial turns as Omar listens; asked to, it gives, and the gold comes out.
       if (close(6)) {
         cracked += ((crack ? 1 : 0) - cracked) * Math.min(1, dt * 1.5)
         vault.parts.dial.rotation.z = crack ? t * 6 : Math.sin(t * .9) * 1.2 + Math.sin(t * 2.3) * .3
@@ -856,7 +873,7 @@ export default async function islands(engine: Engine): Promise<Station> {
         player.root.rotation.y = ease(player.root.rotation.y, facing, Math.min(1, dt * 8))
         player.root.updateMatrixWorld()
         player.pose(pose)
-        // The ball: still, then off his foot at the strike, into the net, then rolled back out to the spot.
+        // The ball: still, then off the boot at the strike, into the net, then rolled back out to the spot.
         const hit = 1.3 + .8 * .62
         if (c < hit) footy.position.copy(SPOT)
         else if (c < hit + .85) {

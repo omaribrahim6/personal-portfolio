@@ -9,8 +9,8 @@ import { arch, bench, robot, signpost, windmill } from '../props'
 import { puppet } from '../puppet'
 
 // The garden path: the story so far, walked. A path winds the length of a long garden island, with a
-// signpost for every role, oldest first. Omar walks it as you read: he stops at each post while its card is
-// in front of you and walks on to the next as you scroll, past arches of vines, benches, an old windmill,
+// signpost for every role, oldest first. Omar walks it as you read, stopping at each post while its card is
+// in front of you and walking on to the next as you scroll, past arches of vines, benches, an old windmill,
 // and a giant robot asleep under the meadow.
 
 export const DAY = {
@@ -112,7 +112,7 @@ export default async function garden(): Promise<Station> {
     }
   }
 
-  // The garden: low beds in front of the path, so nothing stands between you and him; trees, shrubs and
+  // The garden: low beds in front of the path, so nothing stands between you and Omar; trees, shrubs and
   // houses behind it.
   const zp = (x: number) => Math.sin((x + 17) / 3.4 * .85) * 2.4
   const rand = (() => { let seed = 7; return () => (seed = (seed * 16807) % 2147483647) / 2147483647 })()
@@ -188,7 +188,7 @@ export default async function garden(): Promise<Station> {
       if (!near) return
       mill.sails.rotation.z += dt * .6
       giant.eye.scale.setScalar(1 + Math.sin(t * .8) * .04)
-      // Where he should be: at a post while its card is read, on the path between them otherwise.
+      // Where Omar should be: at a post while its card is read, on the path between them otherwise.
       const index = Math.min(n - 1, Math.max(0, beat - 1))
       const k = Math.floor(index), f = index - k
       state.u = stops[k] + ((stops[Math.min(n - 1, k + 1)] ?? stops[k]) - stops[k]) * f
@@ -198,7 +198,7 @@ export default async function garden(): Promise<Station> {
       const going = dt > 0 ? moved / dt : 0
       state.walking += ((going > .05 ? 1 : 0) - state.walking) * Math.min(1, dt * 6)
       state.phase += moved / (STRIDE * scale)
-      // Facing where he is going, or turned toward you while he stands.
+      // Facing the way along the path, or turned toward you while standing.
       curve.getTangentAt(state.u, tangent)
       const back = position.x < previous.x - 1e-4
       const along = Math.atan2(tangent.x, tangent.z) + (back ? Math.PI : 0)

@@ -7,7 +7,7 @@ import { Beat, Stop, StopHead } from '../Voyage'
 import { useWorld } from '../World'
 import styles from './stops.module.css'
 
-// Five islands: a card for each thing he does off the clock, while in the world he does it. The outdoors
+// Five islands: a card for each thing Omar does off the clock, while in the world Omar does it. The outdoors
 // island has three (on foot, on two wheels, on the water). Each card has its photos as prints; open one and
 // it comes up large.
 

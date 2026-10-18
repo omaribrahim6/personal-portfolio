@@ -4,13 +4,13 @@ import { awards, modes, type Mode } from '../../../content'
 import { C, cypress, flowers, light, plain, pod, rng, scatter, solarPanel, tier, toon, tree, turbine } from '../../toon/kit'
 import type { Key, Station } from '../engine'
 import { cheer } from '../motion'
-import { FONTS } from '../props'
+import { FONTS, drone } from '../props'
 import { puppet } from '../puppet'
 
 // The station: the record of wins as a solar tram stop. A platform under a curved roof of panels, the rails
 // running out over the sea on arches, and the tram pulling in as you arrive. Hanging over the platform is
 // the departures board, with every win on it, which flips letter by letter when a filter changes. At the
-// end of the platform he stands on the top step of a podium with a trophy, and behind the station the wind
+// end of the platform Omar stands on the top step of a podium with a trophy, and behind the station the wind
 // farm grows a turbine for every win that was built and a flag for every one that was broken into, with a
 // sun for the one that was given.
 
@@ -96,7 +96,12 @@ function departures() {
       })
       busy = true
     },
-    tick(t: number) { now = t; if (busy) draw() },
+    tick(t: number) {
+      // With reduced motion the clock stands still: the rows change at once, without the riffle.
+      if (t === now) for (const row of state) row.since = -10
+      now = t
+      if (busy) draw()
+    },
   }
 }
 
@@ -283,7 +288,7 @@ export default async function station(): Promise<Station> {
     group.add(planter, shrub)
   }
 
-  // The podium at the far end, and him on top of it.
+  // The podium at the far end, and Omar on top of it.
   const steps = [[-1.05, .55, C.ivory, '2'], [0, .85, C.yellow, '1'], [1.05, .4, C.ivory, '3']] as const
   const podium = new THREE.Group()
   for (const [x, h, color] of steps) {
@@ -362,6 +367,8 @@ export default async function station(): Promise<Station> {
 
   const train = tram()
   group.add(train)
+  // Mail drones, about their rounds over the station.
+  const fliers = [0, 1].map(() => { const d = drone(); d.group.scale.setScalar(.9); group.add(d.group); return d })
 
   let filter: Mode | 'all' = 'all', chosen = 0
   const list = () => awards.filter(a => filter === 'all' || a.mode === filter)
@@ -399,6 +406,12 @@ export default async function station(): Promise<Station> {
       const day = new Date(), minutes = day.getHours() * 60 + day.getMinutes() + day.getSeconds() / 60
       hands[0].rotation.z = -minutes / 720 * Math.PI * 2
       hands[1].rotation.z = -minutes / 60 * Math.PI * 2
+      fliers.forEach((d, i) => {
+        const s = t * .22 + i * Math.PI
+        d.group.position.set(Math.sin(s) * 11, 7.5 + i * 1.2 + Math.sin(t * .8 + i) * .3, -1 + Math.cos(s) * 6)
+        d.group.rotation.set(Math.sin(t + i) * .06, s + Math.PI / 2, 0)
+        d.rotors.forEach(r => { r.rotation.y += dt * 24 })
+      })
       for (const mark of marks) {
         const lit = filter === 'all' || filter === mark.mode
         if (mark.rotor) mark.rotor.rotation.z += dt * (lit ? 2.2 : .3)
@@ -407,7 +420,7 @@ export default async function station(): Promise<Station> {
       }
       omar.root.updateMatrixWorld()
       omar.pose(cheer(t))
-      // The trophy rides in his right hand.
+      // The trophy rides in the right hand.
       omar.where('handR', pos)
       cup.position.copy(group.worldToLocal(pos)).add(new THREE.Vector3(0, .02, 0))
       cup.rotation.y = t * .5

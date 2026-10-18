@@ -5,7 +5,7 @@ import styles from './stops.module.css'
 
 const dates = (role: Role) => role.period?.replace(' (expected)', '').replace(/ · .*/, '') ?? 'undated'
 
-// The garden path: one card for each signpost, in the order he walks past them, oldest first.
+// The garden path: one card for each signpost, in the order Omar walks past them, oldest first.
 export default function About() {
   return (
     <Stop id="about">

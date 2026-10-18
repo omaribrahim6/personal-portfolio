@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { load } from './puppet'
 
-// The statues he was modelled in for each pastime (on a bike, at a vault, cross-legged on a podium) are
+// The statues Omar was modelled in for each pastime (on a bike, at a vault, cross-legged on a podium) are
 // single solid sculptures, which a skeleton cannot bend: a seated or crouched body is nowhere near where the
 // rigged one stands. So they are taken apart instead, like an action figure: every triangle is given to a
 // part by where it sits (a head, a dial, a wheel), and each part turns on its own pivot.
