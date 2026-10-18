@@ -1,0 +1,212 @@
+/* ------------------------------------------------------------ boarding pass */
+
+/* The first card sits low and small, under the name standing in the world, which says it larger. */
+.first { max-width: 27rem; align-self: flex-end; margin-bottom: 4vh; }
+.first .name { font-size: 2.1rem; }
+
+.pass { position: relative; }
+.passHead {
+  display: flex;
+  justify-content: space-between;
+  margin: -1.35rem -1.5rem 1rem;
+  padding: .55rem 1.5rem .5rem;
+  border-bottom: 2px dashed var(--color-ink);
+  border-radius: .8rem .8rem 0 0;
+  background: var(--color-sun);
+  font-weight: 700;
+}
+.hello { margin: 0; font-family: var(--font-serif); font-size: 1.3rem; font-style: italic; }
+.name {
+  margin: .1rem 0 .5rem;
+  font-family: var(--font-display);
+  font-size: clamp(2.3rem, 4.6vw, 3.6rem);
+  font-weight: 400;
+  line-height: .9;
+  text-transform: uppercase;
+  --line: var(--color-coral);
+}
+.lede { margin: 0; font-family: var(--font-serif); font-size: 1.3rem; line-height: 1.2; }
+.lede strong { font-weight: 400; font-style: italic; background: linear-gradient(transparent 60%, color-mix(in srgb, var(--color-sun) 75%, transparent) 60%); }
+.fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .7rem 1rem;
+  margin: 1.1rem 0;
+  padding: .9rem 0;
+  border-block: 1.5px dashed color-mix(in srgb, var(--color-ink) 40%, transparent);
+}
+.fields dt { color: var(--color-ink-3); }
+.fields dd { margin: .15rem 0 0; font-family: var(--font-sans); font-size: .82rem; font-weight: 600; letter-spacing: 0; text-transform: none; }
+.links { display: flex; flex-wrap: wrap; gap: .55rem; }
+
+.kicker { margin: 0 0 .6rem; color: var(--color-coral); font-weight: 700; }
+.route { display: grid; margin: 0; padding: 0; list-style: none; border-top: 2px solid var(--color-ink); }
+.route a {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  padding: .6rem 0;
+  border-bottom: var(--hair);
+  color: inherit;
+  font-family: var(--font-round);
+  font-size: 1.05rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.route b {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.8rem;
+  height: 1.8rem;
+  border: 2px solid var(--color-ink);
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-size: .9rem;
+  font-weight: 400;
+}
+.route i { flex: 1; border-bottom: 2px dotted color-mix(in srgb, var(--color-ink) 35%, transparent); }
+.route a:hover b { background: var(--color-sun); }
+.note { margin: 1rem 0 0; font-family: var(--font-serif); font-size: 1.05rem; font-style: italic; line-height: 1.35; color: var(--color-ink-2); }
+
+@media (max-width: 720px) {
+  .passHead { margin: -1.1rem -1.15rem .8rem; padding-inline: 1.15rem; }
+  .fields { margin: .8rem 0; padding: .7rem 0; }
+  .name { font-size: 2.3rem; }
+}
+
+/* ----------------------------------------------------------- the garden path */
+
+.legend { display: flex; flex-wrap: wrap; gap: 1rem; margin: 0; }
+.legend span { display: inline-flex; align-items: center; gap: .4em; }
+.legend i { width: 1.3rem; height: .5rem; border: 1.5px solid var(--color-ink); border-radius: 999px; background: var(--c); }
+.legend [data-category='experience'], .role[data-category='experience'] { --c: var(--color-cobalt); }
+.legend [data-category='volunteer'], .role[data-category='volunteer'] { --c: var(--color-coral); }
+.legend [data-category='education'], .role[data-category='education'] { --c: var(--color-leaf); }
+
+.role { position: relative; }
+.role::before {
+  content: '';
+  position: absolute;
+  inset: -1.35rem auto -1.5rem -1.5rem;
+  width: 6px;
+  border-radius: .8rem 0 0 .8rem;
+  background: var(--c);
+}
+.roleHead { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 0 0 .7rem; color: var(--color-ink-3); }
+.roleHead :global(.stamp) { --stamp: var(--c); --tilt: -2deg; }
+.kind { display: flex; align-items: center; gap: .5em; margin: 0; color: var(--color-ink-3); }
+.kind i { width: .6rem; height: .6rem; border: 1.5px solid var(--color-ink); border-radius: 50%; background: var(--c); }
+.role h3 { margin: .25rem 0 0; font-family: var(--font-round); font-size: 1.3rem; font-weight: 600; line-height: 1.15; }
+.org { margin: .15rem 0 .7rem; font-family: var(--font-serif); font-size: 1.2rem; font-style: italic; color: var(--color-ink-2); }
+.details { display: grid; gap: .45rem; margin: 0; padding: 0; list-style: none; font-size: .95rem; line-height: 1.5; }
+.details li { position: relative; padding-left: 1.3rem; }
+.details li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: .5em;
+  width: .7rem;
+  height: .42rem;
+  border: 1.5px solid var(--color-ink);
+  border-radius: 0 100% 0 100%;
+  background: color-mix(in srgb, var(--c, var(--color-leaf)) 55%, var(--color-card));
+  transform: rotate(-20deg);
+}
+@media (max-width: 720px) {
+  .role::before { inset: -1.1rem auto -1.2rem -1.15rem; }
+  .details { font-size: .9rem; }
+}
+
+/* ------------------------------------------------------------- the workshops */
+
+.project { --tint: #d3efe3; --accent: var(--color-moss); }
+.project[data-scene='cascade'] { --tint: #fbe6ad; --accent: #c4851d; }
+.project[data-scene='trail'] { --tint: #cfe4f4; --accent: var(--color-cobalt); }
+.project[data-scene='reflection'] { --tint: #f7d8cf; --accent: #c3553a; }
+.workshop { display: flex; align-items: center; gap: .7rem; margin: 0; color: var(--accent); font-weight: 700; }
+.workshop i { flex: 1; height: 2px; background: currentColor; }
+.workshop span:last-child { color: var(--color-ink-3); font-weight: 500; }
+.prize { display: flex; align-items: center; gap: .7rem; margin: .9rem 0 .4rem; }
+.prize p { display: grid; margin: 0; line-height: 1.2; }
+.prize b { font-family: var(--font-round); font-size: .95rem; font-weight: 600; }
+.prize span { font-family: var(--font-serif); font-size: 1rem; font-style: italic; color: var(--color-ink-2); }
+.prize svg { width: 2.6rem; flex: none; }
+.projectTitle {
+  margin: .1rem 0 .7rem;
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  font-weight: 400;
+  line-height: .9;
+  text-transform: uppercase;
+  --line: var(--tint);
+}
+.lead { margin: 0 0 .7rem; font-family: var(--font-serif); font-size: 1.22rem; font-style: italic; line-height: 1.22; }
+.body { margin: 0; font-size: .93rem; line-height: 1.55; color: var(--color-ink-2); }
+.tags { display: flex; flex-wrap: wrap; gap: .35rem; margin: .9rem 0 0; padding: 0; list-style: none; }
+.tags li {
+  position: relative;
+  padding: .22rem .55rem .22rem 1.1rem;
+  border: 1.5px solid var(--color-ink);
+  border-radius: .25rem .8rem .8rem .25rem;
+  background: var(--color-card);
+  font-family: var(--font-label);
+  font-size: .58rem;
+}
+.tags li::before {
+  content: '';
+  position: absolute;
+  left: .38rem;
+  top: 50%;
+  width: .32rem;
+  height: .32rem;
+  border: 1.5px solid var(--color-ink);
+  border-radius: 50%;
+  background: var(--tint);
+  transform: translateY(-50%);
+}
+.project .links { margin-top: 1.1rem; align-items: center; }
+
+.lever {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .4rem .9rem .4rem .45rem;
+  border: 2px solid var(--color-ink);
+  border-radius: 999px;
+  background: var(--color-card);
+  color: var(--color-ink);
+  font-size: .85rem;
+  font-weight: 650;
+  box-shadow: 3px 3px 0 var(--color-ink);
+  transition: transform .18s var(--ease-out), box-shadow .18s var(--ease-out), background-color .25s ease;
+}
+.lever:hover { transform: translate(-1px, -2px); box-shadow: 4px 5px 0 var(--color-ink); }
+.lever:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--color-ink); }
+.lever[aria-pressed='true'] { background: var(--color-sun); }
+.track { position: relative; width: 2.4rem; height: 1.2rem; border: 2px solid var(--color-ink); border-radius: 999px; background: color-mix(in srgb, var(--color-ink) 12%, var(--color-paper-2)); }
+.track i { position: absolute; top: 50%; left: .08rem; width: .85rem; height: .85rem; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-coral); transform: translateY(-50%); transition: left .4s var(--ease-spring), background-color .3s ease; }
+.lever[aria-pressed='true'] .track i { left: calc(100% - .95rem); background: var(--color-leaf); }
+
+/* Notes pinned to places in the world. */
+.notes { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
+.note2 { position: absolute; left: 0; top: 0; width: 0; height: 0; opacity: 0; transition: opacity .35s ease; }
+.note2[data-shown='true'][data-seen='true'] { opacity: 1; }
+.note2::before { content: ''; position: absolute; left: -4px; top: -4px; width: 8px; height: 8px; border: 1.5px solid var(--color-ink); border-radius: 50%; background: var(--color-sun); }
+.note2::after { content: ''; position: absolute; left: -.75px; bottom: 4px; width: 1.5px; height: 1.6rem; background: var(--color-ink); }
+.note2 > span {
+  position: absolute;
+  left: 0;
+  bottom: calc(1.6rem + 4px);
+  transform: translateX(-50%);
+  padding: .28rem .6rem;
+  border: 1.5px solid var(--color-ink);
+  border-radius: .35rem;
+  background: var(--color-card);
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-style: italic;
+  white-space: nowrap;
+  box-shadow: 2px 2px 0 var(--color-ink);
+}
+.note2[data-code='true'] > span { max-width: 14rem; white-space: normal; background: var(--color-ink); color: var(--color-lime); font-family: var(--font-label); font-size: .62rem; font-style: normal; line-height: 1.5; box-shadow: 2px 2px 0 var(--color-coral); }

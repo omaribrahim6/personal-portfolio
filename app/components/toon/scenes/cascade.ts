@@ -87,9 +87,9 @@ function pyramid() {
   return group
 }
 
-export default function cascade(): Diorama {
-  const s = studio({ target: v(.1, 1.2, 0), distance: 22, yaw: .62, pitch: .42, fov: 27, span: 7.5 })
-  const { scene, camera } = s
+/** The model on its own, for the voyage to stand in its world. */
+export function model() {
+  const scene = new THREE.Group()
 
   const ground = tier(5.2, 1, 21, C.grass, C.stone, .07)
   ground.mesh.position.y = -.5
@@ -216,15 +216,10 @@ export default function cascade(): Diorama {
   const state = lever(3.4)
   const from = new THREE.Vector3(), to = new THREE.Vector3()
   return {
-    scene,
-    camera,
+    group: scene,
     anchors,
-    ink: { line: 1.4, boil: 4 },
-    resize: s.resize,
-    pointer: s.pointer,
-    set(next) { state.set(next === 'open') },
-    update(t, dt) {
-      s.follow(dt)
+    set(next: string) { state.set(next === 'open') },
+    update(t: number, dt: number) {
       const p = state.step(dt)
       slides.forEach(({ group, lines, layer, pillar, i }) => {
         // Each slide lifts off the deck in turn, turns, grows, and settles into its place in the cascade.
@@ -266,6 +261,22 @@ export default function cascade(): Diorama {
       })
       teacher.rotation.y += (Math.atan2(LAYERS[0].at.x - teacher.position.x, LAYERS[0].at.z - teacher.position.z) * span(p, .1, .3) + .9 * (1 - span(p, .1, .3)) - teacher.rotation.y) * .1
     },
-    dispose() { disposeAll(scene) },
+  }
+}
+
+export default function cascade(): Diorama {
+  const s = studio({ target: v(.1, 1.2, 0), distance: 22, yaw: .62, pitch: .42, fov: 27, span: 7.5 })
+  const m = model()
+  s.scene.add(m.group)
+  return {
+    scene: s.scene,
+    camera: s.camera,
+    anchors: m.anchors,
+    ink: { line: 1.4, boil: 4 },
+    resize: s.resize,
+    pointer: s.pointer,
+    set: m.set,
+    update(t, dt) { s.follow(dt); m.update(t, dt) },
+    dispose() { disposeAll(s.scene) },
   }
 }

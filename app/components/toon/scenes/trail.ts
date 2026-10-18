@@ -114,9 +114,9 @@ function lighthouse() {
   return { group, lamp, beam, cone }
 }
 
-export default function trail(): Diorama {
-  const s = studio({ target: v(0, 1.2, 0), distance: 22, yaw: .5, pitch: .44, fov: 27, span: 7 })
-  const { scene, camera } = s
+/** The model on its own, for the voyage to stand in its world; `alone` is false there. */
+export function model(camera: THREE.Camera, alone = true) {
+  const scene = new THREE.Group()
   const rand = rng(5)
 
   // The sea, as a round slab of water.
@@ -125,7 +125,8 @@ export default function trail(): Diorama {
   const sea = new THREE.Mesh(new THREE.CylinderGeometry(5.4, 5.4, 1, 96, 1), [toon(C.waterDeep), toon('#ffffff', { map: waves }), toon(C.waterDeep)] as unknown as THREE.Material)
   sea.position.y = -.5
   sea.receiveShadow = true
-  scene.add(sea)
+  // In the voyage it stands in the world's own sea.
+  if (alone) scene.add(sea)
 
   // The rock, and the green on top of it.
   const rocks: THREE.BufferGeometry[] = [], darker: THREE.BufferGeometry[] = []
@@ -209,15 +210,10 @@ export default function trail(): Diorama {
   const lampOff = toon('#f5e7c4'), lampOn = light(C.glow)
   const toward = Math.atan2(-(chosen.at.z - .1), chosen.at.x + .1)
   return {
-    scene,
-    camera,
+    group: scene,
     anchors,
-    ink: { line: 1.4, boil: 4 },
-    resize: s.resize,
-    pointer: s.pointer,
-    set(next) { state.set(next === 'open') },
-    update(t, dt) {
-      s.follow(dt)
+    set(next: string) { state.set(next === 'open') },
+    update(t: number, dt: number) {
       const p = state.step(dt)
       house.lamp.material = p > .02 ? lampOn : lampOff
       // The beam sweeps round twice, then comes to rest on the bottle.
@@ -257,6 +253,22 @@ export default function trail(): Diorama {
         m.cloud.scale.setScalar(1 - clear * .35)
       })
     },
-    dispose() { disposeAll(scene) },
+  }
+}
+
+export default function trail(): Diorama {
+  const s = studio({ target: v(0, 1.2, 0), distance: 22, yaw: .5, pitch: .44, fov: 27, span: 7 })
+  const m = model(s.camera)
+  s.scene.add(m.group)
+  return {
+    scene: s.scene,
+    camera: s.camera,
+    anchors: m.anchors,
+    ink: { line: 1.4, boil: 4 },
+    resize: s.resize,
+    pointer: s.pointer,
+    set: m.set,
+    update(t, dt) { s.follow(dt); m.update(t, dt) },
+    dispose() { disposeAll(s.scene) },
   }
 }

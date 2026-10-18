@@ -114,9 +114,9 @@ function llama() {
   return { group, head }
 }
 
-export default function reflection(): Diorama {
-  const s = studio({ target: v(0, .9, 0), distance: 21, yaw: .55, pitch: .5, fov: 27, span: 7 })
-  const { scene, camera } = s
+/** The model on its own, for the voyage to stand in its world. */
+export function model() {
+  const scene = new THREE.Group()
 
   const ground = tier(5.2, 1, 31, C.grass, C.stone, .06)
   ground.mesh.position.y = -.5
@@ -253,15 +253,10 @@ export default function reflection(): Diorama {
   const state = lever(4.4)
   const at = new THREE.Vector3()
   return {
-    scene,
-    camera,
+    group: scene,
     anchors,
-    ink: { line: 1.4, boil: 4 },
-    resize: s.resize,
-    pointer: s.pointer,
-    set(next) { state.set(next === 'open') },
-    update(t, dt) {
-      s.follow(dt)
+    set(next: string) { state.set(next === 'open') },
+    update(t: number, dt: number) {
       const p = state.step(dt)
       const running = p > .05 && p < .99
       inBelt.texture.offset.y -= running ? dt * 1.2 : 0
@@ -316,6 +311,22 @@ export default function reflection(): Diorama {
       keeper.head.rotation.y = Math.sin(t * .8) * .4
       keeper.head.rotation.x = Math.sin(t * 1.3) * .08
     },
-    dispose() { disposeAll(scene) },
+  }
+}
+
+export default function reflection(): Diorama {
+  const s = studio({ target: v(0, .9, 0), distance: 21, yaw: .55, pitch: .5, fov: 27, span: 7 })
+  const m = model()
+  s.scene.add(m.group)
+  return {
+    scene: s.scene,
+    camera: s.camera,
+    anchors: m.anchors,
+    ink: { line: 1.4, boil: 4 },
+    resize: s.resize,
+    pointer: s.pointer,
+    set: m.set,
+    update(t, dt) { s.follow(dt); m.update(t, dt) },
+    dispose() { disposeAll(s.scene) },
   }
 }

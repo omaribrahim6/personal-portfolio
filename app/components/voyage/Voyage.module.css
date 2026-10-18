@@ -1,0 +1,214 @@
+/* ---------------------------------------------------------------- the world */
+
+.world {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100vw;
+  height: 100lvh;
+  /* What shows before the world is drawn, or if it cannot be: the morning sky over the sea. */
+  background: linear-gradient(#4a80d4, #78a8e2 30%, #b9cfe6 48%, #f3c9b4 54%, #45b2c4 55%, #2a8aa3);
+}
+
+/* The page runs over the world; only the cards (and what is in them) take the pointer. */
+.track {
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+}
+.track :global(a), .track :global(button), .track :global(input), .track :global(label) { pointer-events: auto; }
+
+.stop { position: relative; }
+.stop:last-child { padding-bottom: 10vh; }
+
+/* A moment at a stop: a screen and a quarter of scrolling, the card in the middle of it. */
+.beat {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 125vh;
+  padding: 0 var(--edge);
+}
+.beat[data-side='right'] { justify-content: flex-end; }
+.beat[data-side='center'] { justify-content: center; }
+.stop > .beat:first-child { min-height: 100vh; }
+
+.card {
+  position: relative;
+  width: 100%;
+  max-width: 31rem;
+  padding: 1.35rem 1.5rem 1.5rem;
+  border: 2px solid var(--color-ink);
+  border-radius: .9rem;
+  background: var(--color-card) var(--stock);
+  color: var(--color-ink);
+  box-shadow: 6px 7px 0 var(--color-ink);
+  pointer-events: auto;
+}
+.card[data-wide='true'] { max-width: 44rem; }
+
+.head { display: grid; gap: .5rem; margin-bottom: .9rem; }
+.folio { display: flex; align-items: baseline; gap: .7rem; color: var(--color-ink-2); }
+.folio b { color: var(--color-coral); font-weight: 700; }
+.folio i { flex: 1; border-bottom: 2px dotted color-mix(in srgb, currentColor 50%, transparent); }
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 400;
+  line-height: .92;
+  text-transform: uppercase;
+  --line: var(--color-sun);
+}
+.dek {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.22rem;
+  font-style: italic;
+  line-height: 1.25;
+  color: var(--color-ink-2);
+}
+
+.onward { display: flex; align-items: center; gap: .5em; margin: 1.2rem 0 0; color: var(--color-ink-2); }
+.onward svg { animation: nudge 1.6s ease-in-out infinite; }
+@keyframes nudge { 50% { transform: translateY(3px); } }
+
+/* ------------------------------------------------------------- the top bar */
+
+.bar {
+  position: fixed;
+  top: .8rem;
+  left: var(--edge);
+  right: var(--edge);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  pointer-events: none;
+}
+.bar > * { pointer-events: auto; }
+.brand {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  padding: .3rem .9rem .3rem .3rem;
+  border: 2px solid var(--color-ink);
+  border-radius: 999px;
+  background: var(--color-card);
+  color: inherit;
+  text-decoration: none;
+  box-shadow: 3px 3px 0 var(--color-ink);
+}
+.mark { width: 2rem; height: 2rem; transition: transform .8s var(--ease-spring); }
+.brand:hover .mark { transform: rotate(60deg); }
+.brand :global(.label) { display: grid; line-height: 1.35; }
+.brand b { font-weight: 700; }
+.brand :global(.label) span { color: var(--color-ink-3); }
+.actions { display: flex; align-items: center; gap: .6rem; }
+.almanac {
+  padding: .5rem .8rem;
+  border: 2px solid var(--color-ink);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-card) 85%, transparent);
+  color: var(--color-ink);
+  text-decoration: none;
+}
+.almanac:hover { background: var(--color-sun); }
+
+/* --------------------------------------------------------------- the route */
+
+/* The stops down the left, like a line on a transit map; the line fills in as you go. */
+.route {
+  position: fixed;
+  left: max(.9rem, calc(var(--edge) - 2.6rem));
+  top: 50%;
+  z-index: 30;
+  display: grid;
+  gap: .9rem;
+  transform: translateY(-50%);
+}
+.line {
+  position: absolute;
+  left: .72rem;
+  top: .8rem;
+  bottom: .8rem;
+  width: 3px;
+  border-radius: 2px;
+  background: linear-gradient(var(--color-ink) calc(var(--through) * 100%), color-mix(in srgb, var(--color-ink) 22%, transparent) 0);
+}
+.route a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  color: var(--color-ink);
+  text-decoration: none;
+}
+.route a b {
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid var(--color-ink);
+  border-radius: 50%;
+  background: var(--color-card);
+  font-family: var(--font-label);
+  font-size: .6rem;
+  transition: background-color .25s ease, transform .3s var(--ease-spring);
+}
+.route a[data-past='true'] b { background: var(--color-ink); color: var(--color-card); }
+.route a[aria-current] b { background: var(--color-sun); color: var(--color-ink); transform: scale(1.25); }
+.route a span {
+  padding: .15rem .5rem;
+  border-radius: .3rem;
+  background: var(--color-card);
+  font-family: var(--font-label);
+  font-size: .58rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateX(-.4rem);
+  transition: opacity .2s ease, transform .3s var(--ease-out);
+}
+.route a:hover span, .route a:focus-visible span { opacity: 1; transform: none; box-shadow: 0 0 0 1.5px var(--color-ink); }
+
+.fallback {
+  position: relative;
+  z-index: 2;
+  max-width: 34rem;
+  margin: 5.5rem var(--edge) 0;
+  padding: .9rem 1.1rem;
+  border: 2px solid var(--color-ink);
+  border-radius: .6rem;
+  background: var(--color-sun);
+}
+
+.skip {
+  position: fixed;
+  top: .75rem;
+  left: .75rem;
+  z-index: 100;
+  padding: .7rem 1.1rem;
+  border: 2px solid var(--color-ink);
+  border-radius: 999px;
+  background: var(--color-sun);
+  color: var(--color-ink);
+  font-size: .85rem;
+  font-weight: 700;
+  transform: translateY(-200%);
+}
+.skip:focus { transform: none; }
+
+@media (max-width: 1100px) {
+  .route { display: none; }
+}
+@media (max-width: 720px) {
+  .almanac, .brand :global(.label), .actions :global(.btn):first-of-type { display: none; }
+  /* On a phone the cards ride along the bottom, and the world is above them. */
+  .beat { align-items: flex-end; justify-content: center; min-height: 118vh; padding-bottom: 3vh; }
+  .stop > .beat:first-child { min-height: 100vh; }
+  .card { max-width: none; padding: 1.1rem 1.15rem 1.2rem; box-shadow: 4px 5px 0 var(--color-ink); }
+  .title { font-size: 2rem; }
+}

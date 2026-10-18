@@ -12,7 +12,7 @@ type Scene = Project['window']['scene']
 type Callout = { at: string; text: string; when: 'open' | 'closed' | 'always'; code?: boolean }
 
 // The notes pinned to each drawing, at named places in its scene. They follow the place as the camera moves.
-const CALLOUTS: Record<Scene, Callout[]> = {
+export const CALLOUTS: Record<Scene, Callout[]> = {
   signal: [
     { at: 'report', text: 'a pothole, and one report', when: 'open' },
     { at: 'neighbours', text: 'five neighbours: me too', when: 'open' },
@@ -37,19 +37,19 @@ const CALLOUTS: Record<Scene, Callout[]> = {
 }
 
 /** The prize, split from the event it was won at. */
-function award(text: string) {
+export function award(text: string) {
   const [event, prize] = text.split(' — ')
   return { event, prize }
 }
 
 /** The first sentence, to stand above the rest as the standfirst. */
-function standfirst(text: string) {
+export function standfirst(text: string) {
   const match = text.match(/^([^]+?[.!?])\s+([^]*)$/)
   return match ? [match[1], match[2]] : [text, '']
 }
 
 /** A rosette, as pinned to a winner at a show: a scalloped badge with a star, and two tails. */
-function Rosette({ won }: { won: boolean }) {
+export function Rosette({ won }: { won: boolean }) {
   const scallops = Array.from({ length: 18 }, (_, k) => {
     const a = k / 18 * Math.PI * 2
     return `${(32 + Math.cos(a) * 25).toFixed(1)} ${(30 + Math.sin(a) * 25).toFixed(1)}`

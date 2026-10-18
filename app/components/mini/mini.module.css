@@ -1,7 +1,7 @@
 /* ------------------------------------------------------------------ the corner */
 
 .dock {
-  --size: clamp(118px, 16vw, 236px);
+  --size: clamp(118px, 13vw, 196px);
   position: fixed;
   right: 0;
   bottom: 0;

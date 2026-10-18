@@ -50,29 +50,19 @@ const LIGHT = {
   },
 }
 
-export default function cover(time: keyof typeof LIGHT = 'morning'): Diorama {
-  const light_ = LIGHT[time]
-  const scene = new THREE.Scene()
-  const HAZE = light_.haze
-  // The sky goes wherever the camera does, so it is never nearer or further.
-  const dome = skyDome(240, light_.sky)
-  scene.add(dome)
-  scene.fog = new THREE.Fog(HAZE, 40, 175)
-  const camera = new THREE.PerspectiveCamera(24, 1.6, .5, 400)
-  sunlight(scene, { ...light_.sun, span: 13 })
-
+/**
+ * The town on its own, without sky or sea: the terraced island, its neighbours (the wind farm and the far
+ * island with the cable car between), boats, birds and the airborne turbine. The front and back covers stand
+ * it in a sky of their own; the voyage puts it in the world.
+ */
+export function town(time: keyof typeof LIGHT = 'morning') {
+  const world = new THREE.Group()
   const spin: { object: THREE.Object3D; speed: number; axis: 'x' | 'y' | 'z' }[] = []
   const bob: { object: THREE.Object3D; base: number; phase: number; amount: number }[] = []
 
-  /* ---------------------------------------------------------------- the sea */
-  const waves = ripples(light_.water[0], light_.water[1])
-  waves.repeat.set(70, 70)
-  const water = sea(180, C.water, waves)
-  scene.add(water)
-
   /* ------------------------------------------------------------- the island */
   const island = new THREE.Group()
-  scene.add(island)
+  world.add(island)
 
   const beach = tier(7.5, .8, 3, C.sand, '#e8cf98', .07)
   beach.mesh.position.y = 0
@@ -267,25 +257,17 @@ export default function cover(time: keyof typeof LIGHT = 'morning'): Diorama {
   const kite = aerostat(2.3)
   kite.group.position.set(-5.2, 11.5, -4)
   kite.group.rotation.y = -.5
-  scene.add(kite.group)
+  world.add(kite.group)
   spin.push({ object: kite.rotor, speed: 3.2, axis: 'y' })
   bob.push({ object: kite.group, base: 11.5, phase: 0, amount: .25 })
   const towerTop = v(-1.1 + .1, t3y + 2.6, -1.5 + .1)
   const line = tether(towerTop, kite.group.position.clone().add(v(.4, -.9, .2)), 1.2, .025)
-  scene.add(line)
-
-  for (const [right, y, away, s, seed] of [[-34, 15, 70, 10, 1], [8, 24, 95, 14, 2], [38, 13, 60, 8, 3], [-64, 10, 85, 9, 4], [60, 20, 110, 13, 5], [18, 10, 34, 3.6, 6], [-14, 8, 40, 3, 7]] as const) {
-    const c = cloud(s, seed)
-    c.position.copy(seen(right, y, away))
-    c.lookAt(camera.position.clone().setY(y))
-    scene.add(c)
-    bob.push({ object: c, base: y, phase: seed, amount: .3 })
-  }
+  world.add(line)
 
   const flock: { group: THREE.Object3D; left: THREE.Object3D; right: THREE.Object3D; phase: number; r: number; h: number }[] = []
   for (let i = 0; i < 6; i++) {
     const b = bird(.32)
-    scene.add(b.group)
+    world.add(b.group)
     flock.push({ ...b, phase: i * .45 + (i % 2) * .2, r: 5 + (i % 3) * .7, h: 9 + (i % 2) * .6 })
   }
 
@@ -305,7 +287,7 @@ export default function cover(time: keyof typeof LIGHT = 'morning'): Diorama {
     farm.add(t.group)
     spin.push({ object: t.rotor, speed: 1.1 + h * .05, axis: 'z' })
   }
-  scene.add(farm)
+  world.add(farm)
 
   // Another island, further off, its houses pale in the haze.
   const far = new THREE.Group()
@@ -330,7 +312,100 @@ export default function cover(time: keyof typeof LIGHT = 'morning'): Diorama {
     c.position.copy(on(farLand, a, .6, 1.2))
     far.add(c)
   }
-  scene.add(far)
+  world.add(far)
+
+  // A cable car from the top of the island to the next one over.
+  const pylon = (height: number) => {
+    const g = new THREE.Group()
+    const mast = new THREE.Mesh(new THREE.CylinderGeometry(.07, .13, height, 8), toon(C.ivory))
+    mast.position.y = height / 2
+    const arm = new THREE.Mesh(new THREE.BoxGeometry(.7, .1, .1), toon(C.coral))
+    arm.position.y = height
+    mast.castShadow = arm.castShadow = true
+    g.add(mast, arm)
+    return g
+  }
+  const nearPylon = pylon(2)
+  nearPylon.position.set(-1.1 - 1.5, t3y, -1.5 - .9)
+  world.add(nearPylon)
+  const farPylon = pylon(2.6)
+  farPylon.position.set(-25 + .6, 3, -14 - .4 + 1.6)
+  world.add(farPylon)
+  const cable = cableway(nearPylon.position.clone().add(v(0, 2, 0)), farPylon.position.clone().add(v(0, 2.6, 0)), 1.6, 4, .55)
+  world.add(cable.group)
+
+  // Boats.
+  const boats: { group: THREE.Object3D; phase: number; y: number }[] = []
+  for (const [x, z, s, sail, yaw] of [[10.5, 6.5, 1.3, C.coral, -.8], [3.5, 12, 1.1, C.ivory, .4], [-10.5, 7.5, 1.2, C.yellow, 2.4], [19, -2, 1, C.ivory, -1.2], [-3, 16, 1, C.sky, 1.2]] as const) {
+    const b = boat(s, sail)
+    b.position.set(x, .12, z)
+    b.rotation.y = yaw
+    world.add(b)
+    boats.push({ group: b, phase: x, y: .12 })
+  }
+
+
+  // In the evening every window is lit.
+  if (time === 'evening') {
+    const dark = toon(C.glassDark), lit = light(C.glow)
+    world.traverse(node => { if (node instanceof THREE.Mesh && node.material === dark) node.material = lit })
+  }
+
+  return {
+    group: world,
+    stand,
+    /** The top of the tower, where the tether is made fast. */
+    towerTop,
+    update(t: number, dt: number) {
+      for (const s of spin) s.object.rotation[s.axis] += s.speed * dt
+      for (const b of bob) b.object.position.y = b.base + Math.sin(t * .5 + b.phase) * b.amount
+      for (const b of boats) {
+        b.group.position.y = b.y + Math.sin(t * 1.3 + b.phase) * .04
+        b.group.rotation.z = Math.sin(t * 1.1 + b.phase) * .05
+      }
+      cable.move(t)
+      for (const f of falls) f.flow(t)
+      flock.forEach((b, i) => {
+        const a = t * .22 + b.phase
+        b.group.position.set(2 + Math.cos(a) * b.r, b.h + Math.sin(t * .7 + i) * .3, -1 + Math.sin(a) * b.r * .6)
+        b.group.rotation.y = -a
+        const flap = Math.sin(t * 9 + i * 1.7) * .5
+        b.left.rotation.z = .3 + flap
+        b.right.rotation.z = -.3 - flap
+      })
+    },
+  }
+}
+
+export default function cover(time: keyof typeof LIGHT = 'morning'): Diorama {
+  const light_ = LIGHT[time]
+  const scene = new THREE.Scene()
+  const HAZE = light_.haze
+  // The sky goes wherever the camera does, so it is never nearer or further.
+  const dome = skyDome(240, light_.sky)
+  scene.add(dome)
+  scene.fog = new THREE.Fog(HAZE, 40, 175)
+  const camera = new THREE.PerspectiveCamera(24, 1.6, .5, 400)
+  sunlight(scene, { ...light_.sun, span: 13 })
+
+  const bob: { object: THREE.Object3D; base: number; phase: number; amount: number }[] = []
+
+  /* ---------------------------------------------------------------- the sea */
+  const waves = ripples(light_.water[0], light_.water[1])
+  waves.repeat.set(70, 70)
+  const water = sea(180, C.water, waves)
+  scene.add(water)
+
+  const place = town(time)
+  scene.add(place.group)
+
+  for (const [right, y, away, s, seed] of [[-34, 15, 70, 10, 1], [8, 24, 95, 14, 2], [38, 13, 60, 8, 3], [-64, 10, 85, 9, 4], [60, 20, 110, 13, 5], [18, 10, 34, 3.6, 6], [-14, 8, 40, 3, 7]] as const) {
+    const c = cloud(s, seed)
+    c.position.copy(seen(right, y, away))
+    c.lookAt(camera.position.clone().setY(y))
+    scene.add(c)
+    bob.push({ object: c, base: y, phase: seed, amount: .3 })
+  }
 
   // Islands on the horizon, pale with distance.
   for (const [right, away, scale, seed] of [[-40, 70, 1.3, 61], [28, 95, 1.7, 62], [-8, 130, 2.2, 63], [58, 70, 1.1, 64], [-80, 110, 1.8, 65]] as const) {
@@ -354,44 +429,10 @@ export default function cover(time: keyof typeof LIGHT = 'morning'): Diorama {
     scene.add(isle)
   }
 
-  // A cable car from the top of the island to the next one over.
-  const pylon = (height: number) => {
-    const g = new THREE.Group()
-    const mast = new THREE.Mesh(new THREE.CylinderGeometry(.07, .13, height, 8), toon(C.ivory))
-    mast.position.y = height / 2
-    const arm = new THREE.Mesh(new THREE.BoxGeometry(.7, .1, .1), toon(C.coral))
-    arm.position.y = height
-    mast.castShadow = arm.castShadow = true
-    g.add(mast, arm)
-    return g
-  }
-  const nearPylon = pylon(2)
-  nearPylon.position.set(-1.1 - 1.5, t3y, -1.5 - .9)
-  scene.add(nearPylon)
-  const farPylon = pylon(2.6)
-  farPylon.position.set(-25 + .6, 3, -14 - .4 + 1.6)
-  scene.add(farPylon)
-  const cable = cableway(nearPylon.position.clone().add(v(0, 2, 0)), farPylon.position.clone().add(v(0, 2.6, 0)), 1.6, 4, .55)
-  scene.add(cable.group)
-
-  // Boats.
-  const boats: { group: THREE.Object3D; phase: number; y: number }[] = []
-  for (const [x, z, s, sail, yaw] of [[10.5, 6.5, 1.3, C.coral, -.8], [3.5, 12, 1.1, C.ivory, .4], [-10.5, 7.5, 1.2, C.yellow, 2.4], [19, -2, 1, C.ivory, -1.2], [-3, 16, 1, C.sky, 1.2]] as const) {
-    const b = boat(s, sail)
-    b.position.set(x, .12, z)
-    b.rotation.y = yaw
-    scene.add(b)
-    boats.push({ group: b, phase: x, y: .12 })
-  }
-
-  // In the evening every window is lit, the clouds go pink, and the sun sits on the horizon.
+  // In the evening the clouds go pink and the sun sits on the horizon.
   if (time === 'evening') {
-    const dark = toon(C.glassDark), lit = light(C.glow), pink = cloudMaterial(light_.cloud[0], light_.cloud[1])
-    scene.traverse(node => {
-      if (!(node instanceof THREE.Mesh)) return
-      if (node.material === dark) node.material = lit
-      else if (node.material === cloudMaterial()) node.material = pink
-    })
+    const pink = cloudMaterial(light_.cloud[0], light_.cloud[1])
+    scene.traverse(node => { if (node instanceof THREE.Mesh && node.material === cloudMaterial()) node.material = pink })
     const sun = new THREE.Mesh(new THREE.CircleGeometry(9, 48), new THREE.MeshBasicMaterial({ color: '#ffe0a8', fog: false }))
     const halo = new THREE.Mesh(new THREE.RingGeometry(10.5, 13, 48), new THREE.MeshBasicMaterial({ color: '#ffd2a0', fog: false, transparent: true, opacity: .45 }))
     const glow = new THREE.Group()
@@ -423,7 +464,7 @@ export default function cover(time: keyof typeof LIGHT = 'morning'): Diorama {
   return {
     scene,
     camera,
-    anchors: { stand },
+    anchors: { stand: place.stand },
     ink: { line: 1.5, boil: 4, depthEdge: .05 },
     resize(w, h) { width = w; height = h; aim() },
     pointer(x, y) { pointer.tx = x; pointer.ty = y },
@@ -432,22 +473,8 @@ export default function cover(time: keyof typeof LIGHT = 'morning'): Diorama {
       pointer.x += (pointer.tx - pointer.x) * k
       pointer.y += (pointer.ty - pointer.y) * k
       aim()
-      for (const s of spin) s.object.rotation[s.axis] += s.speed * dt
       for (const b of bob) b.object.position.y = b.base + Math.sin(t * .5 + b.phase) * b.amount
-      for (const b of boats) {
-        b.group.position.y = b.y + Math.sin(t * 1.3 + b.phase) * .04
-        b.group.rotation.z = Math.sin(t * 1.1 + b.phase) * .05
-      }
-      cable.move(t)
-      for (const f of falls) f.flow(t)
-      flock.forEach((b, i) => {
-        const a = t * .22 + b.phase
-        b.group.position.set(2 + Math.cos(a) * b.r, b.h + Math.sin(t * .7 + i) * .3, -1 + Math.sin(a) * b.r * .6)
-        b.group.rotation.y = -a
-        const flap = Math.sin(t * 9 + i * 1.7) * .5
-        b.left.rotation.z = .3 + flap
-        b.right.rotation.z = -.3 - flap
-      })
+      place.update(t, dt)
     },
     dispose() {
       scene.traverse(node => {

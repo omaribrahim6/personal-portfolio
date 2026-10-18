@@ -1,28 +1,22 @@
-import Almanac from './components/Almanac'
-import BackCover from './components/BackCover'
-import Contents from './components/Contents'
-import Cover from './components/Cover'
-import Features from './components/Features'
-import FieldNotes from './components/FieldNotes'
-import Interests from './components/islands/Interests'
-import Record from './components/Record'
-import SeedBank from './components/SeedBank'
+import About from './components/voyage/stops/About'
+import Home from './components/voyage/stops/Home'
+import Projects from './components/voyage/stops/Projects'
+import Voyage, { Beat, Stop, StopHead } from './components/voyage/Voyage'
 
-// The portfolio as one issue of a magazine: a cover, the contents, and a section for each part of the story,
-// to a back cover with a coupon to clip. The illustrations are small 3D scenes, drawn live in ink.
-export default function Home() {
+// The portfolio as a voyage across a solar punk archipelago, sunrise to sunset: seven stops, drawn live in
+// 3D behind the page, with the words on cards that pass by as you go. The magazine edition is at /almanac.
+export default function Page() {
   return (
-    <Almanac>
-      <main>
-        <Cover />
-        <Contents />
-        <FieldNotes />
-        <Features />
-        <Record />
-        <SeedBank />
-        <Interests />
-        <BackCover />
-      </main>
-    </Almanac>
+    <Voyage>
+      <Home />
+      <About />
+      <Projects />
+      {(['awards', 'skills', 'interests', 'contact'] as const).map(id => (
+        <Stop key={id} id={id}>
+          <Beat><StopHead id={id} title={id} /></Beat>
+          <Beat side="right"><p>…</p></Beat>
+        </Stop>
+      ))}
+    </Voyage>
   )
 }

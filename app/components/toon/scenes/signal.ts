@@ -201,9 +201,9 @@ function townHall() {
   return { group, draw }
 }
 
-export default function signal(): Diorama {
-  const s = studio({ target: v(0, .1, -.2), distance: 22.5, yaw: .42, pitch: .6, fov: 27, span: 7 })
-  const { scene, camera } = s
+/** The model on its own, for the voyage to stand in its world. */
+export function model() {
+  const scene = new THREE.Group()
 
   const ground = tier(5.4, 1, 3, C.grass, C.stone, .06)
   ground.mesh.position.y = -.5
@@ -341,15 +341,10 @@ export default function signal(): Diorama {
 
   let shown = -1
   return {
-    scene,
-    camera,
+    group: scene,
     anchors,
-    ink: { line: 1.4, boil: 4 },
-    resize: s.resize,
-    pointer: s.pointer,
-    set(next) { state.set(next === 'open') },
-    update(t, dt) {
-      s.follow(dt)
+    set(next: string) { state.set(next === 'open') },
+    update(t: number, dt: number) {
       const p = state.step(dt)
       // He looks about, and bobs on his feet.
       mamdani.head.rotation.y = Math.sin(t * .7) * .35 + (p > 0 ? .3 : 0)
@@ -390,6 +385,22 @@ export default function signal(): Diorama {
       const screen = Math.round((span(p, .15, .3) * 10)) / 10 + (fill > .5 ? 10 : 0)
       if (screen !== shown) { shown = screen; hall.draw(span(p, .15, .3), fill) }
     },
-    dispose() { disposeAll(scene) },
+  }
+}
+
+export default function signal(): Diorama {
+  const s = studio({ target: v(0, .1, -.2), distance: 22.5, yaw: .42, pitch: .6, fov: 27, span: 7 })
+  const m = model()
+  s.scene.add(m.group)
+  return {
+    scene: s.scene,
+    camera: s.camera,
+    anchors: m.anchors,
+    ink: { line: 1.4, boil: 4 },
+    resize: s.resize,
+    pointer: s.pointer,
+    set: m.set,
+    update(t, dt) { s.follow(dt); m.update(t, dt) },
+    dispose() { disposeAll(s.scene) },
   }
 }
