@@ -41,9 +41,7 @@ export default function Wins() {
 
   return (
     <section id="awards" aria-labelledby="awards-title">
-      <Plate index={3} scene="summit" after="arch" tone="light" numeral="IV" place="the hill" kicker="scoreboard" title="Wins" titleId="awards-title">
-        Hackathons, CTFs, and one award I didn’t see coming. Every win was either something I built or something I broke.
-      </Plate>
+      <Plate index={3} scene="summit" after="arch" tone="light" kicker="scoreboard" title="Wins" titleId="awards-title" />
 
       <Ground scene="summit" className={styles.ground}>
         <div className="measure">

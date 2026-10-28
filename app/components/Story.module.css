@@ -11,7 +11,6 @@
 
 .range { --gutter: 6.4rem; }
 
-.rangeHead { margin-bottom: .4rem; opacity: .62; }
 
 .plot {
   position: relative;
@@ -99,13 +98,6 @@
 .legend i { width: 1.4rem; height: 1.5px; background: var(--color-coral); }
 .legend [data-category='volunteer'] i { background: var(--color-gold); }
 .legend [data-category='education'] i { background: var(--color-peri); }
-
-.foot {
-  margin: .9rem 0 0 var(--gutter);
-  font-size: .78rem;
-  line-height: 1.5;
-  opacity: .5;
-}
 
 /* ---------------------------------------------------------------- the entries */
 

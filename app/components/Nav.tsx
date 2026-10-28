@@ -63,7 +63,7 @@ export default function Nav({ active, tone, progress }: { active: string; tone: 
         <nav className={styles.links} aria-label="Chapters">
           {chapters.slice(1).map(chapter => (
             <a key={chapter.id} href={`#${chapter.id}`} className="label" aria-current={active === chapter.id ? 'location' : undefined}>
-              <i aria-hidden="true">{chapter.numeral}</i>{short[chapter.id]}
+              {short[chapter.id]}
             </a>
           ))}
           <a className="label" href={links.resume} target="_blank" rel="noopener noreferrer">Résumé <ArrowUpRight size={11} /></a>
@@ -77,7 +77,6 @@ export default function Nav({ active, tone, progress }: { active: string; tone: 
         <nav aria-label="Index">
           {chapters.map(chapter => (
             <a key={chapter.id} href={`#${chapter.id}`} aria-current={active === chapter.id ? 'location' : undefined} onClick={() => setOpen(false)}>
-              <span className="label">{chapter.numeral} · {chapter.place}</span>
               {chapter.label}
             </a>
           ))}

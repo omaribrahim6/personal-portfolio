@@ -171,9 +171,7 @@ export default function Interests() {
 
   return (
     <section id="interests" aria-labelledby="interests-title">
-      <Plate index={5} scene="islands" after="field" tone="light" numeral="VI" place="the islands" kicker="five islands" title="Off the clock" titleId="interests-title">
-        What I do when I am not shipping something. Each island is one of them.
-      </Plate>
+      <Plate index={5} scene="islands" after="field" tone="light" kicker="five islands" title="Off the clock" titleId="interests-title" />
 
       <Ground scene="islands" className={styles.ground}>
         <div ref={section} className={`measure ${styles.body}`}>

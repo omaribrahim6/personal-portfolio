@@ -10,13 +10,13 @@ export const links = {
 }
 
 export const chapters = [
-  { id: 'home', numeral: 'I', place: 'the ridge', label: 'Hello' },
-  { id: 'about', numeral: 'II', place: 'the dunes', label: 'The story' },
-  { id: 'projects', numeral: 'III', place: 'the arch', label: 'Selected work' },
-  { id: 'awards', numeral: 'IV', place: 'the hill', label: 'Wins' },
-  { id: 'skills', numeral: 'V', place: 'the field', label: 'The toolkit' },
-  { id: 'interests', numeral: 'VI', place: 'the islands', label: 'Off the clock' },
-  { id: 'contact', numeral: 'VII', place: 'the shore', label: 'Say hello' },
+  { id: 'home', label: 'Hello' },
+  { id: 'about', label: 'The story' },
+  { id: 'projects', label: 'Selected work' },
+  { id: 'awards', label: 'Wins' },
+  { id: 'skills', label: 'The toolkit' },
+  { id: 'interests', label: 'Off the clock' },
+  { id: 'contact', label: 'Say hello' },
 ] as const
 
 /* ---------------------------------------------------------------- the story */

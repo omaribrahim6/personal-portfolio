@@ -35,9 +35,7 @@ function Work({ project, index }: { project: Project; index: number }) {
 export default function Works() {
   return (
     <section id="projects" aria-labelledby="projects-title">
-      <Plate index={2} scene="arch" after="dunes" tone="light" numeral="III" place="the arch" kicker="ideas, made real" title="Selected work" titleId="projects-title" tall>
-        Hackathon wins and things I build for fun. There’s a little something to play with in each one.
-      </Plate>
+      <Plate index={2} scene="arch" after="dunes" tone="light" kicker="ideas, made real" title="Selected work" titleId="projects-title" tall />
       <Ground scene="arch" className={styles.ground}>
         <div className={`measure ${styles.list}`}>
           <Rail label="Selected work, one project per card">

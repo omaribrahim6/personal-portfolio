@@ -31,14 +31,12 @@ export function Ground({ scene, tone = 'dark', className = '', children }: { sce
  * The opening of a chapter. The ground of the previous chapter thins out into mist, the sky shows
  * through behind the title, and the next landscape rises underneath it.
  */
-export default function Plate({ index, scene, after, tone, numeral, place, kicker, title, titleId, href, tall, children }: {
+export default function Plate({ index, scene, after, tone, kicker, title, titleId, href, tall }: {
   index: number
   scene: PlateScene
   /** The plate above this one, whose ground dissolves into this sky. */
   after: PlateScene
   tone: 'dark' | 'light'
-  numeral: string
-  place: string
   kicker: string
   title: string
   titleId: string
@@ -46,16 +44,13 @@ export default function Plate({ index, scene, after, tone, numeral, place, kicke
   href?: string
   /** The landscape rises behind the title instead of stopping below it. */
   tall?: boolean
-  children?: ReactNode
 }) {
   return (
     <header className={styles.plate} data-plate={index} data-tone={tone} data-tall={tall} style={{ '--ground': GROUND[scene] } as CSSProperties}>
       <Painting dissolveOf={GROUND[after]} className={styles.dissolve} />
       <div className={`measure ${styles.heading}`}>
-        <p className={`label ${styles.mark}`}><span>Plate {numeral}</span><span>{place}</span></p>
         <h2 id={titleId}>{href ? <a href={href}>{title}</a> : title}</h2>
         <p className={styles.kicker}>{kicker}</p>
-        {children && <p className={styles.note}>{children}</p>}
       </div>
       <Terrain scene={scene} />
     </header>

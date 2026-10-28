@@ -49,7 +49,6 @@
   opacity: .78;
   transition: opacity .25s ease;
 }
-.links a i { font-style: normal; opacity: .55; margin-right: .2em; }
 .links a:hover, .links a:focus-visible, .links a[aria-current] { opacity: 1; }
 .links a::after {
   content: '';
@@ -99,7 +98,6 @@
   font-variation-settings: 'SOFT' 100, 'WONK' 1;
   line-height: 1.05;
 }
-.index nav a span { opacity: .6; }
 .index nav a[aria-current] { color: var(--color-coral); }
 
 .elsewhere { display: flex; flex-wrap: wrap; gap: .8rem 1.6rem; }

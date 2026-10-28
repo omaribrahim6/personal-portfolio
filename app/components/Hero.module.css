@@ -82,29 +82,6 @@
   animation: ground 1.6s cubic-bezier(.16, .8, .2, 1) both;
 }
 
-.caption {
-  position: absolute;
-  z-index: 2;
-  bottom: 1.5rem;
-  animation: settle 1s ease both 1.5s;
-}
-.caption {
-  left: var(--edge);
-  display: flex;
-  gap: 1.2em;
-  opacity: .78;
-}
-.caption span + span::before {
-  content: '';
-  display: inline-block;
-  width: 2.2em;
-  height: 1px;
-  margin-right: 1.2em;
-  vertical-align: middle;
-  background: currentColor;
-  opacity: .6;
-}
-
 .ground { padding: 0; height: 7svh; }
 .ground::before { display: none; }
 
@@ -113,16 +90,11 @@
 @keyframes ground { from { opacity: 0; transform: translateY(7%); } }
 
 /* Phones: the painting gets the middle of the screen; the practical lines sit on the hill just below it. */
-@media (max-width: 960px) {
-  .caption { bottom: 3.3rem; }
-}
-
 @media (max-width: 720px) {
   .stage { padding-top: 5.2rem; }
   .copy h1 { font-size: clamp(4rem, 21.5vw, 7rem); }
   .lede { font-size: 1.12rem; max-width: 22rem; }
   .stage > .terrain { height: clamp(220px, 34svh, 360px); }
-  .caption { bottom: 2.7rem; }
   .more {
     position: absolute;
     top: 100%;

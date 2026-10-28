@@ -25,24 +25,6 @@
   padding-bottom: clamp(1.5rem, 5svh, 4rem);
 }
 
-.mark {
-  display: flex;
-  gap: 1.4em;
-  align-items: center;
-  margin-bottom: 1.3rem;
-  opacity: .82;
-}
-.mark span + span::before {
-  content: '';
-  display: inline-block;
-  width: 2.6em;
-  height: 1px;
-  margin-right: 1.4em;
-  vertical-align: middle;
-  background: currentColor;
-  opacity: .6;
-}
-
 .heading h2 {
   max-width: 12ch;
   font-family: var(--font-display);
@@ -61,13 +43,6 @@
   font-style: italic;
   font-weight: 300;
   font-variation-settings: 'SOFT' 100, 'WONK' 1;
-}
-
-.note {
-  max-width: 34rem;
-  margin-top: .6rem;
-  font-size: .98rem;
-  opacity: .82;
 }
 
 .heading h2 a {

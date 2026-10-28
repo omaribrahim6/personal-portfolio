@@ -28,10 +28,6 @@ export default function Hero() {
         </div>
 
         <Terrain scene="ridge" className={styles.terrain} />
-
-        <p className={`label ${styles.caption}`}>
-          <span>Plate I</span><span>the ridge</span>
-        </p>
       </div>
       <Ground scene="ridge" className={styles.ground} />
     </section>

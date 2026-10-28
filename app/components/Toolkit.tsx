@@ -34,9 +34,7 @@ export default function Toolkit() {
 
   return (
     <section id="skills" aria-labelledby="skills-title">
-      <Plate index={4} scene="field" after="summit" tone="light" numeral="V" place="the field" kicker="with receipts" title="Skills & tools" titleId="skills-title">
-        Technologies I work with. Pick a tool. The receipt shows where on this page I actually used it.
-      </Plate>
+      <Plate index={4} scene="field" after="summit" tone="light" kicker="with receipts" title="Skills & tools" titleId="skills-title" />
 
       <Ground scene="field" className={styles.ground}>
         <div className={`measure ${styles.body}`}>

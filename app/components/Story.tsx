@@ -112,9 +112,7 @@ export default function Story() {
 
   return (
     <section id="about" aria-labelledby="about-title">
-      <Plate index={1} scene="dunes" after="ridge" tone="dark" numeral="II" place="the dunes" kicker="where the time went" title="The story so far" titleId="about-title">
-        School, work, and the things I volunteer for.
-      </Plate>
+      <Plate index={1} scene="dunes" after="ridge" tone="dark" kicker="where the time went" title="The story so far" titleId="about-title" />
 
       <Ground scene="dunes" className={styles.ground}>
         <div className="measure">
@@ -128,7 +126,6 @@ export default function Story() {
 
           <div className={styles.body}>
             <div className={styles.range}>
-              <p className={`label ${styles.rangeHead}`}>the range · one dune per role, as wide as the months it lasted</p>
               <div className={styles.plot} style={{ aspectRatio: range ? `${VW} / ${range.height}` : `${VW} / 380` }}>
                 {range && (
                   <>
@@ -177,7 +174,6 @@ export default function Story() {
                 <span data-category="volunteer"><i />volunteer</span>
                 <span data-category="education"><i />education</span>
               </div>
-              <p className={styles.foot}>→ still going · cumsa.ca isn’t dated, so it lives in the list · the range follows the cards, and a dune will take you to its entry</p>
             </div>
 
             <Rail label="The story so far, one card per role" reset={filter} onActive={follow}>
