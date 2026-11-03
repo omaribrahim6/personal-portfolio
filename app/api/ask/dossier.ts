@@ -5,7 +5,7 @@ import { awards, chapters, email, interests, links, projects, roles, skillGroups
 
 /** Places on the page he can point a visitor to: anchor id → what the link should say. */
 export const PLACES: Record<string, string> = {
-  ...Object.fromEntries(chapters.filter(chapter => chapter.id !== 'home').map(chapter => [chapter.id, chapter.label])),
+  ...Object.fromEntries(chapters.map(chapter => [chapter.id, chapter.label])),
   ...Object.fromEntries(roles.map(role => [`story-${role.id}`, `${role.title} · ${role.organization}`])),
   ...Object.fromEntries(projects.map((project, index) => [`project-${index}`, project.title])),
 }
@@ -24,20 +24,20 @@ const facts = [
   '## Projects (place id in brackets)',
   ...projects.map((project, index) => `- [project-${index}] ${project.title}. ${project.award}. ${project.description} Built with ${project.tags.join(', ')}.${project.demo ? ` Demo: ${project.demo}.` : ''}${project.github ? ` Code: ${project.github}.` : ''}${project.devpost ? ` Devpost: ${project.devpost}.` : ''}`),
   '',
-  '## Wins [awards]',
+  '## Wins [wins]',
   ...awards.map(award => `- ${award.result}, ${award.event} (${award.date}). ${award.detail}`),
   '',
-  '## Skills and tools [skills]',
-  ...skillGroups.map(group => `- ${group.title}: ${group.skills.map(skill => skill.name).join(', ')}.`),
+  '## Skills and tools',
+  ...skillGroups.map(group => `- ${group.title}: ${group.skills.join(', ')}.`),
   'Most of it was learned shipping under a deadline: hackathons, CTFs and production sites people depend on. Currently going deeper on agentic AI systems and offensive security.',
   '',
   '## Off the clock: interests [interests]',
   ...interests.map(interest => `- ${interest.title}${interest.figure ? ` (${interest.figure} ${interest.kicker})` : ''}. ${interest.body}${interest.links?.filter(link => !link.href.startsWith('#')).map(link => ` ${link.label}: ${link.href}.`).join('') ?? ''}`),
   '',
   '## This site, and you',
-  'The portfolio is one night\'s walk from dusk to dawn: seven painted scenes (the ridge, the dunes, the arch, the hill, the field, the islands, the shore). On the islands, more small 3D versions of you show your interests, and on the first one you change between hiking, biking and paddleboarding. It is built with Next.js, TypeScript, a hand-written WebGL sky and procedurally painted landscapes.',
+  'The portfolio is deliberately bare: one page on a contour map, with a light and a dark mode. It has his name, his links, a short list of projects, a row of wins, a list of experience, and an interests section where small 3D versions of you stand on floating islands doing each thing: hiking, biking, paddling, competing, making games, security and soccer. It is built with Next.js, TypeScript and three.js.',
   'You are a small low-poly 3D version of Omar. The model was generated from a drawing with Tripo and rigged automatically; your answers come from Gemini. Omar won a hackathon with a project called Mamdani that had a small 3D guide like you, which is where the idea came from.',
-  `Other places you can point to: ${chapters.filter(chapter => chapter.id !== 'home').map(chapter => `[${chapter.id}] ${chapter.label}`).join(', ')}.`,
+  `Other places you can point to: ${chapters.map(chapter => `[${chapter.id}] ${chapter.label}`).join(', ')}.`,
 ].join('\n')
 
 export const instructions = (today: string) => `You are a small AI stand-in for Omar Ibrahim who lives on his portfolio website. You go by Omar, as he does. Visitors are usually recruiters, engineers or other students.

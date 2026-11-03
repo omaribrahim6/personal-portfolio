@@ -1,27 +1,18 @@
 import type { Metadata, Viewport } from 'next'
-import { Fraunces, Hanken_Grotesk, Michroma } from 'next/font/google'
+import { Barlow, Barlow_Condensed } from 'next/font/google'
 import './globals.css'
 
-// A soft, slightly odd serif for the big words, in the spirit of a painted paperback cover.
-const fraunces = Fraunces({
+// Barlow takes after the highway and trail signs of the American west: the condensed cut for anything big, the regular for reading.
+const barlow = Barlow({
   subsets: ['latin'],
-  style: ['normal', 'italic'],
-  axes: ['opsz', 'SOFT', 'WONK'],
-  variable: '--font-fraunces',
+  weight: ['400', '500'],
+  variable: '--font-barlow',
   display: 'swap',
 })
-
-const hanken = Hanken_Grotesk({
+const barlowCondensed = Barlow_Condensed({
   subsets: ['latin'],
-  variable: '--font-hanken',
-  display: 'swap',
-})
-
-// Wide, squared capitals for captions and coordinates.
-const michroma = Michroma({
-  weight: '400',
-  subsets: ['latin'],
-  variable: '--font-michroma',
+  weight: ['500', '600'],
+  variable: '--font-barlow-condensed',
   display: 'swap',
 })
 
@@ -71,9 +62,15 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#11123a',
-  colorScheme: 'dark',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#dad8d0' },
+    { media: '(prefers-color-scheme: dark)', color: '#0f1d18' },
+  ],
+  colorScheme: 'light dark',
 }
+
+// The visitor's light or dark pick (see ThemeToggle), back on the page before it paints.
+const theme = `try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}`
 
 export default function RootLayout({
   children,
@@ -81,7 +78,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${hanken.variable} ${michroma.variable}`}>
+    <html lang="en" className={`${barlow.variable} ${barlowCondensed.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: theme }} />
+      </head>
       <body>
         {children}
       </body>

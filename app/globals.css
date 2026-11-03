@@ -1,33 +1,67 @@
 @import 'tailwindcss';
 
-@theme {
-  /* Night */
-  --color-ink: #0b0c28;
-  --color-night: #11123a;
-  --color-indigo: #232080;
-  --color-ultra: #3b47bd;
-  --color-peri: #8e9cee;
-  --color-lilac: #d6d4f2;
-  /* Light */
-  --color-coral: #f6866a;
-  --color-ember: #d9485a;
-  --color-gold: #f6b455;
-  --color-cream: #f2ecdb;
-
-  --font-display: var(--font-fraunces), 'Iowan Old Style', Georgia, serif;
-  --font-sans: var(--font-hanken), system-ui, sans-serif;
-  --font-label: var(--font-michroma), var(--font-hanken), system-ui, sans-serif;
-}
-
 @layer base {
   :root {
-    /* The one margin everything hangs from: the header, the name, every title and every column. */
-    --edge: max(clamp(1.25rem, 3.4vw, 3rem), calc((100vw - 84rem) / 2));
+    /* Sampled from the via ferrata photo: the granite, the pines, the helmet. */
+    --bg: #dad8d0;
+    --surface: #e6e4dd;
+    --surface-hi: #cfcdc4;
+    --border: #bdbcb1;
+    --border-hi: #94978b;
+    --accent: #e06a00;
+    --accent-hi: #a04a00;
+    --accent-glow: rgba(224, 106, 0, .16);
+    --text: #123328;
+    --muted: #46584f;
+    /* The ink the contour map is drawn in. */
+    --topo: #163a2d;
+    --topo-strength: 1;
+    --radius: 0;
+
+    --size-big: clamp(2.9rem, 6.2vw, 5.75rem);
+    --size-body: 1.125rem;
+    --size-small: .9375rem;
+    --display: var(--font-barlow-condensed), 'Arial Narrow', sans-serif;
+    color-scheme: light;
+  }
+
+  /* Dark: the same forest after sundown. It follows the system until the visitor picks (ThemeToggle). */
+  :root[data-theme='dark'] {
+    --bg: #0f1d18;
+    --surface: #15261f;
+    --surface-hi: #1d3129;
+    --border: #2c4238;
+    --border-hi: #4d6358;
+    --accent: #f07d1a;
+    --accent-hi: #ff9d4d;
+    --accent-glow: rgba(240, 125, 26, .18);
+    --text: #e4e2d9;
+    --muted: #a3b0a7;
+    --topo: #cfe0d4;
+    --topo-strength: .55;
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+      --bg: #0f1d18;
+      --surface: #15261f;
+      --surface-hi: #1d3129;
+      --border: #2c4238;
+      --border-hi: #4d6358;
+      --accent: #f07d1a;
+      --accent-hi: #ff9d4d;
+      --accent-glow: rgba(240, 125, 26, .18);
+      --text: #e4e2d9;
+      --muted: #a3b0a7;
+      --topo: #cfe0d4;
+      --topo-strength: .55;
+      color-scheme: dark;
+    }
   }
 
   html {
     overflow-x: clip;
-    background: var(--color-night);
+    background: var(--bg);
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
@@ -36,87 +70,40 @@
   body {
     min-height: 100svh;
     overflow-x: clip;
-    background: var(--color-night);
-    color: var(--color-cream);
-    font-family: var(--font-sans);
-    font-size: 1.0625rem;
-    line-height: 1.6;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-barlow), system-ui, sans-serif;
+    font-size: var(--size-body);
+    line-height: 1.55;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    isolation: isolate;
   }
 
-  /* Anchors land below the fixed header. */
-  [id] { scroll-margin-top: 5.5rem; }
+  /* The contour map the whole site sits on (scripts/topo.mjs), inked in whichever colour the theme asks for. */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: var(--topo);
+    opacity: var(--topo-strength);
+    -webkit-mask: url('/topo.svg') center / cover no-repeat;
+    mask: url('/topo.svg') center / cover no-repeat;
+    pointer-events: none;
+  }
 
-  ::selection { background: var(--color-coral); color: var(--color-ink); }
+  [id] { scroll-margin-top: 2rem; }
 
-  :where(a, button, input, [tabindex]):focus-visible {
-    outline: 2px solid var(--color-gold);
-    outline-offset: 4px;
-    border-radius: 2px;
+  ::selection { background: var(--accent); color: var(--text); }
+
+  :where(a, button, input, textarea, [tabindex]):focus-visible {
+    outline: 2px solid var(--accent-hi);
+    outline-offset: 3px;
   }
 
   button { cursor: pointer; }
-  button:disabled { cursor: default; }
-
-  html { scrollbar-color: #3a3a8c var(--color-ink); }
-}
-
-@layer components {
-  /* Small wide capitals: the captions under the paintings. */
-  .label {
-    font-family: var(--font-label);
-    font-size: .65rem;
-    line-height: 1.5;
-    letter-spacing: .2em;
-    text-transform: uppercase;
-  }
-
-  .measure { margin-inline: var(--edge); }
-
-  /* Text links: a rule that fills in from the left, and an arrow that leans the way it is going. */
-  .go {
-    display: inline-flex;
-    align-items: center;
-    gap: .4em;
-    padding-block: .3em;
-    background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
-    transition: color .25s ease, background-size .35s ease;
-  }
-  .go svg { flex: none; transition: transform .3s cubic-bezier(.2, .7, .2, 1); }
-  .go:hover, .go:focus-visible { color: var(--accent, var(--color-coral)); }
-  .go:hover svg, .go:focus-visible svg { transform: translate(2px, -2px); }
-  .go[data-down]:hover svg, .go[data-down]:focus-visible svg { transform: translateY(3px); }
-
-  /* Filters: plain words, the chosen one underlined with light. */
-  .filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .35rem 1.6rem;
-  }
-  .filters button {
-    position: relative;
-    padding: .55rem 0;
-    color: inherit;
-    opacity: .58;
-    transition: opacity .25s ease, color .25s ease;
-  }
-  .filters button small { margin-left: .5em; font-size: 1em; opacity: .6; }
-  .filters button::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: .2rem;
-    height: 1px;
-    background: var(--accent, var(--color-coral));
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform .35s cubic-bezier(.2, .7, .2, 1);
-  }
-  .filters button:hover { opacity: 1; }
-  .filters button[aria-pressed='true'] { opacity: 1; color: var(--accent, var(--color-coral)); }
-  .filters button[aria-pressed='true']::after { transform: scaleX(1); }
+  button:disabled { cursor: not-allowed; }
 }
 
 @media (prefers-reduced-motion: reduce) {

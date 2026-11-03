@@ -1,6 +1,6 @@
 # Portfolio
 
-Omar Ibrahim's portfolio, built with Next.js and TypeScript. The page is one night's walk from dusk to dawn: seven painted landscapes under a single sky, with the portfolio written on the ground between them. See [docs/dreamscape.md](docs/dreamscape.md) for the concept and how it is built.
+Omar Ibrahim's portfolio, built with Next.js and TypeScript. A short front page that follows a trail across a contour map, and separate pages for the longer version: work, projects, awards and life.
 
 A small 3D Omar lives in the corner and answers questions about the work: see [docs/mini-omar.md](docs/mini-omar.md).
 
@@ -9,8 +9,6 @@ A small 3D Omar lives in the corner and answers questions about the work: see [d
 - Next.js 16 (App Router)
 - TypeScript
 - Tailwind CSS
-- Framer Motion
-- WebGL (a hand-written shader for the sky) and 2D canvas (the painted terrain)
 - three.js (only for mini Omar, loaded on demand) and the Gemini API (his answers)
 
 ## Getting Started
@@ -41,11 +39,11 @@ npm run start
 ## Where things are
 
 - `app/content.ts` — everything the site says: roles, projects, wins, tools, links
-- `app/components/sky/` — the sky shader and what it looks like over each chapter
-- `app/components/paint/` — the painted landscapes
-- `app/components/` — one component per chapter, plus the shell that ties scrolling to the sky
+- `app/(site)/` — the pages, and the layout they share
+- `app/components/site.module.css` — how all of them look; the colours and sizes are at the top of `app/globals.css`
 - `app/components/mini/` and `app/api/ask/` — mini Omar, and the endpoint that answers for him
-- `scripts/` — how his model was generated, rigged and fixed up
+- `scripts/topo.mjs` — draws the contour map, `public/topo.svg`
+- `scripts/` — also how his model was generated, rigged and fixed up
 
 ## License
 

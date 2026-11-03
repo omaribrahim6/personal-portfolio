@@ -1,191 +1,43 @@
 /* ------------------------------------------------------------------ the corner */
 
-.dock {
-  --size: clamp(118px, 13vw, 172px);
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  z-index: 72;
-  width: var(--size);
-  height: var(--size);
-  transform-origin: 100% 100%;
-  transition: transform .9s cubic-bezier(.3, 1.45, .45, 1), opacity .3s ease;
-}
-
-/* Not loaded yet, away on the beach, or making room: he is below the edge of the screen. */
-.dock[data-hidden='true'] {
-  transform: translate(28%, 112%);
-  transition: transform .45s cubic-bezier(.6, 0, .8, .4);
-  pointer-events: none;
-}
-
-/* The chat is open: the corner empties, and he is in the chat instead. */
-.dock[data-open='true'] {
-  opacity: 0;
-  transform: scale(.6);
-  transition: transform .45s cubic-bezier(.22, 1, .36, 1), opacity .3s ease;
-  pointer-events: none;
-}
-
+/* A plain button in the corner, in the page's own ink. It steps aside while the chat is open. */
 .launcher {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-  border-top-left-radius: 100%;
-  -webkit-tap-highlight-color: transparent;
-  transform-origin: 100% 100%;
-  transition: transform .45s cubic-bezier(.22, 1, .36, 1);
-}
-.launcher:hover { transform: scale(1.04); }
-.launcher:focus-visible { outline-offset: -6px; }
-
-/* A low moon: coral at night, paler once the sky is. Rings like the ones around the real one. */
-.moon {
-  position: absolute;
-  inset: 0;
-  border-top-left-radius: 100%;
-  background:
-    repeating-radial-gradient(circle at 100% 100%, transparent 0 21px, rgba(255, 244, 224, .16) 21px 22px),
-    radial-gradient(circle at 100% 100%, #ffd2a6 0%, #f9986f 42%, #ee6d5f 72%, #d9485a 100%);
-  box-shadow: 0 0 0 1px rgba(255, 210, 170, .35), 0 0 46px rgba(246, 134, 106, .38);
-  transition: filter .8s ease;
-}
-.dock[data-dawn='true'] .moon { filter: saturate(.9) brightness(1.06); }
-
-/* He is taller than his moon, and his hand goes wide when he waves: the seat overhangs it on every side. */
-.seat {
-  position: absolute;
-  right: -22%;
-  bottom: -14%;
-  display: block;
-  width: 140%;
-  height: 132%;
-  pointer-events: none;
-}
-
-.canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: 50% 100%;
-  animation: arrive .5s ease both;
-}
-
-/* What the corner is for, on hover. */
-/* It sits clear of him, to his left, and above anything of his that reaches that far. */
-.hint {
-  position: absolute;
-  right: 106%;
-  bottom: 38%;
-  z-index: 2;
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 72;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 7px 12px;
-  border-radius: 999px;
-  background: var(--color-cream);
-  color: var(--color-ink);
-  font-size: 12.5px;
-  font-weight: 500;
-  white-space: nowrap;
-  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, .8);
-  pointer-events: none;
-  opacity: 0;
-  transform: translateX(8px);
-  transition: opacity .2s, transform .3s cubic-bezier(.22, 1, .36, 1);
-}
-.hint[data-on='true'] { opacity: 1; transform: none; }
-.hint kbd {
-  padding: 2px 5px;
-  border-radius: 5px;
-  background: rgba(11, 12, 40, .12);
-  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
-  font-size: 10.5px;
-}
-
-.bubble {
-  position: absolute;
-  right: 78%;
-  bottom: 74%;
-  width: max-content;
-  max-width: min(260px, 62vw);
-  padding: 12px 14px;
-  border-radius: 18px 18px 4px 18px;
-  background: var(--color-cream);
-  color: var(--color-ink);
-  font-size: 13px;
-  line-height: 1.4;
-  text-align: left;
-  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, .8);
-  animation: bubble .55s cubic-bezier(.22, 1, .36, 1) both;
-}
-
-/* ------------------------------------------------------------------ the beach */
-
-.beach {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .5s ease;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid var(--text);
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--display);
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1;
   -webkit-tap-highlight-color: transparent;
+  transition: background-color .15s, color .15s, opacity .3s ease, transform .3s ease;
 }
-.beach[data-here='true'] { opacity: 1; pointer-events: auto; }
-.beach .seat { inset: 0; width: 100%; height: 100%; }
-
-/* The shadow he throws toward you, away from the sun. */
-.footing {
-  position: absolute;
-  left: 12%;
-  bottom: 3%;
-  width: 70%;
-  height: 8%;
-  border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(20, 21, 74, .45), rgba(20, 21, 74, 0));
-  transform: translate(-14%, 30%) skewX(-40deg);
-}
-
-.invite {
-  position: absolute;
-  left: 78%;
-  top: 20%;
-  display: inline-flex;
-  align-items: center;
-  gap: .5em;
-  padding: .45rem .7rem;
-  border-radius: 999px 999px 999px 0;
-  background: #14154a;
-  color: var(--color-cream);
-  white-space: nowrap;
-  opacity: 0;
-  transform: translateY(.4rem);
-  transition: opacity .3s ease, transform .4s cubic-bezier(.2, .8, .2, 1);
-}
-.beach:hover .invite, .beach:focus-visible .invite { opacity: 1; transform: none; }
-@media (hover: none) { .beach[data-here='true'] .invite { opacity: 1; transform: none; } }
+.launcher:hover { background: var(--text); color: var(--bg); }
+.launcher[data-open='true'] { opacity: 0; transform: translateY(8px); pointer-events: none; }
 
 /* ------------------------------------------------------------------ the chat */
 
 /* Mamdani's chat panel: the same box, measurements and motion. Only the colours are this site's. */
 .chat {
-  --panel: #10113a;
-  --panel-2: #181a4c;
-  --line: rgba(242, 236, 219, .1);
-  --line-2: rgba(242, 236, 219, .2);
-  --ink: var(--color-cream);
-  --ink-2: rgba(242, 236, 219, .76);
-  --ink-3: rgba(242, 236, 219, .52);
-  --black: var(--color-cream);
-  --on-black: var(--color-ink);
-  --accent: var(--color-coral);
-  --good: #5fd39a;
-  --bad: #ffb7a0;
+  --panel: var(--surface);
+  --panel-2: var(--surface-hi);
+  --line: color-mix(in srgb, var(--text) 12%, transparent);
+  --line-2: color-mix(in srgb, var(--text) 24%, transparent);
+  --ink: var(--text);
+  --ink-2: color-mix(in srgb, var(--text) 78%, transparent);
+  --ink-3: color-mix(in srgb, var(--text) 62%, transparent);
+  --black: var(--text);
+  --on-black: var(--bg);
+  --good: #1f9d63;
+  --bad: #b3321f;
   --ease: cubic-bezier(.22, 1, .36, 1);
 
   position: fixed;
@@ -205,7 +57,7 @@
   color: var(--ink);
   font-size: 13.5px;
   line-height: 1.5;
-  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, .8);
+  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, .35);
   /* It grows out of the corner he lives in, and goes back into it a little faster. */
   clip-path: circle(0% at 100% 100%);
   visibility: hidden;
@@ -325,42 +177,20 @@
 .cta svg { flex: none; }
 .cta span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* He stands behind the message box. */
-.stage {
-  position: relative;
-  z-index: 1;
-  flex: none;
-  height: 132px;
-  margin-top: -20px;
-  overflow: hidden;
-  background: radial-gradient(60% 90% at 50% 100%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%);
-  pointer-events: none;
-}
-.behind {
-  position: absolute;
-  left: 50%;
-  top: -22px;
-  display: block;
-  width: 190px;
-  height: 200px;
-  transform: translateX(-50%);
-}
-
 .composer {
   position: relative;
   z-index: 3;
   display: flex;
   align-items: flex-end;
   gap: 8px;
-  margin: -26px 14px 14px;
+  margin: 0 14px 14px;
   padding: 8px 8px 8px 16px;
   border: 1px solid var(--line-2);
   border-radius: 20px;
   background: var(--panel);
-  box-shadow: 0 -10px 30px -12px rgba(0, 0, 0, .45);
   transition: border-color .2s var(--ease);
 }
-.composer:focus-within { border-color: color-mix(in srgb, var(--accent) 70%, transparent); }
+.composer:focus-within { border-color: var(--text); }
 .composer textarea {
   flex: 1;
   min-width: 0;
@@ -385,16 +215,13 @@
   width: 38px;
   height: 38px;
   border-radius: 13px;
-  background: var(--accent);
+  background: var(--black);
   color: var(--on-black);
   transition: transform .2s var(--ease), opacity .2s;
 }
 .send:disabled { opacity: .35; }
 .send:not(:disabled):hover { transform: scale(1.06); }
-.send[data-stop] { background: var(--black); color: var(--on-black); }
 
-@keyframes arrive { from { opacity: 0; } }
-@keyframes bubble { from { opacity: 0; transform: translate(12px, 12px) scale(.9); } }
 @keyframes rise { from { opacity: 0; transform: translateY(16px); } }
 @keyframes msg { from { opacity: 0; transform: translateY(8px); } }
 @keyframes typing { 50% { opacity: .4; transform: translateY(-4px); } }
@@ -424,13 +251,10 @@
   .list button { padding: 8px 12px; border-radius: 12px; font-size: 12.5px; }
   /* Four questions fit a card this size; the fifth is for wider screens. */
   .list button:nth-child(n + 5) { display: none; }
-  .stage { height: 96px; margin-top: -16px; }
-  .behind { top: -16px; width: 140px; height: 148px; }
-  .composer { margin: -24px 10px 10px; padding: 6px 6px 6px 14px; border-radius: 18px; }
+  .composer { margin: 0 10px 10px; padding: 6px 6px 6px 14px; border-radius: 18px; }
   /* 16px, or iOS zooms the whole page in when the box is tapped. */
   .composer textarea { padding: 7px 0; font-size: 16px; }
   .send { width: 36px; height: 36px; border-radius: 12px; }
-  .bubble { right: 70%; }
 }
 
 @media (prefers-reduced-motion: reduce) {

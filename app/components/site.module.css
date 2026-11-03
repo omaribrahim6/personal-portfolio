@@ -1,0 +1,141 @@
+/* One page: who, where to find me, what I have made, and the islands. */
+
+.page {
+  max-width: 1040px;
+  margin-inline: auto;
+  padding: clamp(48px, 10svh, 112px) clamp(16px, 4vw, 48px) 112px;
+}
+
+.top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.top h1 {
+  font-family: var(--display);
+  font-size: clamp(3.75rem, 11vw, 8.5rem);
+  font-weight: 500;
+  line-height: .86;
+  letter-spacing: -.012em;
+}
+.role { max-width: 30rem; margin-top: 20px; font-size: clamp(1.125rem, 1.8vw, 1.375rem); font-weight: 500; line-height: 1.3; }
+
+/* Links read as links: the accent underline. */
+.links a, .meta a, .islandWords a {
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+  transition: color .15s;
+}
+.links a:hover, .meta a:hover, .islandWords a:hover { color: var(--accent-hi); }
+.links { display: flex; flex-wrap: wrap; gap: 8px 28px; margin-top: 28px; font-weight: 500; }
+
+.theme {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--text);
+  background: var(--bg);
+  color: var(--text);
+  transition: border-color .15s, color .15s;
+}
+.theme:hover { border-color: var(--accent); color: var(--accent-hi); }
+/* The moon in light mode, the sun in dark. */
+.theme [data-show='dark'] { display: none; }
+:global(:root[data-theme='dark']) .theme [data-show='dark'] { display: block; }
+:global(:root[data-theme='dark']) .theme [data-show='light'] { display: none; }
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme='light'])) .theme [data-show='dark'] { display: block; }
+  :global(:root:not([data-theme='light'])) .theme [data-show='light'] { display: none; }
+}
+
+/* ------------------------------------------------------------------ the lists */
+
+.section { margin-top: clamp(64px, 12svh, 112px); }
+.label {
+  padding-bottom: 12px;
+  font-family: var(--display);
+  font-size: clamp(2.25rem, 4vw, 3rem);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.rows > li {
+  display: grid;
+  grid-template-columns: minmax(10rem, 1fr) minmax(0, 3fr);
+  gap: 4px 24px;
+  padding-block: 14px;
+  border-top: 1px solid var(--text);
+}
+.rows > li:last-child { border-bottom: 1px solid var(--text); }
+.rows h3 { font-family: var(--display); font-size: 1.5rem; font-weight: 500; line-height: 1.15; }
+.rows h3 em { color: var(--muted); font-style: normal; }
+.rows time { color: var(--muted); font-size: var(--size-small); font-weight: 500; line-height: 2.2; }
+.meta { display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: 4px; font-size: var(--size-small); font-weight: 500; }
+.meta span { color: var(--muted); }
+
+/* Small, in one row that scrolls sideways, fading out at the right edge so it reads as more to see. */
+.wins {
+  overflow-x: auto;
+  border-block: 1px solid var(--text);
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-hi) transparent;
+  -webkit-mask-image: linear-gradient(to left, transparent, #000 48px);
+  mask-image: linear-gradient(to left, transparent, #000 48px);
+}
+.wins ul { display: flex; width: max-content; padding-right: 48px; }
+.wins li {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  width: 196px;
+  padding: 12px 16px 14px;
+  border-left: 1px solid var(--border-hi);
+  scroll-snap-align: start;
+}
+.wins li:first-child { padding-left: 0; border-left: 0; }
+.wins time { color: var(--muted); font-size: .8125rem; font-weight: 500; }
+.wins b { font-family: var(--display); font-size: 1.1875rem; font-weight: 500; line-height: 1.1; }
+.wins span { color: var(--muted); font-size: var(--size-small); line-height: 1.3; }
+
+/* ---------------------------------------------------------------- the islands */
+
+.islandStage {
+  display: grid;
+  grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+  align-items: center;
+  gap: clamp(24px, 4vw, 56px);
+  height: clamp(440px, 64svh, 640px);
+  border-top: 1px solid var(--text);
+}
+.islandWords { position: relative; z-index: 1; display: grid; gap: 20px; }
+.islandWords > p { min-height: 3.2em; font-size: clamp(1.125rem, 1.8vw, 1.375rem); font-weight: 500; line-height: 1.3; }
+
+/* Plain words you can press, with the chosen one marked. */
+.picks { display: flex; flex-wrap: wrap; gap: 4px 18px; font-weight: 500; }
+.picks button { padding-block: 4px; border-bottom: 3px solid transparent; color: var(--muted); transition: color .15s; }
+.picks button:hover { color: var(--text); }
+.picks button[aria-pressed='true'] { border-color: var(--accent); color: var(--text); }
+
+/* Wider than its column and faded at the edges, so nothing gets cut off by a straight line. */
+.world { position: relative; height: 100%; min-height: 0; margin-left: -14%; opacity: 0; transition: opacity .6s; }
+.world[data-ready='true'] { opacity: 1; }
+.world[data-flat='true'] { display: none; }
+.world canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 90%, transparent), linear-gradient(to top, transparent, #000 10%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent, #000 12%, #000 90%, transparent), linear-gradient(to top, transparent, #000 10%);
+  mask-composite: intersect;
+}
+.world canvas[data-pointing='true'] { cursor: pointer; }
+
+@media (max-width: 760px) {
+  .rows > li { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .rows time { line-height: 1.5; }
+  .islandStage { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); height: auto; padding-top: 20px; }
+  .world { height: 380px; margin-inline: -16px; }
+}

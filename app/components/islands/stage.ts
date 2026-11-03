@@ -17,9 +17,9 @@ const MODEL_OF: Record<Exclude<IslandId, 'outdoors'>, ModelName> = { competing: 
 const url = (name: ModelName) => `/models/interests/${name}.glb`
 
 // The page under the canvas. Fog fades into it, so far islands sink into the ground colour, not into black.
-const GROUND = '#14153f'
+const GROUND = '#dad8d0'
 // Rock: from the band of earth under the meadow down to the tip, lit coral and falling into violet.
-const ROCK_TOP = new THREE.Color('#d9607a'), ROCK_LOW = new THREE.Color('#3a2150'), EARTH = new THREE.Color('#4a2a5c')
+const ROCK_TOP = new THREE.Color('#a9a79b'), ROCK_LOW = new THREE.Color('#5b5f55'), EARTH = new THREE.Color('#6d5a44')
 
 // The gap in the vault door on the security island, in the island's own space (he stands at the origin,
 // facing +Z). Gold light comes out of it: the gold inside glows, a lamp sits in the gap, shafts of light
@@ -97,12 +97,12 @@ const flat = (color: string, extra: THREE.MeshStandardMaterialParameters = {}) =
 function pine(height: number, seed: number) {
   const rand = rng(seed)
   const group = new THREE.Group()
-  const trunk = new THREE.Mesh(new THREE.CylinderGeometry(.018, .026, height * .3, 5), flat('#3a2430'))
+  const trunk = new THREE.Mesh(new THREE.CylinderGeometry(.018, .026, height * .3, 5), flat('#4a3a2c'))
   trunk.position.y = height * .15
   group.add(trunk)
   for (let k = 0; k < 3; k++) {
     const r = height * (.3 - k * .07), h = height * (.42 - k * .06)
-    const cone = new THREE.Mesh(new THREE.ConeGeometry(r, h, 6), flat(k === 2 ? '#3f7766' : '#2c5a50'))
+    const cone = new THREE.Mesh(new THREE.ConeGeometry(r, h, 6), flat(k === 2 ? '#3d6b4c' : '#23503c'))
     cone.position.y = height * (.32 + k * .2) + h / 2 - height * .1
     cone.rotation.y = rand() * 3
     group.add(cone)
@@ -113,7 +113,7 @@ function pine(height: number, seed: number) {
 function puff(seed: number, size: number) {
   const rand = rng(seed)
   const group = new THREE.Group()
-  const material = flat('#e6e0f6', { roughness: 1 })
+  const material = flat('#f4f3ee', { roughness: 1 })
   for (let i = 0; i < 5; i++) {
     const ball = new THREE.Mesh(new THREE.IcosahedronGeometry(size * (.5 + rand() * .5), 0), material)
     ball.position.set((i - 2) * size * .7, (rand() - .3) * size * .4, (rand() - .5) * size * .6)
@@ -144,7 +144,7 @@ function pitchTexture() {
   canvas.width = canvas.height = size
   const ctx = canvas.getContext('2d')!
   for (let i = 0; i < 12; i++) {
-    ctx.fillStyle = i % 2 ? '#5662d2' : '#6d79e0'
+    ctx.fillStyle = i % 2 ? '#4f8a4c' : '#5f9c58'
     ctx.fillRect(i * size / 12, 0, size / 12 + 1, size)
   }
   ctx.strokeStyle = 'rgba(242,236,219,.95)'
@@ -241,10 +241,10 @@ export class IslandStage {
     this.renderer.outputColorSpace = THREE.SRGBColorSpace
     this.scene.fog = new THREE.Fog(GROUND, 9, 26)
 
-    const sky = new THREE.HemisphereLight('#d6d9ff', '#4a2f78', 1.5)
-    const key = new THREE.DirectionalLight('#ffd6b8', 2.3)
+    const sky = new THREE.HemisphereLight('#ffffff', '#8c8a78', 1.9)
+    const key = new THREE.DirectionalLight('#fff4e0', 2.4)
     key.position.set(3, 5, 4)
-    const rim = new THREE.DirectionalLight('#8e9cee', 1.3)
+    const rim = new THREE.DirectionalLight('#ffffff', .8)
     rim.position.set(-4, 2, -3)
     this.scene.add(sky, key, rim)
 
@@ -256,7 +256,7 @@ export class IslandStage {
     const sparkle = new THREE.BufferGeometry()
     sparkle.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(count * 3), 3))
     const tints = new Float32Array(count * 3)
-    const palette = ['#fff1dc', '#f6b455', '#f6866a', '#c9cffb'].map(c => new THREE.Color(c))
+    const palette = ['#fff1dc', '#f5b24a', '#e06a00', '#ffffff'].map(c => new THREE.Color(c))
     for (let i = 0; i < count; i++) palette[i % palette.length].toArray(tints, i * 3)
     sparkle.setAttribute('color', new THREE.Float32BufferAttribute(tints, 3))
     this.sparkles = new THREE.Points(sparkle, new THREE.PointsMaterial({ map: glow, vertexColors: true, size: .11, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }))
@@ -295,7 +295,7 @@ export class IslandStage {
       this.scene.add(group)
       return isle
     }
-    const meadow = (seed: number) => { const rand = rng(seed); return () => new THREE.Color('#5f6ad8').lerp(new THREE.Color('#8e9cee'), rand() * .6) }
+    const meadow = (seed: number) => { const rand = rng(seed); return () => new THREE.Color('#4f7f50').lerp(new THREE.Color('#6d9a5c'), rand() * .6) }
 
     // The outdoors: pines, a few stones, and a pool that opens up under him when he takes the board out.
     const outdoors = place('outdoors', [0, 0, 0], 1.3, 1.25, 11, meadow(12))
@@ -305,7 +305,7 @@ export class IslandStage {
       outdoors.group.add(tree)
     })
     ;[[.78, .55, .07], [-.5, .9, .05], [.25, .95, .04]].forEach(([x, z, r], i) => {
-      const stone = new THREE.Mesh(new THREE.DodecahedronGeometry(r, 0), flat('#8f7fb8'))
+      const stone = new THREE.Mesh(new THREE.DodecahedronGeometry(r, 0), flat('#8d8c80'))
       stone.position.set(x, .03, z)
       stone.rotation.set(i, i * 2, 0)
       outdoors.group.add(stone)
@@ -386,7 +386,7 @@ export class IslandStage {
     pitch.rotation.x = -Math.PI / 2
     pitch.position.y = .056
     soccer.group.add(pitch)
-    const line = flat('#f2ecdb')
+    const line = flat('#f4f3ee')
     const goal = new THREE.Group()
     const post = (w: number, h: number, d: number, x: number, y: number, z: number) => {
       const bar = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), line)
@@ -402,7 +402,7 @@ export class IslandStage {
     for (let k = 0; k <= 4; k++) net.push(-.48, k * .105, 0, -.48, k * .105, -.18, .48, k * .105, 0, .48, k * .105, -.18)
     const netGeometry = new THREE.BufferGeometry()
     netGeometry.setAttribute('position', new THREE.Float32BufferAttribute(net, 3))
-    goal.add(new THREE.LineSegments(netGeometry, new THREE.LineBasicMaterial({ color: '#d6d4f2', transparent: true, opacity: .55 })))
+    goal.add(new THREE.LineSegments(netGeometry, new THREE.LineBasicMaterial({ color: '#f4f3ee', transparent: true, opacity: .55 })))
     goal.position.set(.15, .06, -.85)
     soccer.group.add(goal)
 
@@ -578,6 +578,11 @@ export class IslandStage {
     this.raycaster.setFromCamera(new THREE.Vector2((x - box.left) / box.width * 2 - 1, -((y - box.top) / box.height) * 2 + 1), this.camera)
     const targets = isle.mount.children.filter(child => child.visible)
     return this.raycaster.intersectObjects(targets, true).length > 0
+  }
+
+  /** The page changed colour (light or dark), so the fog follows it. */
+  ground(color: string) {
+    (this.scene.fog as THREE.Fog).color.set(color)
   }
 
   resize() {
